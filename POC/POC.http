@@ -1,6 +1,18 @@
 @POC_HostAddress = http://localhost:5177
 
-GET {{POC_HostAddress}}/weatherforecast/
+GET {{POC_HostAddress}}/screen-profiles/
+POST {{POC_HostAddress}}/screen-profiles/
+PATCH {{POC_HostAddress}}/screen-profiles/{id}
+DELETE {{POC_HostAddress}}/screen-profiles/{id}
+
+GET {{POC_HostAddress}}/screens/
+POST {{POC_HostAddress}}/screens/
+PATCH {{POC_HostAddress}}/screens/{id}
+DELETE {{POC_HostAddress}}/screens/{id}
+
+
+
 Accept: application/json
 
 ###
+

@@ -19,4 +19,14 @@
       </Content>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="BusinessLogic\Commands\" />
+      <Folder Include="BusinessLogic\Handlers\" />
+      <Folder Include="BusinessLogic\Queries\" />
+      <Folder Include="BusinessLogic\Services\" />
+      <Folder Include="Infrastructure\Interfaces\" />
+      <Folder Include="Infrastructure\Models\" />
+      <Folder Include="Infrastructure\Repositories\" />
+    </ItemGroup>
+
 </Project>
