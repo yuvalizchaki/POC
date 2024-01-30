@@ -9,6 +9,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+        <PackageReference Include="MediatR" Version="12.2.0" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
     </ItemGroup>
@@ -17,16 +19,6 @@
       <Content Include="..\.dockerignore">
         <Link>.dockerignore</Link>
       </Content>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="BusinessLogic\Commands\" />
-      <Folder Include="BusinessLogic\Handlers\" />
-      <Folder Include="BusinessLogic\Queries\" />
-      <Folder Include="BusinessLogic\Services\" />
-      <Folder Include="Infrastructure\Interfaces\" />
-      <Folder Include="Infrastructure\Models\" />
-      <Folder Include="Infrastructure\Repositories\" />
     </ItemGroup>
 
 </Project>
