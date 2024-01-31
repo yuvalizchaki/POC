@@ -1,21 +1,16 @@
 ﻿using MediatR;
+using POC.Contracts.Screen;
 using POC.Contracts.ScreenProfile;
 using POC.Infrastructure.Repositories;
 
 namespace POC.App.Queries.GetAllScreenProfiles;
 
-public class GetAllScreenProfilesQueryHandler : IRequestHandler<GetAllScreenProfilesQuery, List<ScreenProfileDto>>
+public class GetAllScreenProfilesQueryHandler(ScreenProfileRepository repository)
+    : IRequestHandler<GetAllScreenProfilesQuery, List<ScreenProfileDto>>
 {
-    private readonly ScreenProfileRepository _repository;
-
-    public GetAllScreenProfilesQueryHandler(ScreenProfileRepository repository)
-    {
-        _repository = repository;
-    }
-
     public async Task<List<ScreenProfileDto>> Handle(GetAllScreenProfilesQuery request, CancellationToken cancellationToken)
     {
-        var screenProfiles = await _repository.GetAllAsync();
+        var screenProfiles = await repository.GetAllAsync();
         var screenProfileDtos = new List<ScreenProfileDto>();
 
         foreach (var profile in screenProfiles)
@@ -24,6 +19,11 @@ public class GetAllScreenProfilesQueryHandler : IRequestHandler<GetAllScreenProf
             {
                 Id = profile.Id,
                 Name = profile.Name,
+                Screens = profile.Screens.Select(s => new ScreenDto
+                {
+                    Id = s.Id,
+                    Ip = s.IpAddress,
+                }).ToList()
                 // Map other properties as necessary
             });
         }

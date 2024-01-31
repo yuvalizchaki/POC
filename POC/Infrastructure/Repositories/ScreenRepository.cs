@@ -22,6 +22,7 @@ public class ScreenRepository
     
     public Task AddAsync(Screen screen)
     {
+        screen.Id = GetNextId();
         _screens.Add(screen);
         return Task.CompletedTask;
     }
@@ -45,5 +46,11 @@ public class ScreenRepository
             _screens.Remove(screen);
         }
         return Task.CompletedTask;
+    }
+    
+    //TODO DELETE THIS WHEN WE HAVE A PROPER DB THAT DOES THIS FOR US
+    private int GetNextId()
+    {
+        return _screens.Any() ? _screens.Max(s => s.Id) + 1 : 1;
     }
 }

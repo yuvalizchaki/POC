@@ -4,7 +4,7 @@ using POC.Infrastructure.Repositories;
 
 namespace POC.App.Commands.DeleteScreenProfile;
 
-public class DeleteScreenProfileCommandHandler : IRequestHandler<DeleteScreenProfileCommand, DeletedScreenProfileResponse>
+public class DeleteScreenProfileCommandHandler : IRequestHandler<DeleteScreenProfileCommand>
 {
     
     private readonly ScreenProfileRepository _repository;
@@ -14,7 +14,7 @@ public class DeleteScreenProfileCommandHandler : IRequestHandler<DeleteScreenPro
         _repository = repository;
     }
     
-    public async Task<DeletedScreenProfileResponse> Handle(DeleteScreenProfileCommand request, CancellationToken cancellationToken)
+    public async Task Handle(DeleteScreenProfileCommand request, CancellationToken cancellationToken)
     {
         await _repository.DeleteAsync(request.Id);
         var response = new DeletedScreenProfileResponse
@@ -22,7 +22,5 @@ public class DeleteScreenProfileCommandHandler : IRequestHandler<DeleteScreenPro
             Id = request.Id,
             message = "Screen Profile Deleted Successfully"
         };
-
-        return response;
     }
 }

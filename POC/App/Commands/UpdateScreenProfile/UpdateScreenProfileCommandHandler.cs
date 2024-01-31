@@ -25,6 +25,7 @@ public class UpdateScreenProfileCommandHandler : IRequestHandler<UpdateScreenPro
             Screens = request.ScreenProfile.Screens.Select(s => new Screen
             {
                 Id = s.Id,
+                IpAddress = s.Ip
                 // TODO ADD Other properties to both screen model and screenDto
             }).ToList(),
         };
@@ -37,6 +38,7 @@ public class UpdateScreenProfileCommandHandler : IRequestHandler<UpdateScreenPro
             Screens = updatedScreenProfile.Screens.Select(s => new ScreenDto
             {
                 Id = s.Id,
+                Ip = s.IpAddress
                 // TODO ADD Other properties to both screen model and screenDto
             }).ToList(),
         };

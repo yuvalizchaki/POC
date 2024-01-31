@@ -50,14 +50,14 @@ public class ScreenProfilesController : ControllerBase
     public async Task<IActionResult> DeleteScreenProfile(int id)
     {
         var command = new DeleteScreenProfileCommand(id);
-        var result = await _mediator.Send(command);
-        return Ok(result);
+        await _mediator.Send(command);
+        return Ok(NoContent());
 
     }
     
     //get all
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ScreenProfileDto>>> GetAllScreenProfiles()
+    public async Task<ActionResult<List<ScreenProfileDto>>> GetAllScreenProfiles()
     {
         var query = new GetAllScreenProfilesQuery();
         var result = await _mediator.Send(query);

@@ -1,4 +1,5 @@
 using MediatR;
+using POC.Contracts.Screen;
 using POC.Contracts.ScreenProfile;
 using POC.Infrastructure.Repositories;
 
@@ -21,6 +22,11 @@ public class GetScreenProfileQueryHandler : IRequestHandler<GetScreenProfileQuer
         {
             Id = screenProfile.Id,
             Name = screenProfile.Name,
+            Screens = screenProfile.Screens.Select(s => new ScreenDto
+            {
+                Id = s.Id,
+                Ip = s.IpAddress,
+            }).ToList()
             // Other properties
         };
         
