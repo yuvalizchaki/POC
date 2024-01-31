@@ -42,7 +42,7 @@ public class ScreensController : ControllerBase
     {
         var query = new GetScreenQuery(id);
         var result = await _mediator.Send(query);
-        return Ok(result);
+        return result != null ? Ok(result) : NotFound();
     }
     
     //get all

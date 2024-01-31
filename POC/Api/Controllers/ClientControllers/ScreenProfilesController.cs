@@ -35,7 +35,7 @@ public class ScreenProfilesController : ControllerBase
     {
         var query = new GetScreenProfileQuery(id);
         var result = await _mediator.Send(query);
-        return Ok(result);
+        return result != null ? Ok(result) : NotFound();
     }
     
     [HttpPut("{id}")]

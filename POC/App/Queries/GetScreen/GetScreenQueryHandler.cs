@@ -1,5 +1,6 @@
 using MediatR;
 using POC.Contracts.Screen;
+using POC.Infrastructure.Extensions;
 using POC.Infrastructure.Repositories;
 
 namespace POC.App.Queries.GetScreen;
@@ -16,12 +17,6 @@ public class GetScreenQueryHandler : IRequestHandler<GetScreenQuery, ScreenDto>
     public async Task<ScreenDto> Handle(GetScreenQuery request, CancellationToken cancellationToken)
     {
         var screen = await _repository.GetByIdAsync(request.Id);
-        var screenDto = new ScreenDto
-        {
-            Id = screen.Id,
-            Ip = screen.IpAddress
-            // Other properties
-        };
-        return screenDto;
+        return screen.ToScreenDto();
     }
 }

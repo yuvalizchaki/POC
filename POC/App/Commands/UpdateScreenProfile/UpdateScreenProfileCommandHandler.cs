@@ -1,21 +1,15 @@
 using MediatR;
 using POC.Contracts.Screen;
 using POC.Contracts.ScreenProfile;
+using POC.Infrastructure.Extensions;
 using POC.Infrastructure.Models;
 using POC.Infrastructure.Repositories;
 
 namespace POC.App.Commands.UpdateScreenProfile;
 
-public class UpdateScreenProfileCommandHandler : IRequestHandler<UpdateScreenProfileCommand, ScreenProfileDto>
+public class UpdateScreenProfileCommandHandler(ScreenProfileRepository repository)
+    : IRequestHandler<UpdateScreenProfileCommand, ScreenProfileDto>
 {
-    
-    private readonly ScreenProfileRepository _repository;
-
-    public UpdateScreenProfileCommandHandler(ScreenProfileRepository repository)
-    {
-        _repository = repository;
-    }
-    
     public async Task<ScreenProfileDto> Handle(UpdateScreenProfileCommand request, CancellationToken cancellationToken)
     {
         var updatedScreenProfile = new ScreenProfile
@@ -25,22 +19,18 @@ public class UpdateScreenProfileCommandHandler : IRequestHandler<UpdateScreenPro
             Screens = request.ScreenProfile.Screens.Select(s => new Screen
             {
                 Id = s.Id,
-                IpAddress = s.Ip
+                IpAddress = s.Ip,
+                ScreenProfileId = s.ScreenProfileId,
                 // TODO ADD Other properties to both screen model and screenDto
             }).ToList(),
         };
-        await _repository.UpdateAsync(updatedScreenProfile);
+        await repository.UpdateAsync(updatedScreenProfile);
         
         var updatedScreenProfileDto = new ScreenProfileDto
         {
             Id = updatedScreenProfile.Id,
             Name = updatedScreenProfile.Name,
-            Screens = updatedScreenProfile.Screens.Select(s => new ScreenDto
-            {
-                Id = s.Id,
-                Ip = s.IpAddress
-                // TODO ADD Other properties to both screen model and screenDto
-            }).ToList(),
+            Screens = updatedScreenProfile.Screens.Select(s => s.ToScreenDto()).ToList()
         };
         
         return updatedScreenProfileDto;

@@ -18,7 +18,8 @@ public class GetScreenProfileQueryHandler : IRequestHandler<GetScreenProfileQuer
     public async Task<ScreenProfileDto> Handle(GetScreenProfileQuery request, CancellationToken cancellationToken)
     {
         var screenProfile = await _repository.GetByIdAsync(request.Id);
-        var screenProfileDto = new ScreenProfileDto
+        return screenProfile == null ? null : 
+        new ScreenProfileDto
         {
             Id = screenProfile.Id,
             Name = screenProfile.Name,
@@ -29,7 +30,5 @@ public class GetScreenProfileQueryHandler : IRequestHandler<GetScreenProfileQuer
             }).ToList()
             // Other properties
         };
-        
-        return screenProfileDto;
     }
 }
