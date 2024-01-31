@@ -2,7 +2,7 @@
 using POC.Contracts.ScreenProfile;
 using POC.Infrastructure.Repositories;
 
-namespace POC.App.Queries;
+namespace POC.App.Queries.GetAllScreenProfiles;
 
 public class GetAllScreenProfilesQueryHandler : IRequestHandler<GetAllScreenProfilesQuery, List<ScreenProfileDto>>
 {

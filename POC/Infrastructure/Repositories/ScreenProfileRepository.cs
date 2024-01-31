@@ -22,6 +22,7 @@ public class ScreenProfileRepository
 
     public Task AddAsync(ScreenProfile profile)
     {
+        profile.Id = GetNextId();
         _screenProfiles.Add(profile);
         return Task.CompletedTask;
     }
@@ -45,6 +46,12 @@ public class ScreenProfileRepository
             _screenProfiles.Remove(profile);
         }
         return Task.CompletedTask;
+    }
+    
+    //TODO this is 100% not best practice, and not something we should use, but for the POC it's fine, lemme know if u think otherwise
+    private int GetNextId()
+    {
+        return _screenProfiles.Any() ? _screenProfiles.Max(p => p.Id) + 1 : 1;
     }
 
     // Additional methods as needed, such as for managing relationships with Screens
