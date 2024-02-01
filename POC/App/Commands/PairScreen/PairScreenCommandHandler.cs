@@ -1,12 +1,14 @@
 using MediatR;
+using POC.Api.Hubs;
 using POC.Contracts.Screen;
 using POC.Infrastructure.Models;
 using POC.Infrastructure.Repositories;
+using POC.Api.Hubs;
 
 namespace POC.App.Commands.PairScreen;
 
 public class PairScreenCommandHandler(
-    //GuestHub hub,
+    GuestHub hub,
     ScreenProfileRepository screenProfileRepository,
     ScreenRepository screenRepository)
     : IRequestHandler<PairScreenCommand, ScreenDto>
@@ -18,7 +20,7 @@ public class PairScreenCommandHandler(
     public async Task<ScreenDto> Handle(PairScreenCommand request, CancellationToken cancellationToken)
     {
         //does the screen with this ip exist in the guest hub?
-        var exists = true;
+        var exists = await hub.IsIpConnected(request.PairScreenDto.IpAddress);
         //exists = await _hub.IsScreenConnected(request.PairScreenDto.IpAddress);
         if (exists)
         {
@@ -29,10 +31,12 @@ public class PairScreenCommandHandler(
                 ScreenProfileId = request.PairScreenDto.ScreenProfileId,
                 ScreenProfile = screenProfile
             };
+            await hub.OnConnect();
             await screenRepository.AddAsync(screen);
             screenProfile.Screens.Add(screen);
             await screenProfileRepository.UpdateAsync(screenProfile);
             //await _hub.NotifyScreenPaired(screen);
+            await hub.SendMessageToIp(request.PairScreenDto.IpAddress, "Screen paired successfully!");
             var screenDto = new ScreenDto
             {
                 Id = screen.Id,
