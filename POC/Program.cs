@@ -24,8 +24,9 @@ builder.Services.AddSingleton<ScreenProfileRepository>();
 builder.Services.AddSingleton<ScreenRepository>();
 
 // Register adapters
-builder.Services.AddHttpClient<CrmAdapter>();
-
+//builder.Services.AddHttpClient<CrmAdapter>();
+builder.Services.AddHttpClient<CrmAdapter>("CrmApiClient");
+builder.Services.AddSingleton<CrmAdapter>();
 // Register MediatR and handlers
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
@@ -47,5 +48,14 @@ app.UseRouting();
 app.MapHub<ScreenHub>("/screenHub");
 
 app.MapControllers();
+// web hooks
+/*app.MapPost("/webhooks", async context =>
+{
+    var request = await context.Request.ReadFromJsonAsync<WebhookOrderAdded>();
+    context.Response.StatusCode = 200;
+    await context.Response.WriteAsync("new order added");
+});*/
 
 app.Run();
+
+//public record WebhookOrderAdded(string header, string body);

@@ -1,4 +1,5 @@
 ﻿using POC.Contracts.CrmDTOs;
+using Newtonsoft.Json;
 
 namespace POC.Infrastructure.Adapters;
 
@@ -23,11 +24,13 @@ public class CrmAdapter
     // EXAMPLE ->          return new MyResult();
     // EXAMPLE ->      }
     
-    private readonly HttpClient _httpClient;
+    private readonly HttpClient _crmApiClient;
+    //private readonly ILogger<CrmAdapter> _logger;
 
-    public CrmAdapter(HttpClient httpClient)
+    public CrmAdapter(IHttpClientFactory httpClientFactory)
     {
-        _httpClient = httpClient;
+        _crmApiClient = httpClientFactory.CreateClient("CrmApiClient");  
+        _crmApiClient.BaseAddress = new Uri("http://localhost:8008/"); // Set the base address
         // Configure httpClient if necessary (e.g., BaseAddress, Default Headers)
     }
 
@@ -45,4 +48,17 @@ public class CrmAdapter
     }
 
     // Additional methods to interact with the third-party API
+    public async Task<List<OrderDto>> GetAllOrdersAsync()
+    { 
+        // Make an HTTP GET request to CRM API to fetch all orders
+        HttpResponseMessage response = await _crmApiClient.GetAsync("orders");
+
+        // Check if the request was successful
+        response.EnsureSuccessStatusCode();
+
+        // Parse the response and return the list of orders
+        string responseContent = await response.Content.ReadAsStringAsync();
+        return JsonConvert.DeserializeObject<List<OrderDto>>(responseContent);
+
+    }
 }
