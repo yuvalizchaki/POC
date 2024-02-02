@@ -1,4 +1,6 @@
-﻿using POC.Contracts.CrmDTOs;
+﻿using System.Net;
+using Microsoft.AspNetCore.Http.HttpResults;
+using POC.Contracts.CrmDTOs;
 using Newtonsoft.Json;
 
 namespace POC.Infrastructure.Adapters;
@@ -51,7 +53,10 @@ public class CrmAdapter
     { 
         // Make an HTTP GET request to CRM API to fetch all orders
         HttpResponseMessage response = await _crmApiClient.GetAsync("orders");
-
+        if(response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return null;
+        }
         // Check if the request was successful
         response.EnsureSuccessStatusCode();
 
@@ -59,5 +64,22 @@ public class CrmAdapter
         string responseContent = await response.Content.ReadAsStringAsync();
         return JsonConvert.DeserializeObject<List<OrderDto>>(responseContent);
 
+    }
+
+    public async Task<OrderDto> GetOrderById(int id)
+    {
+        
+        HttpResponseMessage response = await _crmApiClient.GetAsync($"orders/{id}");
+        if(response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return null;
+        }
+        // Parse the response and return the list of orders
+        string responseContent = await response.Content.ReadAsStringAsync();
+        int charactersToRemoveFromStart = 9;
+        int charactersToRemoveFromEnd = 1;
+        string modifiedResponseContent = responseContent.Substring(charactersToRemoveFromStart, 
+            responseContent.Length - charactersToRemoveFromStart - charactersToRemoveFromEnd);
+        return JsonConvert.DeserializeObject<OrderDto>(modifiedResponseContent);
     }
 }
