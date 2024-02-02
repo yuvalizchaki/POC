@@ -2,8 +2,7 @@
 
 public class OrderDto
 {
-    public int Id;
-    public int CustomerId;
-    public string? ClientName;
-    // TODO: Complete
+    public int Id { get; set; }
+    public int CustomerId { get; set; }
+    public string? ClientName { get; set; }
 }
