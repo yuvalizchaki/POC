@@ -31,11 +31,13 @@ public class OrdersController : ControllerBase
         return result != null ? Ok(result) : NotFound();
     }
     [HttpPost]
-    public async Task<ActionResult<List<OrderDto>>> OrderAdded(OrderDto orderDto)
+    // when a new order is added, the webhook url is this post method
+    // we will add a caching mechanism here after POC
+    //for now we will just return the new order added
+    //probably wont be needed- depends on MapPost
+    public async Task<ActionResult<OrderDto>> WebhookOrderAdded(OrderDto orderDto)
     {
-        var query = new GetAllOrdersQuery();
-        var result = await _mediator.Send(query);
-        result.Add(orderDto);
-        return Ok(result);
+        //TODO: send to hub 
+        return Ok(orderDto);
     }
 }

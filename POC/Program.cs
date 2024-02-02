@@ -49,12 +49,20 @@ app.MapHub<ScreenHub>("/screenHub");
 
 app.MapControllers();
 // web hooks
-app.MapPost("/webhooks", async context =>
-{
-    var request = await context.Request.ReadFromJsonAsync<WebhookOrderAdded>();
-    context.Response.StatusCode = 200;
-    await context.Response.WriteAsync("new order added");
-});
+// const string server = "http://localhost:8008";
+// const string callback = "http://localhost:5177/webhook";
+// const string topic = "order.new";
+//
+// var client = new HttpClient();
+//
+// Console.WriteLine($"Subscribing to topic {topic} with callback {callback}");
+// await client.PostAsJsonAsync(server + "/webhook", new { topic, callback });
+// app.MapPost("/webhook", async context =>
+// {
+//     var request = await context.Request.ReadFromJsonAsync<WebhookOrderAdded>();
+//     context.Response.StatusCode = 200;
+//     await context.Response.WriteAsync($"new order added: {request?.Body}");
+// });
 
 app.Run();
 
