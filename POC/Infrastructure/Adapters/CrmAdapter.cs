@@ -31,7 +31,6 @@ public class CrmAdapter
     {
         _crmApiClient = httpClientFactory.CreateClient("CrmApiClient");  
         _crmApiClient.BaseAddress = new Uri("http://localhost:8008/"); // Set the base address
-        // Configure httpClient if necessary (e.g., BaseAddress, Default Headers)
     }
 
     public async Task<OrderDto> SendRequestAsync(OrderDto request)

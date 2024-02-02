@@ -49,13 +49,13 @@ app.MapHub<ScreenHub>("/screenHub");
 
 app.MapControllers();
 // web hooks
-/*app.MapPost("/webhooks", async context =>
+app.MapPost("/webhooks", async context =>
 {
     var request = await context.Request.ReadFromJsonAsync<WebhookOrderAdded>();
     context.Response.StatusCode = 200;
     await context.Response.WriteAsync("new order added");
-});*/
+});
 
 app.Run();
 
-//public record WebhookOrderAdded(string header, string body);
+public record WebhookOrderAdded(string Header, string Body);
