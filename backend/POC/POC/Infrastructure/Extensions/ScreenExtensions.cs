@@ -6,9 +6,9 @@ namespace POC.Infrastructure.Extensions;
 public static class ScreenExtensions
 {
     //to dto
-    public static ScreenDto? ToScreenDto(this Screen screen)
+    public static ScreenDto ToScreenDto(this Screen screen)
     {
-        return screen == null? null : new ScreenDto()
+        return new ScreenDto()
         {
             Id = screen.Id,
             Ip = screen.IpAddress,

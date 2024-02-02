@@ -3,13 +3,7 @@ using POC.Contracts.Screen;
 
 namespace POC.App.Queries.GetScreen;
 
-public class GetScreenQuery : IRequest<ScreenDto>
+public class GetScreenQuery(int id) : IRequest<ScreenDto>
 {
-    public int Id { get; set; }
-    
-    public GetScreenQuery(int id)
-    {
-        Id = id;
-    }
-    
+    public int Id { get; set; } = id;
 }

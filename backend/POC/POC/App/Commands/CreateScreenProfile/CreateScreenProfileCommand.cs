@@ -4,12 +4,7 @@ namespace POC.App.Commands.CreateScreenProfile;
 
 using MediatR;
 
-public class CreateScreenProfileCommand : IRequest<ScreenProfileDto>
+public class CreateScreenProfileCommand(CreateScreenProfileDto createScreenProfileDto) : IRequest<ScreenProfileDto>
 {
-    public CreateScreenProfileDto CreateScreenProfileDto { get; }
-
-    public CreateScreenProfileCommand(CreateScreenProfileDto createScreenProfileDto)
-    {
-        CreateScreenProfileDto = createScreenProfileDto;
-    }
+    public CreateScreenProfileDto CreateScreenProfileDto { get; } = createScreenProfileDto;
 }

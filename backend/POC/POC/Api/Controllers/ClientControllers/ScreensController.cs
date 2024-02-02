@@ -5,6 +5,7 @@ using POC.App.Commands.RemoveScreen;
 using POC.App.Queries.GetAllScreens;
 using POC.App.Queries.GetScreen;
 using POC.Contracts.Screen;
+using POC.Infrastructure.Common.Exceptions;
 
 namespace POC.Api.Controllers.ClientControllers;
 
@@ -25,24 +26,52 @@ public class ScreensController : ControllerBase
     public async Task<IActionResult> PairScreen([FromBody] PairScreenDto pairScreenDto)
     {
         var command = new PairScreenCommand(pairScreenDto);
-        var result = await _mediator.Send(command);
-        return Ok(result);
+        
+        try
+        {
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+        catch (ScreenProfileNotFoundException e)
+        {
+            return NotFound();
+        }
+        catch (IpNotInGuestHubException e)
+        {
+            return BadRequest();
+        }
     }
     
     [HttpDelete("{id}")]
     public async Task<IActionResult> RemoveScreen(int id)
     {
         var command = new RemoveScreenCommand(id);
-        await _mediator.Send(command);
-        return Ok(NoContent());
+
+        try
+        {
+            await _mediator.Send(command);
+            return NoContent();
+        }
+        catch (ScreenNotFoundException e)
+        {
+            return NotFound();
+        }
     }
     
     [HttpGet("{id}")]
     public async Task<ActionResult<ScreenDto>> GetScreen(int id)
     {
         var query = new GetScreenQuery(id);
-        var result = await _mediator.Send(query);
-        return result != null ? Ok(result) : NotFound();
+
+        try
+        {
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+        catch (ScreenNotFoundException e)
+        {
+            return NotFound();
+        }
     }
     
     //get all
@@ -50,7 +79,15 @@ public class ScreensController : ControllerBase
     public async Task<ActionResult<List<ScreenDto>>> GetAllScreens()
     {
         var query = new GetAllScreensQuery();
-        var result = await _mediator.Send(query);
-        return Ok(result);
+
+        try
+        {
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+        catch (Exception e)
+        {
+            return BadRequest();
+        }
     }
 }

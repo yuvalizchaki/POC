@@ -1,6 +1,7 @@
 using MediatR;
 using POC.Contracts.Screen;
 using POC.Contracts.ScreenProfile;
+using POC.Infrastructure.Common.Exceptions;
 using POC.Infrastructure.Extensions;
 using POC.Infrastructure.Models;
 using POC.Infrastructure.Repositories;
@@ -12,27 +13,14 @@ public class UpdateScreenProfileCommandHandler(ScreenProfileRepository repositor
 {
     public async Task<ScreenProfileDto> Handle(UpdateScreenProfileCommand request, CancellationToken cancellationToken)
     {
-        var updatedScreenProfile = new ScreenProfile
-        {
-            Id = request.Id,
-            Name = request.ScreenProfile.Name,
-            Screens = request.ScreenProfile.Screens.Select(s => new Screen
-            {
-                Id = s.Id,
-                IpAddress = s.Ip,
-                ScreenProfileId = s.ScreenProfileId,
-                // TODO ADD Other properties to both screen model and screenDto
-            }).ToList(),
-        };
-        await repository.UpdateAsync(updatedScreenProfile);
+        var screenToUpdate = await repository.GetByIdAsync(request.Id);
         
-        var updatedScreenProfileDto = new ScreenProfileDto
-        {
-            Id = updatedScreenProfile.Id,
-            Name = updatedScreenProfile.Name,
-            Screens = updatedScreenProfile.Screens.Select(s => s.ToScreenDto()).ToList()
-        };
+        if (screenToUpdate == null) throw new ScreenProfileNotFoundException();
         
-        return updatedScreenProfileDto;
+        screenToUpdate.Name = request.ScreenProfile.Name;
+        
+        await repository.UpdateAsync(screenToUpdate);
+        
+        return screenToUpdate.ToScreenProfileDto();
     }
 }

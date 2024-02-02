@@ -1,26 +1,21 @@
 using MediatR;
 using POC.Contracts.ScreenProfile;
+using POC.Infrastructure.Common.Exceptions;
 using POC.Infrastructure.Repositories;
 
 namespace POC.App.Commands.DeleteScreenProfile;
 
-public class DeleteScreenProfileCommandHandler : IRequestHandler<DeleteScreenProfileCommand>
+public class DeleteScreenProfileCommandHandler(ScreenProfileRepository repository,
+    ScreenRepository screenRepository //TODO DELETE THIS WHEN WE HAVE A PROPER DB THAT DOES THIS FOR US
+) : IRequestHandler<DeleteScreenProfileCommand>
 {
-    
-    private readonly ScreenProfileRepository _repository;
-
-    public DeleteScreenProfileCommandHandler(ScreenProfileRepository repository)
-    {
-        _repository = repository;
-    }
-    
     public async Task Handle(DeleteScreenProfileCommand request, CancellationToken cancellationToken)
     {
-        await _repository.DeleteAsync(request.Id);
-        var response = new DeletedScreenProfileResponse
-        {
-            Id = request.Id,
-            message = "Screen Profile Deleted Successfully"
-        };
+        var result = await repository.DeleteAsync(request.Id);
+        if (!result) throw new ScreenProfileNotFoundException();
+        
+        //TODO DELETE THIS WHEN WE HAVE A PROPER DB THAT DOES THIS FOR US
+        await screenRepository.updateScreenProfileDeleteAsync(request.Id);
+        //
     }
 }

@@ -3,6 +3,6 @@
 public class ScreenProfile
 {
     public int Id { get; set; }
-    public string Name { get; set; }
-    public List<Screen> Screens { get; set; } = new List<Screen>();
+    public string Name { get; set; } = null!;
+    public List<Screen> Screens { get; set; } = [];
 }
