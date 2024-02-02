@@ -23,6 +23,7 @@ builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavi
 builder.Services.AddSingleton<ScreenProfileRepository>();
 builder.Services.AddSingleton<ScreenRepository>();
 builder.Services.AddSingleton<ConnectionRepository>();
+builder.Services.AddSingleton<GuestHub>();
 
 // Register adapters
 builder.Services.AddHttpClient<CrmAdapter>();
