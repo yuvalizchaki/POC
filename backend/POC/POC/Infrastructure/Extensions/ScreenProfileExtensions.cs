@@ -6,9 +6,9 @@ namespace POC.Infrastructure.Extensions;
 public static class ScreenProfileExtensions
 {
     //to dto
-    public static ScreenProfileDto? ToScreenProfileDto(this ScreenProfile screenProfile)
+    public static ScreenProfileDto ToScreenProfileDto(this ScreenProfile screenProfile)
     {
-        return screenProfile == null? null : new ScreenProfileDto
+        return new ScreenProfileDto
         {
             Id = screenProfile.Id,
             Name = screenProfile.Name,

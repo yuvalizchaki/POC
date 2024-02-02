@@ -14,7 +14,7 @@ public class ScreenProfileRepository
         return Task.FromResult(_screenProfiles.ToList());
     }
 
-    public Task<ScreenProfile> GetByIdAsync(int id)
+    public Task<ScreenProfile?> GetByIdAsync(int id)
     {
         var profile = _screenProfiles.FirstOrDefault(p => p.Id == id);
         return Task.FromResult(profile);
@@ -23,36 +23,54 @@ public class ScreenProfileRepository
     public Task AddAsync(ScreenProfile profile)
     {
         profile.Id = GetNextId();
+        
         _screenProfiles.Add(profile);
+        
         return Task.CompletedTask;
     }
 
-    public Task UpdateAsync(ScreenProfile profile)
+    public Task<bool> UpdateAsync(ScreenProfile profile)
     {
         var existingProfile = _screenProfiles.FirstOrDefault(p => p.Id == profile.Id);
-        if (existingProfile != null)
-        {
-            _screenProfiles.Remove(existingProfile);
-            _screenProfiles.Add(profile);
-        }
-        return Task.CompletedTask;
+        
+        if (existingProfile == null) return Task.FromResult(false);
+        
+        _screenProfiles.Remove(existingProfile);
+        _screenProfiles.Add(profile);
+        
+        return Task.FromResult(true);
     }
 
-    public Task DeleteAsync(int id)
+    public Task<bool> DeleteAsync(int id)
     {
         var profile = _screenProfiles.FirstOrDefault(p => p.Id == id);
-        if (profile != null)
-        {
-            _screenProfiles.Remove(profile);
-        }
-        return Task.CompletedTask;
+        
+        if (profile == null) return Task.FromResult(false);
+        
+        _screenProfiles.Remove(profile);
+        
+        return Task.FromResult(true);
     }
     
     //TODO this is 100% not best practice, and not something we should use, but for the POC it's fine, lemme know if u think otherwise
     private int GetNextId()
     {
-        return _screenProfiles.Any() ? _screenProfiles.Max(p => p.Id) + 1 : 1;
+        return _screenProfiles.Count != 0 ? _screenProfiles.Max(p => p.Id) + 1 : 1;
+    }
+    
+    //TODO DELETE THIS WHEN WE HAVE A PROPER DB THAT DOES THIS FOR US
+    public Task updateScreenDeleteAsync(int screenId, int screenProfileId)
+    {
+        //delete the screen for the screenProfile
+        var screenProfile = _screenProfiles.FirstOrDefault(p => p.Id == screenProfileId);
+
+        var screen = screenProfile?.Screens.FirstOrDefault(s => s.Id == screenId);
+        
+        if (screen == null) return Task.CompletedTask;
+        
+        screenProfile?.Screens.Remove(screen);
+        
+        return Task.CompletedTask;
     }
 
-    // Additional methods as needed, such as for managing relationships with Screens
 }

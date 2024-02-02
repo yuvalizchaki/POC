@@ -14,7 +14,7 @@ public class ScreenRepository
         return Task.FromResult(_screens.ToList());
     }
 
-    public Task<Screen> GetByIdAsync(int id)
+    public Task<Screen?> GetByIdAsync(int id)
     {
         var screen = _screens.FirstOrDefault(s => s.Id == id);
         return Task.FromResult(screen);
@@ -38,10 +38,21 @@ public class ScreenRepository
         return Task.CompletedTask;
     }
 
-    public Task DeleteAsync(int id)
+    public Task<bool> DeleteAsync(int id)
     {
         var screen = _screens.FirstOrDefault(s => s.Id == id);
-        if (screen != null)
+        if (screen == null) return Task.FromResult(false);
+        _screens.Remove(screen);
+        return Task.FromResult(true);
+    }
+    
+    
+    //TODO DELETE THIS WHEN WE HAVE A PROPER DB THAT DOES THIS FOR US
+    public Task updateScreenProfileDeleteAsync(int screenProfileId)
+    {
+        //delete all screens with screenProfileId
+        var screens = _screens.Where(s => s.ScreenProfileId == screenProfileId).ToList();
+        foreach (var screen in screens)
         {
             _screens.Remove(screen);
         }
@@ -53,4 +64,6 @@ public class ScreenRepository
     {
         return _screens.Any() ? _screens.Max(s => s.Id) + 1 : 1;
     }
+    
+    
 }

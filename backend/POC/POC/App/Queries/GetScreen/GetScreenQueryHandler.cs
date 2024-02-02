@@ -1,22 +1,19 @@
 using MediatR;
 using POC.Contracts.Screen;
+using POC.Infrastructure.Common.Exceptions;
 using POC.Infrastructure.Extensions;
 using POC.Infrastructure.Repositories;
 
 namespace POC.App.Queries.GetScreen;
 
-public class GetScreenQueryHandler : IRequestHandler<GetScreenQuery, ScreenDto>
+public class GetScreenQueryHandler(ScreenRepository repository) : IRequestHandler<GetScreenQuery, ScreenDto>
 {
-    private readonly ScreenRepository _repository;
-    
-    public GetScreenQueryHandler(ScreenRepository repository)
-    {
-        _repository = repository;
-    }
-    
     public async Task<ScreenDto> Handle(GetScreenQuery request, CancellationToken cancellationToken)
     {
-        var screen = await _repository.GetByIdAsync(request.Id);
+        var screen = await repository.GetByIdAsync(request.Id);
+
+        if (screen == null) throw new ScreenNotFoundException();
+        
         return screen.ToScreenDto();
     }
 }
