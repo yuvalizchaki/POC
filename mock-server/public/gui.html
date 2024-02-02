@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+        }
+
+        input[type="text"] {
+            padding: 8px;
+            margin: 5px 0;
+            box-sizing: border-box;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #4CAF50;
+        }
+
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        @keyframes glow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 3px #FFD700;
+            }
+
+            50% {
+                box-shadow: 0 0 10px #FFD700;
+            }
+        }
+
+
+        #response-container {
+            font-family: 'Courier New', Courier, monospace;
+            width: 100%;
+            max-height: 500px;
+            overflow-y: scroll;
+            background-color: #FFFCC9;
+            border: 1px solid #eee;
+            padding: 10px;
+            box-sizing: border-box;
+            white-space: pre-wrap;
+        }
+    </style>
+    <script>
+        function sendRequest(method) {
+            var xhr = new XMLHttpRequest();
+            var orderId = document.getElementById('orderId').value;
+            var url = 'http://localhost:8008/orders';
+
+            if (method !== 'POST' && orderId) {
+                url += '/' + orderId;
+            }
+
+            xhr.open(method === 'GET' && !orderId ? 'GET' : method, url, true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    // Display Glow Feedback
+                    document.getElementById('response-container').style.animation = 'glow 0.5s ease-out';
+                    setTimeout(() => {
+                        document.getElementById('response-container').style.animation = '';
+                    }, 500);
+
+
+                    var responseElement = document.getElementById('response');
+                    responseElement.textContent = JSON.stringify(JSON.parse(xhr.responseText), null, 2).trim();
+                }
+            };
+
+            var data = {};
+            if (method === 'POST') {
+                // Include data for POST request if needed
+                data = { /* Your data here */ };
+            }
+
+            xhr.send(method === 'GET' ? null : JSON.stringify(data));
+        }
+    </script>
+</head>
+
+<body>
+    <h1>CRM - Mock Server</h1>
+    <input type="text" id="orderId" placeholder="Order ID">
+    <button onclick="sendRequest('GET')">Get</button>
+    <button onclick="sendRequest('POST')">Create</button>
+    <button onclick="sendRequest('PUT')">Update</button>
+    <button onclick="sendRequest('DELETE')">Delete</button>
+
+    <h2>Response:</h2>
+    <div id="response-container">
+        <span id="response"></span>
+    </div>
+</body>
+
+</html>

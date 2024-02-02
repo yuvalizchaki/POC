@@ -1,4 +1,5 @@
 using MediatR;
+using POC.Api.Conventions;
 using POC.Api.Hubs;
 using POC.App.Behaviors;
 using POC.Infrastructure.Adapters;
@@ -8,16 +9,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Logging.AddConsole();
 
-// Add services to the container.
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-// Add SignalR services
-builder.Services.AddSignalR();
+// ========== Add services to the container. ==========
+builder.Services.AddLogging();
 
 // Register the LoggingBehavior for MediatR
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddSignalR();
 
 // Register in-memory repositories
 builder.Services.AddSingleton<ScreenProfileRepository>();
@@ -25,10 +26,18 @@ builder.Services.AddSingleton<ScreenRepository>();
 builder.Services.AddSingleton<ConnectionRepository>();
 builder.Services.AddSingleton<GuestHub>();
 
-// Register adapters
+// Add the custom route convention
+builder.Services.AddControllers(options =>
+{
+    options.Conventions.Add(new KebabCaseRouteConvention());
+});
+
 //builder.Services.AddHttpClient<CrmAdapter>();
 builder.Services.AddHttpClient<CrmAdapter>("CrmApiClient");
+
+// Register adapters
 builder.Services.AddSingleton<CrmAdapter>();
+
 // Register MediatR and handlers
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
@@ -47,24 +56,10 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 // Map SignalR hubs
-app.MapHub<ScreenHub>("/screenHub");
+app.MapHub<ScreenHub>("/screen-hub");
+app.MapHub<GuestHub>("/guest-hub");
 
 app.MapControllers();
-// web hooks
-// const string server = "http://localhost:8008";
-// const string callback = "http://localhost:5177/webhook";
-// const string topic = "order.new";
-//
-// var client = new HttpClient();
-//
-// Console.WriteLine($"Subscribing to topic {topic} with callback {callback}");
-// await client.PostAsJsonAsync(server + "/webhook", new { topic, callback });
-// app.MapPost("/webhook", async context =>
-// {
-//     var request = await context.Request.ReadFromJsonAsync<WebhookOrderAdded>();
-//     context.Response.StatusCode = 200;
-//     await context.Response.WriteAsync($"new order added: {request?.Body}");
-// });
 
 app.Run();
 

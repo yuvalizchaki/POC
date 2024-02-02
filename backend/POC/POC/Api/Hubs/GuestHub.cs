@@ -3,11 +3,12 @@ using POC.Infrastructure.Repositories;
 
 namespace POC.Api.Hubs;
 
-public class GuestHub (ConnectionRepository connectionRepository) : Hub
+public class GuestHub (ConnectionRepository connectionRepository, ILogger<GuestHub> logger) : Hub
 {
     
     public async Task OnConnect()
     {
+        logger.LogInformation($"Guest hub connection established");
         var ipAddress = Context.GetHttpContext()?.Connection.RemoteIpAddress?.ToString();
         if (ipAddress != null)
         {

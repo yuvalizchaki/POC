@@ -1,0 +1,43 @@
+import { AccountingProviderDto } from "./accountingProvider.dto";
+import { DateTimeDto } from "./dateTime.dto";
+import { OneTimeOrderItemDto } from "./orderItem/oneTimeOrderItem.dto";
+import { OrderItemDto } from "./orderItem/orderItem.dto";
+import { PeopleOrderItemDto } from "./orderItem/peopleOrderItem.dto";
+import { ServiceOrderItemDto } from "./orderItem/serviceOrderItem.dto";
+
+export interface OrderDto {
+    Id: number;
+    CustomerId: number;
+    ClientName?: string;
+    FirstName?: string;
+    Email?: string;
+    Lat?: number;
+    Lng?: number;
+    LastName?: string;
+    Street?: string;
+    City?: string;
+    Appartment?: string;
+    ZipCode?: number;
+    CountryId?: number;
+    Terms?: string;
+    DepartmentId?: number;
+    DiscountPercentage?: number;
+    DiscountAmount?: number;
+    AccountingProvider?: AccountingProviderDto;
+    AccountingProviderId?: number;
+    StartDate: DateTimeDto;
+    EndDate: DateTimeDto;
+    DepartDate?: DateTimeDto;
+    ReturnDate?: DateTimeDto;
+    PaidAmount?: number;
+    InternalRemarks?: string;
+    RemarksPriceOffer?: string;
+    RemarksDeliveryCertificate?: string;
+    RemarksPackageSlip?: string;
+    Status: number;
+    FileUploadedId?: string;
+    OrderItems?: OrderItemDto[];
+    ServiceOrderItems?: ServiceOrderItemDto[];
+    PeopleOrderItems?: PeopleOrderItemDto[];
+    OneTimeOrderItems?: OneTimeOrderItemDto[];
+}
