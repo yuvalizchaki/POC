@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import * as signalR from "@microsoft/signalr";
 import { SignalRHandlers } from "../types/SignalR";
 import { API_BASE_URL } from "../config";
@@ -16,57 +16,57 @@ export const useSignalR = ({
   onConnect,
   onDisconnect,
 }: UseSignalRProps) => {
-  const connection = new signalR.HubConnectionBuilder()
-    .withUrl(API_BASE_URL + hubUrl)
-    .configureLogging(signalR.LogLevel.Information)
-    .build();
+  const [connection, setConnection] = useState<signalR.HubConnection>();
 
-  const startConnection = useCallback(async () => {
-    try {
-      await connection.start();
-      console.log("SignalR Connected.");
-      onConnect?.();
-    } catch (err) {
-      console.error(err);
-      setTimeout(startConnection, 5000);
-    }
-  }, [connection, onConnect]);
+  const createConnection = () => {
+    const con = new signalR.HubConnectionBuilder()
+      .withUrl(API_BASE_URL + hubUrl)
+      .configureLogging(signalR.LogLevel.Information)
+      .withAutomaticReconnect()
+      .build();
+
+    setConnection(con);
+  };
 
   useEffect(() => {
-    startConnection();
-
-    connection.onclose(async () => {
-      onDisconnect?.();
-      await startConnection();
-    });
-
-    return () => {
-      connection.stop();
-    };
-  }, [startConnection, connection, onDisconnect]);
+    createConnection();
+  }, [hubUrl]);
 
   useEffect(() => {
-    Object.entries(commandHandlers).forEach(([commandName, handler]) => {
-      connection.on(commandName, handler);
-    });
-
-    return () => {
-      Object.keys(commandHandlers).forEach((commandName) => {
-        connection.off(commandName);
-      });
-    };
-  }, [connection, commandHandlers]);
-
-  const sendMessage = useCallback(
-    async (message: object) => {
+    if (connection) {
       try {
-        await connection.invoke("SendMessage", JSON.stringify(message));
-      } catch (err) {
-        console.error(err);
-      }
-    },
-    [connection]
-  );
+        connection.start()
+          .then(() => {
+            console.log("SignalR Connected.");
+            onConnect?.();
+            Object.entries(commandHandlers).forEach(([commandName, handler]) => {
+              console.log('[DEBUG] adding command name: ', commandName);
+              connection.on(commandName, handler);
+            });
+          })
+          .catch((err) => {
+            console.error(err);
+            setTimeout(createConnection, 5000);
+          });
 
-  return { sendMessage };
+        connection.onclose(async () => {
+          onDisconnect?.();
+          await createConnection();
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    return () => {
+      if (connection) {
+        Object.keys(commandHandlers).forEach((commandName) => {
+          connection.off(commandName);
+        });
+        connection.stop();
+      }
+    };
+  }, [connection, onDisconnect, commandHandlers, onConnect]);
+
+  return {};
 };

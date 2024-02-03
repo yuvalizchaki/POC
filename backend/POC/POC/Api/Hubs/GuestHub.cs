@@ -1,18 +1,28 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.SignalR;
+using POC.Contracts.Screen;
 using POC.Infrastructure.Repositories;
 
 namespace POC.Api.Hubs;
 
 public class GuestHub (ConnectionRepository connectionRepository, ILogger<GuestHub> logger) : Hub
 {
+    private static readonly string ScreenAdded = "screenAdded";
     
     public async Task OnConnect()
     {
-        logger.LogInformation($"Guest hub connection established");
-        var ipAddress = Context.GetHttpContext()?.Connection.RemoteIpAddress?.ToString();
-        if (ipAddress != null)
+        if (Context != null)
         {
-           await connectionRepository.AddConnectionAsync(ipAddress, Context.ConnectionId);
+            logger.LogInformation($"Guest hub connection established");
+            var ipAddress = Context.GetHttpContext()?.Connection.RemoteIpAddress?.ToString();
+            if (ipAddress != null)
+            {
+                await connectionRepository.AddConnectionAsync(ipAddress, Context.ConnectionId);
+            }
+        }
+        else
+        {
+            logger.LogInformation($"[DEBUG] Connection does not exist");
         }
     }
     
@@ -29,17 +39,33 @@ public class GuestHub (ConnectionRepository connectionRepository, ILogger<GuestH
     }
     
     
-    public async Task SendMessageToIp(string ipAddress, string message)
+    private async Task SendMessageToIp(string ipAddress,  string method, string message)
     {
-        string connectionId = await connectionRepository.GetConnectionIdAsync(ipAddress);
-        if (connectionId != null)
+        // var connectionId = await connectionRepository.GetConnectionIdAsync(ipAddress);
+        // if (connectionId != null)
+        // {
+        //     logger.LogInformation($"[DEBUG] (SendMessageToIp) connectionId: " + connectionId);
+        //     await Clients.Client(connectionId).SendAsync(method, message);
+        // }
+        // else
+        // {
+        //     logger.LogInformation($"[DEBUG] (SendMessageToIp) connectionId: NULL");
+        //     await Clients.Caller.SendAsync("ErrorMessage", "Client with specified IP address is not connected.");
+        // }
+        if (Context != null)
         {
-            await Clients.Client(connectionId).SendAsync("ReceiveMessage", message);
+            logger.LogInformation($"[DEBUG] (SendMessageToIp) connectionId: " + Context.ConnectionId);
+            await Clients.Client(Context.ConnectionId).SendAsync(method, message);
         }
         else
         {
-            await Clients.Caller.SendAsync("ErrorMessage", "Client with specified IP address is not connected.");
+            logger.LogInformation($"[DEBUG] Connection does not exist");
         }
+    }
+
+    public async Task SendMessageAddScreen(string ipAddress, ScreenDto screenDto)
+    {
+         await SendMessageToIp(ipAddress, ScreenAdded, JsonSerializer.Serialize(screenDto));
     }
 
 }

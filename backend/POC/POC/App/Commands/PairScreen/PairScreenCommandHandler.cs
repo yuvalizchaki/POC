@@ -4,6 +4,7 @@ using POC.Contracts.Screen;
 using POC.Infrastructure.Models;
 using POC.Infrastructure.Repositories;
 using POC.Api.Hubs;
+using POC.Contracts;
 using POC.Infrastructure.Common.Exceptions;
 using POC.Infrastructure.Extensions;
 
@@ -31,11 +32,12 @@ public class PairScreenCommandHandler(
             ScreenProfile = screenProfile
         };
         
-        //await hub.OnConnect();
+        await hub.OnConnect();
         await screenRepository.AddAsync(screen);
         screenProfile.Screens.Add(screen);
         await screenProfileRepository.UpdateAsync(screenProfile);
-        //await hub.SendMessageToIp(request.PairScreenDto.IpAddress, "Screen paired successfully!");
+        var screenDto = screen.ToScreenDto();
+        await hub.SendMessageAddScreen(request.PairScreenDto.IpAddress, screenDto);
         
         return screen.ToScreenDto();
     }

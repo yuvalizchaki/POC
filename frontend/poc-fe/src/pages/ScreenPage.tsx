@@ -6,6 +6,7 @@ const ScreenPage: React.FC = () => {
   const [screenInfo, setScreenInfo] = useState<ScreenAddedDto | null>(null);
 
   const handleScreenAdded = (message: ScreenAddedDto) => {
+    console.log('[DEBUG] screen added');
     setScreenInfo(message);
   };
 
