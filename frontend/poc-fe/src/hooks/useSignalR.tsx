@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import * as signalR from "@microsoft/signalr";
+import { useEffect } from "react";
 import { SignalRHandlers } from "../types/SignalR";
-import { API_BASE_URL } from "../config";
+import { useSignalRContext } from "./SignalRProvider";
 
 interface UseSignalRProps {
   hubUrl: string;
@@ -16,57 +15,32 @@ export const useSignalR = ({
   onConnect,
   onDisconnect,
 }: UseSignalRProps) => {
-  const [connection, setConnection] = useState<signalR.HubConnection>();
-
-  const createConnection = () => {
-    const con = new signalR.HubConnectionBuilder()
-      .withUrl(API_BASE_URL + hubUrl)
-      .configureLogging(signalR.LogLevel.Information)
-      .withAutomaticReconnect()
-      .build();
-
-    setConnection(con);
-  };
+  const { connect, bindHandlers, getConnection } = useSignalRContext();
 
   useEffect(() => {
-    createConnection();
-  }, [hubUrl]);
+    connect(hubUrl);
+  }, [hubUrl, connect]);
 
   useEffect(() => {
-    if (connection) {
-      try {
-        connection.start()
-          .then(() => {
-            console.log("SignalR Connected.");
-            onConnect?.();
-            Object.entries(commandHandlers).forEach(([commandName, handler]) => {
-              console.log('[DEBUG] adding command name: ', commandName);
-              connection.on(commandName, handler);
-            });
-          })
-          .catch((err) => {
-            console.error(err);
-            setTimeout(createConnection, 5000);
-          });
-
-        connection.onclose(async () => {
-          onDisconnect?.();
-          await createConnection();
-        });
-      } catch (error) {
-        console.error(error);
-      }
+    const connection = getConnection(hubUrl);
+    if (commandHandlers && connection) {
+      bindHandlers(hubUrl, commandHandlers);
     }
+  }, [hubUrl, commandHandlers, bindHandlers, getConnection]);
 
-    return () => {
-      if (connection) {
-        Object.keys(commandHandlers).forEach((commandName) => {
-          connection.off(commandName);
-        });
-        connection.stop();
-      }
-    };
-  }, [connection, onDisconnect, commandHandlers, onConnect]);
+  useEffect(() => {
+    const connection = getConnection(hubUrl);
+    if (!connection) return;
 
-  return {};
+    const handleConnect = () => onConnect?.();
+    const handleDisconnect = () => onDisconnect?.();
+
+    connection.onreconnected(handleConnect);
+    connection.onclose(handleDisconnect);
+    
+    // return () => {
+    //   connection.offreconnected(handleConnect);
+    //   connection.offclose(handleDisconnect);
+    // };
+  }, [hubUrl, onConnect, onDisconnect, getConnection]);
 };

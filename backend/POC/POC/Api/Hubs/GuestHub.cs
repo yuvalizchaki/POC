@@ -5,10 +5,10 @@ using POC.Infrastructure.Repositories;
 
 namespace POC.Api.Hubs;
 
-public class GuestHub (ConnectionRepository connectionRepository, ILogger<GuestHub> logger) : Hub
+public class GuestHub(ConnectionRepository connectionRepository, ILogger<GuestHub> logger) : Hub
 {
     private static readonly string ScreenAdded = "screenAdded";
-    
+
     public async Task OnConnect()
     {
         if (Context != null)
@@ -25,21 +25,21 @@ public class GuestHub (ConnectionRepository connectionRepository, ILogger<GuestH
             logger.LogInformation($"[DEBUG] Connection does not exist");
         }
     }
-    
-    
+
+
     public async Task OnDisconnect(string ipAddress)
     {
         await connectionRepository.RemoveConnectionAsync(ipAddress);
     }
-    
-    
+
+
     public async Task<bool> IsIpConnected(string ipAddress)
     {
         return await connectionRepository.IsConnectionExistsAsync(ipAddress);
     }
-    
-    
-    private async Task SendMessageToIp(string ipAddress,  string method, string message)
+
+
+    private async Task SendMessageToIp<T>(string ipAddress, string method, T message)
     {
         // var connectionId = await connectionRepository.GetConnectionIdAsync(ipAddress);
         // if (connectionId != null)
@@ -54,7 +54,8 @@ public class GuestHub (ConnectionRepository connectionRepository, ILogger<GuestH
         // }
         if (Context != null)
         {
-            logger.LogInformation($"[DEBUG] (SendMessageToIp) connectionId: " + Context.ConnectionId);
+            // logger.LogInformation($"[DEBUG] (SendMessageToIp) connectionId: " + Context.ConnectionId);
+            
             await Clients.Client(Context.ConnectionId).SendAsync(method, message);
         }
         else
@@ -65,7 +66,6 @@ public class GuestHub (ConnectionRepository connectionRepository, ILogger<GuestH
 
     public async Task SendMessageAddScreen(string ipAddress, ScreenDto screenDto)
     {
-         await SendMessageToIp(ipAddress, ScreenAdded, JsonSerializer.Serialize(screenDto));
+        await SendMessageToIp(ipAddress, ScreenAdded, screenDto);
     }
-
 }
