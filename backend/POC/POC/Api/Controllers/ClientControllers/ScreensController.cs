@@ -40,6 +40,10 @@ public class ScreensController : ControllerBase
         {
             return BadRequest();
         }
+        catch (ScreenAlreadyPairedException e)
+        {
+            return BadRequest();
+        }
     }
     
     [HttpDelete("{id}")]
