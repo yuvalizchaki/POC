@@ -41,6 +41,14 @@ public class GuestHub(ConnectionRepository connectionRepository, ILogger<GuestHu
 
     private async Task SendMessageToIp<T>(string ipAddress, string method, T message)
     {
+        if (Context != null)
+        {
+            await Clients.Client(Context.ConnectionId).SendAsync(method, message);
+        }
+        else
+        {
+            logger.LogInformation($"[DEBUG] Connection does not exist");
+        }
         // var connectionId = await connectionRepository.GetConnectionIdAsync(ipAddress);
         // if (connectionId != null)
         // {
@@ -52,16 +60,6 @@ public class GuestHub(ConnectionRepository connectionRepository, ILogger<GuestHu
         //     logger.LogInformation($"[DEBUG] (SendMessageToIp) connectionId: NULL");
         //     await Clients.Caller.SendAsync("ErrorMessage", "Client with specified IP address is not connected.");
         // }
-        if (Context != null)
-        {
-            // logger.LogInformation($"[DEBUG] (SendMessageToIp) connectionId: " + Context.ConnectionId);
-            
-            await Clients.Client(Context.ConnectionId).SendAsync(method, message);
-        }
-        else
-        {
-            logger.LogInformation($"[DEBUG] Connection does not exist");
-        }
     }
 
     public async Task SendMessageAddScreen(string ipAddress, ScreenDto screenDto)
