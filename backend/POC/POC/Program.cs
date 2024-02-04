@@ -39,6 +39,7 @@ builder.Services.AddSignalR()
 builder.Services.AddSingleton<ScreenProfileRepository>();
 builder.Services.AddSingleton<ScreenRepository>();
 builder.Services.AddSingleton<ConnectionRepository>();
+builder.Services.AddSingleton<ScreenHub>();
 builder.Services.AddSingleton<GuestHub>();
 
 // Add the custom route convention
@@ -75,5 +76,3 @@ app.MapHub<GuestHub>("/guest-hub");
 app.MapControllers();
 
 app.Run();
-
-public record WebhookOrderAdded(string Header, string Body);
