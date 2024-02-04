@@ -1,69 +1,73 @@
-using System.Text.Json;
 using Microsoft.AspNetCore.SignalR;
 using POC.Contracts.Screen;
+using POC.Infrastructure.Extensions;
 using POC.Infrastructure.Repositories;
 
 namespace POC.Api.Hubs;
 
-public class GuestHub(ConnectionRepository connectionRepository, ILogger<GuestHub> logger) : Hub
-{
-    private static readonly string ScreenAdded = "screenAdded";
-
-    public async Task OnConnect()
+public class GuestHub(GuestConnectionRepository guestConnectionRepository, ScreenRepository screenRepository, ILogger<GuestHub> logger) : Hub
     {
-        if (Context != null)
+        private static readonly string MsgScreenAdded = "screenAdded";
+        
+        public override async Task OnConnectedAsync()
         {
-            logger.LogInformation($"Guest hub connection established");
+            logger.LogInformation("Guest hub connection established");
             var ipAddress = Context.GetHttpContext()?.Connection.RemoteIpAddress?.ToString();
             if (ipAddress != null)
             {
-                await connectionRepository.AddConnectionAsync(ipAddress, Context.ConnectionId);
+                await guestConnectionRepository.AddConnectionAsync(ipAddress, Context.ConnectionId);
+
+                var screens = await screenRepository.GetAllAsync();
+                var screen = screens.FirstOrDefault(s => s.IpAddress == ipAddress);
+                if (screen != null)
+                {
+                    var screenDto = screen.ToScreenDto();
+                    await SendMessageAddScreen(ipAddress, screenDto);
+                }
+
+            }
+            else
+            {
+                logger.LogInformation("[DEBUG] Connection does not exist");
+            }
+
+            await base.OnConnectedAsync();
+        }
+
+        public override async Task OnDisconnectedAsync(Exception? exception)
+        {
+            var ipAddress = Context.GetHttpContext()?.Connection.RemoteIpAddress?.ToString();
+            if (ipAddress != null)
+            {
+                await guestConnectionRepository.RemoveConnectionAsync(ipAddress);
+            }
+
+            await base.OnDisconnectedAsync(exception);
+        }
+
+        public async Task<bool> IsIpConnected(string ipAddress)
+        {
+            return await guestConnectionRepository.IsConnectionExistsAsync(ipAddress);
+        }
+
+        private async Task SendMessageToIp<T>(string ipAddress, string method, T message)
+        {
+            var connectionId = await guestConnectionRepository.GetConnectionIdByIpAsync(ipAddress);
+            // DEBUG
+            // var allConnectionsIps = await guestConnectionRepository.GetAllConnectionIpsAsync();
+            // logger.LogInformation($"[DEBUG] All connection ips: {string.Join(", ", allConnectionsIps)}");
+            if (!string.IsNullOrEmpty(connectionId))
+            {
+                await Clients.Client(connectionId).SendAsync(method, message);
+            }
+            else
+            {
+                logger.LogInformation($"[DEBUG] Connection does not exist for IP: {ipAddress}");
             }
         }
-        else
+
+        public async Task SendMessageAddScreen(string ipAddress, ScreenDto screenDto)
         {
-            logger.LogInformation($"[DEBUG] Connection does not exist");
+            await SendMessageToIp(ipAddress, MsgScreenAdded, screenDto);
         }
     }
-
-
-    public async Task OnDisconnect(string ipAddress)
-    {
-        await connectionRepository.RemoveConnectionAsync(ipAddress);
-    }
-
-
-    public async Task<bool> IsIpConnected(string ipAddress)
-    {
-        return await connectionRepository.IsConnectionExistsAsync(ipAddress);
-    }
-
-
-    private async Task SendMessageToIp<T>(string ipAddress, string method, T message)
-    {
-        if (Context != null)
-        {
-            await Clients.Client(Context.ConnectionId).SendAsync(method, message);
-        }
-        else
-        {
-            logger.LogInformation($"[DEBUG] Connection does not exist");
-        }
-        // var connectionId = await connectionRepository.GetConnectionIdAsync(ipAddress);
-        // if (connectionId != null)
-        // {
-        //     logger.LogInformation($"[DEBUG] (SendMessageToIp) connectionId: " + connectionId);
-        //     await Clients.Client(connectionId).SendAsync(method, message);
-        // }
-        // else
-        // {
-        //     logger.LogInformation($"[DEBUG] (SendMessageToIp) connectionId: NULL");
-        //     await Clients.Caller.SendAsync("ErrorMessage", "Client with specified IP address is not connected.");
-        // }
-    }
-
-    public async Task SendMessageAddScreen(string ipAddress, ScreenDto screenDto)
-    {
-        await SendMessageToIp(ipAddress, ScreenAdded, screenDto);
-    }
-}

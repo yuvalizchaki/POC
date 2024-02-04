@@ -8,8 +8,12 @@ interface SignalRProviderProps {
 }
 
 interface SignalRContextValue {
-  connect: (hubUrl: string) => void;
+  connect: (hubUrl: string, onConnect?: () => void, onDisconnect?: () => void) => void;
   bindHandlers: (
+    hubUrl: string,
+    commandHandlers: Partial<SignalRHandlers>
+  ) => void;
+  unbindHandlers: (
     hubUrl: string,
     commandHandlers: Partial<SignalRHandlers>
   ) => void;
@@ -24,10 +28,15 @@ export const SignalRProvider: FC<SignalRProviderProps> = ({
 }) => {
   const connectionsRef = useRef<{ [key: string]: signalR.HubConnection }>({});
 
-  const connect = (hubUrl: string) => {
+  const connect = (
+    hubUrl: string,
+    onConnect?: () => void,
+  ) => {
     const connections = connectionsRef.current;
+    console.log('[DEBUG] connections:' ,connections);
     if (connections[hubUrl]) {
       console.log("Already connected to this hub.");
+      // onConnect?.();
       return;
     }
 
@@ -39,7 +48,10 @@ export const SignalRProvider: FC<SignalRProviderProps> = ({
 
     con
       .start()
-      .then(() => console.log("SignalR Connected to " + hubUrl))
+      .then(() => {
+        console.log("SignalR Connected to " + hubUrl);
+        onConnect?.();
+      })
       .catch((err) =>
         console.error("SignalR Connection Error on " + hubUrl + ": ", err)
       );
@@ -64,6 +76,23 @@ export const SignalRProvider: FC<SignalRProviderProps> = ({
     });
   };
 
+  const unbindHandlers = (
+    hubUrl: string,
+    commandHandlers: Partial<SignalRHandlers>
+  ) => {
+    const connection = connectionsRef.current?.[hubUrl];
+    if (!connection) {
+      console.error("No connection found for hub: " + hubUrl);
+      return;
+    }
+
+    Object.entries(commandHandlers).forEach(([commandName, handler]) => {
+      if (handler) {
+        connection.off(commandName, handler);
+      }
+    });
+  };
+
   const getConnection = (hubUrl: string) => {
     return connectionsRef.current?.[hubUrl];
   };
@@ -71,10 +100,8 @@ export const SignalRProvider: FC<SignalRProviderProps> = ({
   const value = useMemo(
     () => ({
       connect,
-      bindHandlers: (
-        hubUrl: string,
-        commandHandlers: Partial<SignalRHandlers>
-      ) => bindHandlers(hubUrl, commandHandlers),
+      bindHandlers,
+      unbindHandlers,
       getConnection: (hubUrl: string) => getConnection(hubUrl),
     }),
     []
@@ -85,6 +112,7 @@ export const SignalRProvider: FC<SignalRProviderProps> = ({
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useSignalRContext = () => {
   const context = useContext(SignalRContext);
   if (!context) {

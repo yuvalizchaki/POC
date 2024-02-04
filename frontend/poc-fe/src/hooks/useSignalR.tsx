@@ -15,32 +15,22 @@ export const useSignalR = ({
   onConnect,
   onDisconnect,
 }: UseSignalRProps) => {
-  const { connect, bindHandlers, getConnection } = useSignalRContext();
+  const { connect, bindHandlers, unbindHandlers, getConnection } = useSignalRContext();
 
   useEffect(() => {
-    connect(hubUrl);
-  }, [hubUrl, connect]);
+    connect(hubUrl, onConnect, onDisconnect);
+  }, [hubUrl, onConnect, onDisconnect, connect]);
 
   useEffect(() => {
     const connection = getConnection(hubUrl);
     if (commandHandlers && connection) {
       bindHandlers(hubUrl, commandHandlers);
     }
-  }, [hubUrl, commandHandlers, bindHandlers, getConnection]);
 
-  useEffect(() => {
-    const connection = getConnection(hubUrl);
-    if (!connection) return;
-
-    const handleConnect = () => onConnect?.();
-    const handleDisconnect = () => onDisconnect?.();
-
-    connection.onreconnected(handleConnect);
-    connection.onclose(handleDisconnect);
-    
-    // return () => {
-    //   connection.offreconnected(handleConnect);
-    //   connection.offclose(handleDisconnect);
-    // };
-  }, [hubUrl, onConnect, onDisconnect, getConnection]);
+    return () => {
+      if (commandHandlers && connection) {
+        unbindHandlers(hubUrl, commandHandlers);
+      } 
+    }
+  }, [hubUrl, commandHandlers, bindHandlers, getConnection, unbindHandlers]);
 };

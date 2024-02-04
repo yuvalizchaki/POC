@@ -1,9 +1,16 @@
 namespace POC.Infrastructure.Repositories;
 
-public class ConnectionRepository
+public class GuestConnectionRepository
 {
     private readonly Dictionary<string, string> _ipToConnectionIdMap = new();
 
+    public Task<List<string>> GetAllConnectionIpsAsync()
+    {
+        var ipAddresses = _ipToConnectionIdMap.Keys.ToList();
+        return Task.FromResult(ipAddresses);
+    }
+
+    
     public Task AddConnectionAsync(string ipAddress, string connectionId)
     {
         _ipToConnectionIdMap[ipAddress] = connectionId;
@@ -26,7 +33,7 @@ public class ConnectionRepository
     }
     
     
-    public Task<string> GetConnectionIdAsync(string ipAddress)
+    public Task<string> GetConnectionIdByIpAsync(string ipAddress)
     {
         if (_ipToConnectionIdMap.TryGetValue(ipAddress, out string connectionId))
         {

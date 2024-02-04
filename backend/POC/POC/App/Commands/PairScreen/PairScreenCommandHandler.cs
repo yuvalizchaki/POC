@@ -32,7 +32,7 @@ public class PairScreenCommandHandler(
             ScreenProfile = screenProfile
         };
         
-        await hub.OnConnect();
+        await hub.OnConnectedAsync();
         await screenRepository.AddAsync(screen);
         screenProfile.Screens.Add(screen);
         await screenProfileRepository.UpdateAsync(screenProfile);

@@ -1,7 +1,7 @@
 import axios, { Method } from "axios";
 
 /** Modify this URL */
-const WEBHOOK_URL = "http://127.0.0.1:5177/webhook";
+const WEBHOOK_URL = "http://localhost:5177/webhook";
 
 export const sendToWebHook = async (
   route: string,
