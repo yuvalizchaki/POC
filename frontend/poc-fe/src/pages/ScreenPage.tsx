@@ -6,16 +6,17 @@ const ScreenPage: React.FC = () => {
   const [screenInfo, setScreenInfo] = useState<ScreenAddedDto | null>(null);
 
   const handleScreenAdded = (message: ScreenAddedDto) => {
+    console.log("[DEBUG] screen added", message);
     setScreenInfo(message);
   };
 
   useSignalR({
-    hubUrl: '/guest-hub',
+    hubUrl: "/guest-hub",
     onConnect: () => {
-        alert('Connected');
-    }, 
+      alert("Connected");
+    },
     onDisconnect: () => {
-        alert('Disconnected');
+      alert("Disconnected");
     },
     commandHandlers: {
       screenAdded: handleScreenAdded,

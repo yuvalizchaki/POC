@@ -1,7 +1,6 @@
-import { useCallback, useEffect } from "react";
-import * as signalR from "@microsoft/signalr";
+import { useEffect } from "react";
 import { SignalRHandlers } from "../types/SignalR";
-import { API_BASE_URL } from "../config";
+import { useSignalRContext } from "./SignalRProvider";
 
 interface UseSignalRProps {
   hubUrl: string;
@@ -16,57 +15,32 @@ export const useSignalR = ({
   onConnect,
   onDisconnect,
 }: UseSignalRProps) => {
-  const connection = new signalR.HubConnectionBuilder()
-    .withUrl(API_BASE_URL + hubUrl)
-    .configureLogging(signalR.LogLevel.Information)
-    .build();
+  const { connect, bindHandlers, getConnection } = useSignalRContext();
 
-  const startConnection = useCallback(async () => {
-    try {
-      await connection.start();
-      console.log("SignalR Connected.");
-      onConnect?.();
-    } catch (err) {
-      console.error(err);
-      setTimeout(startConnection, 5000);
+  useEffect(() => {
+    connect(hubUrl);
+  }, [hubUrl, connect]);
+
+  useEffect(() => {
+    const connection = getConnection(hubUrl);
+    if (commandHandlers && connection) {
+      bindHandlers(hubUrl, commandHandlers);
     }
-  }, [connection, onConnect]);
+  }, [hubUrl, commandHandlers, bindHandlers, getConnection]);
 
   useEffect(() => {
-    startConnection();
+    const connection = getConnection(hubUrl);
+    if (!connection) return;
 
-    connection.onclose(async () => {
-      onDisconnect?.();
-      await startConnection();
-    });
+    const handleConnect = () => onConnect?.();
+    const handleDisconnect = () => onDisconnect?.();
 
-    return () => {
-      connection.stop();
-    };
-  }, [startConnection, connection, onDisconnect]);
-
-  useEffect(() => {
-    Object.entries(commandHandlers).forEach(([commandName, handler]) => {
-      connection.on(commandName, handler);
-    });
-
-    return () => {
-      Object.keys(commandHandlers).forEach((commandName) => {
-        connection.off(commandName);
-      });
-    };
-  }, [connection, commandHandlers]);
-
-  const sendMessage = useCallback(
-    async (message: object) => {
-      try {
-        await connection.invoke("SendMessage", JSON.stringify(message));
-      } catch (err) {
-        console.error(err);
-      }
-    },
-    [connection]
-  );
-
-  return { sendMessage };
+    connection.onreconnected(handleConnect);
+    connection.onclose(handleDisconnect);
+    
+    // return () => {
+    //   connection.offreconnected(handleConnect);
+    //   connection.offclose(handleDisconnect);
+    // };
+  }, [hubUrl, onConnect, onDisconnect, getConnection]);
 };

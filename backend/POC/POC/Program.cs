@@ -1,8 +1,10 @@
+using System.Text.Json;
 using MediatR;
 using POC.Api.Conventions;
 using POC.Api.Hubs;
 using POC.App.Behaviors;
 using POC.Infrastructure.Adapters;
+using POC.Infrastructure.Common;
 using POC.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,13 +14,26 @@ builder.Logging.AddConsole();
 // ========== Add services to the container. ==========
 builder.Services.AddLogging();
 
+// when accepting a request, accept request.
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy", builder =>
+    {
+        builder.WithOrigins("http://localhost:5173") // Client URL
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
 // Register the LoggingBehavior for MediatR
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
-
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options => { JsonOptionsConfigurator.ConfigureJsonOptions(options.JsonSerializerOptions); });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSignalR();
+builder.Services.AddSignalR()
+    .AddJsonProtocol(options => { JsonOptionsConfigurator.ConfigureJsonOptions(options.PayloadSerializerOptions); });
 
 // Register in-memory repositories
 builder.Services.AddSingleton<ScreenProfileRepository>();
@@ -27,10 +42,7 @@ builder.Services.AddSingleton<ConnectionRepository>();
 builder.Services.AddSingleton<GuestHub>();
 
 // Add the custom route convention
-builder.Services.AddControllers(options =>
-{
-    options.Conventions.Add(new KebabCaseRouteConvention());
-});
+builder.Services.AddControllers(options => { options.Conventions.Add(new KebabCaseRouteConvention()); });
 
 //builder.Services.AddHttpClient<CrmAdapter>();
 builder.Services.AddHttpClient<CrmAdapter>("CrmApiClient");
@@ -52,6 +64,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors("CorsPolicy");
 app.UseHttpsRedirection();
 app.UseRouting();
 
