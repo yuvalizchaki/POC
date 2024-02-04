@@ -6,6 +6,7 @@ using POC.App.Commands.OrderUpdated;
 using POC.Contracts.CrmDTOs;
 
 namespace POC.Api.Controllers.CrmControllers;
+
 [ApiController]
 [Route("[controller]")]
 public class WebhookController : ControllerBase
@@ -16,30 +17,28 @@ public class WebhookController : ControllerBase
     {
         _mediator = mediator;
     }
-    
-    // when a new order is added, the webhook url is this post method
-    // we will add a caching mechanism here after POC
-    [HttpPost("order-added")]
-    public async Task<ActionResult<OrderDto>> WebhookOrderAdded(OrderDto orderDto)
+
+    [HttpPost("orders")]
+    public async Task<ActionResult<OrderDto>> WebhookOrderAdded([FromBody] OrderDto orderDto)
     {
         var command = new OrderAddedCommand(orderDto);
         await _mediator.Send(command);
         return Ok(orderDto);
     }
-    // when a new order is updated, the webhook url is this post method
-    // we will add a caching mechanism here after POC
-    [HttpPost("order-updated")]
-    public async Task<ActionResult<OrderDto>> WebhookOrderUpdated(OrderDto orderDto)
+
+    [HttpPut("orders/{id}")]
+    public async Task<ActionResult<OrderDto>> WebhookOrderUpdated(int id, [FromBody] OrderDto orderDto)
     {
         var command = new OrderUpdatedCommand(orderDto);
         await _mediator.Send(command);
         return Ok(orderDto);
     }
-    [HttpPost("order-deleted")]
-    public async Task<ActionResult<OrderDto>> WebhookOrderDeleted(OrderDto orderDto)
+
+    [HttpDelete("orders/{id}")]
+    public async Task<ActionResult> WebhookOrderDeleted(int id)
     {
-        var command = new OrderDeletedCommand(orderDto);
+        var command = new OrderDeletedCommand(id);
         await _mediator.Send(command);
-        return Ok(orderDto);
+        return Ok();
     }
 }

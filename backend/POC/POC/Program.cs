@@ -1,4 +1,3 @@
-using System.Text.Json;
 using MediatR;
 using POC.Api.Conventions;
 using POC.Api.Hubs;
@@ -38,7 +37,7 @@ builder.Services.AddSignalR()
 // Register in-memory repositories
 builder.Services.AddSingleton<ScreenProfileRepository>();
 builder.Services.AddSingleton<ScreenRepository>();
-builder.Services.AddSingleton<ConnectionRepository>();
+builder.Services.AddSingleton<GuestConnectionRepository>();
 builder.Services.AddSingleton<ScreenHub>();
 builder.Services.AddSingleton<GuestHub>();
 
@@ -68,6 +67,9 @@ if (app.Environment.IsDevelopment())
 app.UseCors("CorsPolicy");
 app.UseHttpsRedirection();
 app.UseRouting();
+
+// app.UseAuthentication(); // Add this if you have authentication
+// app.UseAuthorization();  // Add this if you have authorizatio
 
 // Map SignalR hubs
 app.MapHub<ScreenHub>("/screen-hub");

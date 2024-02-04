@@ -1,6 +1,8 @@
 import React, { useState } from "react";
-import { useSignalR } from "../hooks/useSignalR";
-import { ScreenAddedDto } from "../types/SignalR";
+import { useSignalR } from "../../hooks/useSignalR";
+import { ScreenAddedDto } from "../../types/SignalR";
+import { API_GUEST_HUB_URL } from "../../config";
+import OrdersScreenPage from "./OrdersScreenPage";
 
 const ScreenPage: React.FC = () => {
   const [screenInfo, setScreenInfo] = useState<ScreenAddedDto | null>(null);
@@ -11,13 +13,13 @@ const ScreenPage: React.FC = () => {
   };
 
   useSignalR({
-    hubUrl: "/guest-hub",
-    onConnect: () => {
-      alert("Connected");
-    },
-    onDisconnect: () => {
-      alert("Disconnected");
-    },
+    hubUrl: API_GUEST_HUB_URL,
+    // onConnect: () => {
+    //   alert("Connected");
+    // },
+    // onDisconnect: () => {
+    //   alert("Disconnected");
+    // },
     commandHandlers: {
       screenAdded: handleScreenAdded,
     },
@@ -26,13 +28,9 @@ const ScreenPage: React.FC = () => {
   return (
     <div>
       {screenInfo ? (
-        <div>
-          <p>Screen ID: {screenInfo.id}</p>
-          <p>IP: {screenInfo.ip}</p>
-          <p>Screen Profile ID: {screenInfo.screenProfileId}</p>
-        </div>
+        <OrdersScreenPage screenInfo={screenInfo} />
       ) : (
-        <p>[No Content]</p>
+        <p>{"[No Content]"}</p>
       )}
     </div>
   );

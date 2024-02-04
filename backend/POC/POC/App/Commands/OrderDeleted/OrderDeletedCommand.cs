@@ -3,7 +3,7 @@ using POC.Contracts.CrmDTOs;
 
 namespace POC.App.Commands.OrderDeleted;
 
-public class OrderDeletedCommand(OrderDto orderDto) : IRequest
+public class OrderDeletedCommand(int id) : IRequest
 {
-    public OrderDto OrderDto { get; set; } = orderDto;
+    public int Id { get; } = id;
 }
