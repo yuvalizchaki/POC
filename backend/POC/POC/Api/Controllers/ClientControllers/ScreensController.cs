@@ -44,17 +44,10 @@ public class ScreensController : ControllerBase
             var result = await _mediator.Send(command);
             return Ok(result);
         }
-        catch (ScreenProfileNotFoundException e)
+        catch (Exception e)
         {
-            return BadRequest(e.ToErrorResponse());
-        }
-        catch (IpNotInGuestHubException e)
-        {
-            return BadRequest(e.ToErrorResponse());
-        }
-        catch (ScreenAlreadyPairedException e)
-        {
-            return BadRequest(e.ToErrorResponse());
+            var errorResponse = e.MapToErrorResponse();
+            return BadRequest(errorResponse);
         }
     }
     

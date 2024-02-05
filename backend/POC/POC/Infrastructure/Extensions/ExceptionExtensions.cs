@@ -40,3 +40,17 @@ public static class ScreenAlreadyPairedExceptionExtensions
         } });
     }
 }
+
+public static class ExceptionExtensions
+{
+    public static ErrorResponse MapToErrorResponse(this Exception ex)
+    {
+        return ex switch
+        {
+            ScreenProfileNotFoundException sException => sException.ToErrorResponse(),
+            IpNotInGuestHubException iException => iException.ToErrorResponse(),
+            ScreenAlreadyPairedException sApException => sApException.ToErrorResponse(),
+            _ => new ErrorResponse(new Dictionary<string, string> { { "error", ex.Message } })
+        };
+    }
+}
