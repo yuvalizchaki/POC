@@ -4,8 +4,11 @@ using POC.App.Commands.PairScreen;
 using POC.App.Commands.RemoveScreen;
 using POC.App.Queries.GetAllScreens;
 using POC.App.Queries.GetScreen;
+using POC.Contracts.Response;
 using POC.Contracts.Screen;
 using POC.Infrastructure.Common.Exceptions;
+using POC.Infrastructure.Common.Validators;
+using POC.Infrastructure.Extensions;
 
 namespace POC.Api.Controllers.ClientControllers;
 
@@ -25,6 +28,15 @@ public class ScreensController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> PairScreen([FromBody] PairScreenDto pairScreenDto)
     {
+        var validator = new PairScreenDtoValidator();
+        var validationResult = await validator.ValidateAsync(pairScreenDto);
+
+        if (!validationResult.IsValid)
+        {
+            var errorResponse = new ErrorResponse(validationResult.Errors);
+            return BadRequest(errorResponse);
+        }
+        
         var command = new PairScreenCommand(pairScreenDto);
         
         try
@@ -34,15 +46,15 @@ public class ScreensController : ControllerBase
         }
         catch (ScreenProfileNotFoundException e)
         {
-            return NotFound();
+            return BadRequest(e.ToErrorResponse());
         }
         catch (IpNotInGuestHubException e)
         {
-            return BadRequest();
+            return BadRequest(e.ToErrorResponse());
         }
         catch (ScreenAlreadyPairedException e)
         {
-            return BadRequest();
+            return BadRequest(e.ToErrorResponse());
         }
     }
     
@@ -91,7 +103,8 @@ public class ScreensController : ControllerBase
         }
         catch (Exception e)
         {
-            return BadRequest();
+            //shouldnt happen but just in case for now
+            return BadRequest(e.Message);
         }
     }
 }

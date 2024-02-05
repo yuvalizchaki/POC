@@ -5,8 +5,10 @@ using POC.App.Commands.DeleteScreenProfile;
 using POC.App.Commands.UpdateScreenProfile;
 using POC.App.Queries.GetScreenProfile;
 using POC.App.Queries.GetAllScreenProfiles;
+using POC.Contracts.Response;
 using POC.Contracts.ScreenProfile;
 using POC.Infrastructure.Common.Exceptions;
+using POC.Infrastructure.Common.Validators;
 
 namespace POC.Api.Controllers.ClientControllers;
 
@@ -26,6 +28,15 @@ public class ScreenProfilesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateScreenProfile([FromBody] CreateScreenProfileDto createScreenProfile)
     {
+        var validator = new CreateScreenProfileDtoValidator();
+        var validationResult = await validator.ValidateAsync(createScreenProfile);
+        
+        if (!validationResult.IsValid)
+        {
+            var errorResponse = new ErrorResponse(validationResult.Errors);
+            return BadRequest(errorResponse);
+        }
+        
         var command = new CreateScreenProfileCommand(createScreenProfile);
 
         try
@@ -64,6 +75,15 @@ public class ScreenProfilesController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateScreenProfile(int id, [FromBody] UpdateScreenProfileDto screenProfile)
     {
+        var validator = new UpdateScreenProfileDtoValidator();
+        var validationResult = await validator.ValidateAsync(screenProfile);
+        
+        if (!validationResult.IsValid)
+        {
+            var errorResponse = new ErrorResponse(validationResult.Errors);
+            return BadRequest(errorResponse);
+        }
+        
         var command = new UpdateScreenProfileCommand(id, screenProfile);
 
         try
@@ -116,7 +136,7 @@ public class ScreenProfilesController : ControllerBase
         catch (Exception e)
         {
             _logger.LogError(e, "Error getting all screen profiles, should not happen for now, but just in case.");
-            return BadRequest();
+            return BadRequest(e.Message);
         }
     }
     
