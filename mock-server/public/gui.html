@@ -75,7 +75,12 @@
             }
 
             xhr.open(method === 'GET' && !orderId ? 'GET' : method, url, true);
+
+            // Set headers after opening the request
             xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.setRequestHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+            xhr.setRequestHeader('Pragma', 'no-cache');
+            xhr.setRequestHeader('Expires', '0');
 
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4) {
@@ -84,7 +89,6 @@
                     setTimeout(() => {
                         document.getElementById('response-container').style.animation = '';
                     }, 500);
-
 
                     var responseElement = document.getElementById('response');
                     responseElement.textContent = JSON.stringify(JSON.parse(xhr.responseText), null, 2).trim();
@@ -99,6 +103,7 @@
 
             xhr.send(method === 'GET' ? null : JSON.stringify(data));
         }
+
     </script>
 </head>
 
