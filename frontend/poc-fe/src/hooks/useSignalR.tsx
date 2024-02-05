@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { SignalRHandlers } from "../types/SignalR";
-import { useSignalRContext } from "./SignalRProvider";
+import { SignalRHandlers } from "../types/signalR.types";
+import { useSignalRContext } from "../context/signalR.context";
 
 interface UseSignalRProps {
   hubUrl: string;
