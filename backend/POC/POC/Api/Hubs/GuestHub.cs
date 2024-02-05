@@ -52,10 +52,11 @@ public class GuestHub(GuestConnectionRepository guestConnectionRepository, ILogg
         private async Task SendMessageToClient<T>(string pairCode, string method, T message)
         {
             var connectionId = await guestConnectionRepository.GetConnectionIdByCodeAsync(pairCode);
-            if (connectionId != Context.ConnectionId)
-                throw new Exception("Pairing code is incorrect");
             if (!string.IsNullOrEmpty(connectionId))
-                await Clients.Client(connectionId).SendAsync(method, message);
+                if (connectionId != Context.ConnectionId)
+                    throw new Exception("Pairing code is incorrect");
+                else
+                    await Clients.Client(connectionId).SendAsync(method, message);
             else
                 logger.LogInformation($"[DEBUG] Connection does not exist for paring code: {pairCode}");
         }
