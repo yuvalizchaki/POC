@@ -1,4 +1,4 @@
-import { OrderDto } from "./CrmTypes";
+import { OrderDto } from "./crmTypes.types";
 
 export type SignalRHandler<T> = (payload: T) => void;
 

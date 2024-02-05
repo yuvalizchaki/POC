@@ -1,6 +1,6 @@
 import React, { createContext, useMemo, FC, useContext, useRef } from "react";
 import * as signalR from "@microsoft/signalr";
-import { SignalRHandlers } from "../types/SignalR";
+import { SignalRHandlers } from "../types/signalR.types";
 
 interface SignalRProviderProps {
   baseUrl: string;

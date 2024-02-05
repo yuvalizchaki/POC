@@ -1,14 +1,14 @@
-import { ScreenAddedDto } from "../../types/SignalR";
-import { OrderDto } from "../../types/CrmTypes";
+import { ScreenAddedDto } from "../../../types/signalR.types";
+import { OrderDto } from "../../../types/crmTypes.types";
 import { useCallback, useState } from "react";
-import { useSignalR } from "../../hooks/useSignalR";
-import { API_BASE_URL, API_SCREEN_HUB_URL } from "../../config";
+import { useSignalR } from "../../../hooks/useSignalR";
+import { API_BASE_URL, API_SCREEN_HUB_URL } from "../../../config";
 
-interface OrdersScreenPageProps {
+interface OrdersScreenProps {
   screenInfo: ScreenAddedDto;
 }
 
-const OrdersScreenPage = ({ screenInfo }: OrdersScreenPageProps) => {
+export const OrdersScreen = ({ screenInfo }: OrdersScreenProps) => {
   const [orders, setOrders] = useState<OrderDto[]>([]);
 
   const fetchOrders = useCallback(async () => {
@@ -97,5 +97,3 @@ const OrdersScreenPage = ({ screenInfo }: OrdersScreenPageProps) => {
     </>
   );
 };
-
-export default OrdersScreenPage;

@@ -1,0 +1,1 @@
+export { DashbaordSidebar } from './sidebar.component';
