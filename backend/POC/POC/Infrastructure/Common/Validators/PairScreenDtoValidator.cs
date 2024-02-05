@@ -7,7 +7,7 @@ public class PairScreenDtoValidator : AbstractValidator<PairScreenDto>
 {
     public PairScreenDtoValidator()
     {
-        RuleFor(x => x.IpAddress).NotEmpty().NotNull();
+        RuleFor(x => x.PairingCode).NotEmpty().NotNull();
         RuleFor(x => x.ScreenProfileId).NotEmpty().NotNull();
     }
 }

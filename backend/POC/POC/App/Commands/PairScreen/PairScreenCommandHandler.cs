@@ -19,19 +19,20 @@ public class PairScreenCommandHandler(
 
     public async Task<ScreenDto> Handle(PairScreenCommand request, CancellationToken cancellationToken)
     {
-        var screens = await screenRepository.GetAllAsync();
-        var s = screens.FirstOrDefault(s => s.IpAddress == request.PairScreenDto.IpAddress);
-        if (s != null) throw new ScreenAlreadyPairedException();
+        // var screens = await screenRepository.GetAllAsync();
+        // var s = screens.FirstOrDefault(s => s.IpAddress == request.PairScreenDto.IpAddress);
+        // var s = screenRepository.GetScreenByIp(request.PairScreenDto.IpAddress);
+        // if (s != null) throw new ScreenAlreadyPairedException();
         
-        var exists = await hub.IsIpConnected(request.PairScreenDto.IpAddress);
-        if (!exists) throw new IpNotInGuestHubException();
+        // var exists = await hub.IsIpConnected(request.PairScreenDto.IpAddress);
+        // if (!exists) throw new IpNotInGuestHubException();
         
         var screenProfile = await screenProfileRepository.GetByIdAsync(request.PairScreenDto.ScreenProfileId);
         if (screenProfile == null) throw new ScreenProfileNotFoundException();
         
         var screen = new Screen
         {
-            IpAddress = request.PairScreenDto.IpAddress,
+            // IpAddress = request.PairScreenDto.PairingCode,
             ScreenProfileId = request.PairScreenDto.ScreenProfileId,
             ScreenProfile = screenProfile
         };
@@ -41,7 +42,9 @@ public class PairScreenCommandHandler(
         await screenProfileRepository.UpdateAsync(screenProfile);
         
         var screenDto = screen.ToScreenDto();
-        await hub.SendMessageAddScreen(request.PairScreenDto.IpAddress, screenDto);
+        await hub.SendMessageAddScreen(request.PairScreenDto.PairingCode, screenDto);
+        
+        
         
         return screenDto;
     }

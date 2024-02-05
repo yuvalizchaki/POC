@@ -2,6 +2,6 @@ namespace POC.Contracts.Screen;
 
 public class PairScreenDto
 {
-    public string IpAddress { get; set; }
+    public string PairingCode { get; set; }
     public int ScreenProfileId { get; set; }
 }

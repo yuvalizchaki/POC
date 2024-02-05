@@ -80,7 +80,6 @@ export const OrdersScreen = ({ screenInfo }: OrdersScreenProps) => {
     <>
       <div>
         <p>Screen ID: {screenInfo.id}</p>
-        <p>IP: {screenInfo.ip}</p>
         <p>Screen Profile ID: {screenInfo.screenProfileId}</p>
       </div>
       <div>
