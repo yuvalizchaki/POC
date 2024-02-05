@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
 using POC.Contracts.Screen;
+using POC.Infrastructure.Common.Exceptions;
 using POC.Infrastructure.Extensions;
 using POC.Infrastructure.Generators;
 using POC.Infrastructure.Repositories;
@@ -49,16 +50,25 @@ public class GuestHub(GuestConnectionRepository guestConnectionRepository, ILogg
         // }
 
         
+        /// <exception cref="PairingCodeDoesNotExistException">
+        /// Thrown when the pairing code has no existing connection.
+        /// </exception>
+        /// <exception cref="IncorrectPairingCodeException">
+        /// Thrown when pairing code is incorrect in its format.
+        /// </exception>
         private async Task SendMessageToClient<T>(string pairCode, string method, T message)
         {
             var connectionId = await guestConnectionRepository.GetConnectionIdByCodeAsync(pairCode);
             if (!string.IsNullOrEmpty(connectionId))
                 if (connectionId != Context.ConnectionId)
-                    throw new Exception("Pairing code is incorrect");
+                    throw new IncorrectPairingCodeException();
                 else
                     await Clients.Client(connectionId).SendAsync(method, message);
             else
+            {
                 logger.LogInformation($"[DEBUG] Connection does not exist for paring code: {pairCode}");
+                throw new PairingCodeDoesNotExistException();
+            }
         }
         
 

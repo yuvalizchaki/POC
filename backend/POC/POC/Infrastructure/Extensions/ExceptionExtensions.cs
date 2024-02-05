@@ -17,29 +17,29 @@ public static class ScreenProfileNotFoundExceptionExtensions
     }
 }
 
-public static class IpNotInGuestHubExceptionExtensions
+public static class IncorrectPairingCodeExceptionExtensions
 {
-    public static ErrorResponse ToErrorResponse(this IpNotInGuestHubException ex)
+    public static ErrorResponse ToErrorResponse(this IncorrectPairingCodeException ex)
     {
         return new ErrorResponse(new Dictionary<string, string> {
         {
             nameof(PairScreenDto.PairingCode),
-            "Pairing code not found in guest hub."
+            "Pairing code is incorrect"
         } });
     }
 }
 
-// public static class ScreenAlreadyPairedExceptionExtensions
-// {
-//     public static ErrorResponse ToErrorResponse(this ScreenAlreadyPairedException ex)
-//     {
-//         return new ErrorResponse(new Dictionary<string, string> {
-//         {
-//             nameof(PairScreenDto.IpAddress),
-//             "Screen already paired."
-//         } });
-//     }
-// }
+public static class PairingCodeDoesNotExistExceptionExtensions
+{
+    public static ErrorResponse ToErrorResponse(this PairingCodeDoesNotExistException ex)
+    {
+        return new ErrorResponse(new Dictionary<string, string> {
+        {
+            nameof(PairScreenDto.PairingCode),
+            "Pairing code has no existing connection."
+        } });
+    }
+}
 
 public static class ExceptionExtensions
 {
@@ -48,8 +48,8 @@ public static class ExceptionExtensions
         return ex switch
         {
             ScreenProfileNotFoundException sException => sException.ToErrorResponse(),
-            IpNotInGuestHubException iException => iException.ToErrorResponse(),
-            // ScreenAlreadyPairedException sApException => sApException.ToErrorResponse(),
+            IncorrectPairingCodeException iException => iException.ToErrorResponse(),
+            PairingCodeDoesNotExistException pcException => pcException.ToErrorResponse(),
             _ => new ErrorResponse(new Dictionary<string, string> { { "error", ex.Message } })
         };
     }

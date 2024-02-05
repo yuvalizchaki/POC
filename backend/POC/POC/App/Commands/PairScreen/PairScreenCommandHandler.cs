@@ -36,15 +36,15 @@ public class PairScreenCommandHandler(
             ScreenProfileId = request.PairScreenDto.ScreenProfileId,
             ScreenProfile = screenProfile
         };
+        
+        var screenDto = screen.ToScreenDto();
+        //throws exception so should be prior to adding to the repository
+        await hub.SendMessageAddScreen(request.PairScreenDto.PairingCode, screenDto);
+        
         await screenRepository.AddAsync(screen);
         
         screenProfile.Screens.Add(screen);
         await screenProfileRepository.UpdateAsync(screenProfile);
-        
-        var screenDto = screen.ToScreenDto();
-        await hub.SendMessageAddScreen(request.PairScreenDto.PairingCode, screenDto);
-        
-        
         
         return screenDto;
     }
