@@ -1,17 +1,7 @@
 import { Box } from "@mui/material";
-import { SvgIcon } from "../components/common";
-import { useEffect, useState } from "react";
+import { AppLoader } from "../components/common";
 
 const LoadingPage = () => {
-  const [showIcon, setShowIcon] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowIcon(true);
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, []);
   return (
     <Box
       sx={{
@@ -22,17 +12,7 @@ const LoadingPage = () => {
         alignItems: "center",
       }}
     >
-      {
-        <SvgIcon
-          url="loading-pulse.svg"
-          sx={{
-            width: 50,
-            height: 50,
-            opacity: showIcon ? 1 : 0,
-            transition: "opacity 2s",
-          }}
-        />
-      }
+      <AppLoader fadeInTime={2} />
     </Box>
   );
 };

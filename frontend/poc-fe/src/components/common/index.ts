@@ -1,1 +1,2 @@
-export { AppSvgIcon as SvgIcon } from "./svg-icon.component";
+export { AppLoader } from './loader.component';
+export { AppSvgIcon } from "./svg-icon.component";
