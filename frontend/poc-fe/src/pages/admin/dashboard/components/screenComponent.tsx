@@ -1,34 +1,39 @@
 import { IconButton, Stack, Typography } from "@mui/material";
 
-import DesktopAccessDisabledIcon from "@mui/icons-material/DesktopAccessDisabled";
+// import DesktopAccessDisabledIcon from "@mui/icons-material/DesktopAccessDisabled";
 import ConnectedTvIcon from "@mui/icons-material/ConnectedTv";
 
 import CloseIcon from "@mui/icons-material/Close";
 import { Screen } from "../../../../types/screenProfile.types";
+import { removeScreen } from "../../../../services/adminService";
 interface ScreenProps {
   screen: Screen;
+  fetchScreenProfiles: () => void;
 }
 
-export const ScreenComponent = ({ screen }: ScreenProps) => {
+export const ScreenComponent = ({
+  screen,
+  fetchScreenProfiles,
+}: ScreenProps) => {
+  const handleRemoveScreen = () => {
+    removeScreen(screen.id).then(() => {
+      fetchScreenProfiles();
+    });
+  };
   return (
     <Stack
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        spacing={2}
+      direction="row"
+      // justifyContent="space-between"
+      alignItems="center"
+      spacing={2}
     >
-        <Typography>{screen.ip}</Typography>
-        <Stack direction="row" spacing={2}>
-        <IconButton>
-          <DesktopAccessDisabledIcon />
-        </IconButton>
-        <IconButton>
-          <ConnectedTvIcon />
-        </IconButton>
-        <IconButton>
-          <CloseIcon />
-        </IconButton>
-      </Stack>
+      <Typography>Screen #{screen.id}</Typography>
+      <div style={{ flex: "1 0 0" }} />
+
+      <ConnectedTvIcon color="success" />
+      <IconButton onClick={handleRemoveScreen} size="small">
+        <CloseIcon />
+      </IconButton>
     </Stack>
   );
 };

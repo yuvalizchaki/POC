@@ -7,6 +7,5 @@ export interface ScreenProfile {
 
 export interface Screen {
     id: number;
-    ip: string;
     screenProfileId: number;
   }
