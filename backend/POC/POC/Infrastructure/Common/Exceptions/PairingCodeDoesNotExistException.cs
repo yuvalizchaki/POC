@@ -1,6 +1,6 @@
 ﻿namespace POC.Infrastructure.Common.Exceptions;
 
-public class IpNotInGuestHubException : Exception
+public class PairingCodeDoesNotExistException : Exception
 {
     
 }
