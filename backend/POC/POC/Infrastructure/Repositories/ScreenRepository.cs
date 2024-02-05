@@ -1,4 +1,6 @@
-﻿namespace POC.Infrastructure.Repositories;
+﻿using POC.Contracts.Screen;
+
+namespace POC.Infrastructure.Repositories;
 
 using Models;
 using System.Collections.Generic;
@@ -64,6 +66,12 @@ public class ScreenRepository
     {
         return _screens.Any() ? _screens.Max(s => s.Id) + 1 : 1;
     }
-    
+
+    // public Task<Screen?> GetScreenByIp(string ipAddress)
+    // {
+    //     var screen = _screens.FirstOrDefault(s => s.IpAddress == ipAddress);
+    //     return Task.FromResult(screen);
+    // }
+
     
 }

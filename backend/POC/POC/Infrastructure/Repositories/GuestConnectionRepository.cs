@@ -1,41 +1,35 @@
+using POC.Infrastructure.Generators;
+
 namespace POC.Infrastructure.Repositories;
 
 public class GuestConnectionRepository
 {
-    private readonly Dictionary<string, string> _ipToConnectionIdMap = new();
-
-    public Task<List<string>> GetAllConnectionIpsAsync()
-    {
-        var ipAddresses = _ipToConnectionIdMap.Keys.ToList();
-        return Task.FromResult(ipAddresses);
-    }
-
+    private readonly Dictionary<string, string> _PairingCodeToConnectionIdMap = new();
     
-    public Task AddConnectionAsync(string ipAddress, string connectionId)
+    private readonly PairCodeGenerator _pairCodeGenerator = new();
+    
+    public Task AddConnectionAsync(string paringCode, string connectionId)
     {
-        _ipToConnectionIdMap[ipAddress] = connectionId;
+        _PairingCodeToConnectionIdMap[paringCode] = connectionId;
         return Task.CompletedTask;
     }
     
-    public Task RemoveConnectionAsync(string ipAddress)
+    public Task RemoveConnectionAsync(string paringCode)
     {
-        if ( _ipToConnectionIdMap.ContainsKey(ipAddress))
-        {
-            _ipToConnectionIdMap.Remove(ipAddress);
-        }
+        _PairingCodeToConnectionIdMap.Remove(paringCode);
         
         return Task.CompletedTask;
     }
     
-    public Task<bool> IsConnectionExistsAsync(string ipAddress)
-    {
-        return Task.Run(() => _ipToConnectionIdMap.ContainsKey(ipAddress));
-    }
+    // public Task<bool> IsConnectionExistsAsync(string ipAddress)
+    // {
+    //     return Task.Run(() => _PairingCodeToConnectionIdMap.ContainsKey(ipAddress));
+    // }
     
     
-    public Task<string> GetConnectionIdByIpAsync(string ipAddress)
+    public Task<string> GetConnectionIdByCodeAsync(string paringCode)
     {
-        if (_ipToConnectionIdMap.TryGetValue(ipAddress, out string connectionId))
+        if (_PairingCodeToConnectionIdMap.TryGetValue(paringCode, out string connectionId))
         {
             return Task.FromResult(connectionId);
         }

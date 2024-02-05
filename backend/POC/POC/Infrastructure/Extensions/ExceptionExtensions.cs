@@ -23,23 +23,23 @@ public static class IpNotInGuestHubExceptionExtensions
     {
         return new ErrorResponse(new Dictionary<string, string> {
         {
-            nameof(PairScreenDto.IpAddress),
-            "IP address not found in guest hub."
+            nameof(PairScreenDto.PairingCode),
+            "Pairing code not found in guest hub."
         } });
     }
 }
 
-public static class ScreenAlreadyPairedExceptionExtensions
-{
-    public static ErrorResponse ToErrorResponse(this ScreenAlreadyPairedException ex)
-    {
-        return new ErrorResponse(new Dictionary<string, string> {
-        {
-            nameof(PairScreenDto.IpAddress),
-            "Screen already paired."
-        } });
-    }
-}
+// public static class ScreenAlreadyPairedExceptionExtensions
+// {
+//     public static ErrorResponse ToErrorResponse(this ScreenAlreadyPairedException ex)
+//     {
+//         return new ErrorResponse(new Dictionary<string, string> {
+//         {
+//             nameof(PairScreenDto.IpAddress),
+//             "Screen already paired."
+//         } });
+//     }
+// }
 
 public static class ExceptionExtensions
 {
@@ -49,7 +49,7 @@ public static class ExceptionExtensions
         {
             ScreenProfileNotFoundException sException => sException.ToErrorResponse(),
             IpNotInGuestHubException iException => iException.ToErrorResponse(),
-            ScreenAlreadyPairedException sApException => sApException.ToErrorResponse(),
+            // ScreenAlreadyPairedException sApException => sApException.ToErrorResponse(),
             _ => new ErrorResponse(new Dictionary<string, string> { { "error", ex.Message } })
         };
     }

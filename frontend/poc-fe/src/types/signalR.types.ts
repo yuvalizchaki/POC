@@ -6,14 +6,18 @@ export type SignalRHandler<T> = (payload: T) => void;
 
 export interface ScreenAddedDto {
   id: number;
-  ip: string;
+  pairingCode: string;
   screenProfileId: number;
 }
+
+export type PairingCodeDto = string
 
 // Aligned with backend hub command strings
 export interface GuestHubHandlers {
   screenAdded: SignalRHandler<ScreenAddedDto>;
+  pairCode : SignalRHandler<PairingCodeDto>;
 }
+
 
 // #endregion \======================================== Guest Hub Commands ========================================/
 

@@ -11,7 +11,7 @@ public static class ScreenExtensions
         return new ScreenDto()
         {
             Id = screen.Id,
-            Ip = screen.IpAddress,
+            // Ip = screen.IpAddress,
             ScreenProfileId = screen.ScreenProfileId
         };
     }
