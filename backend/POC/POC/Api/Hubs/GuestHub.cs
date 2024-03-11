@@ -13,23 +13,35 @@ public class GuestHub(GuestConnectionRepository guestConnectionRepository, ILogg
         private static readonly string MsgPairCode = "pairCode";
         private readonly PairCodeGenerator _pairCodeGenerator = new();
         
+        // public override async Task OnConnectedAsync()
+        // {
+        //     var pairingCode = _pairCodeGenerator.GenerateAsync().Result;
+        //     logger.LogInformation("Guest hub connection established");
+        //     await guestConnectionRepository.AddConnectionAsync(pairingCode, Context.ConnectionId);
+        //     await SendMessagePairCode(pairingCode);
+        //     
+        //     await base.OnConnectedAsync();
+        // }
+        
         public override async Task OnConnectedAsync()
         {
-            var pairingCode = _pairCodeGenerator.GenerateAsync().Result;
-            logger.LogInformation("Guest hub connection established");
+            var pairingCode = await _pairCodeGenerator.GenerateAsync();
+            logger.LogInformation($"Guest hub connection established. Pairing code: {pairingCode}, ConnectionId: {Context.ConnectionId}");
+    
             await guestConnectionRepository.AddConnectionAsync(pairingCode, Context.ConnectionId);
             await SendMessagePairCode(pairingCode);
-            
+    
             await base.OnConnectedAsync();
         }
 
+
         
         // The client needs to call to This function from his side when the pairing happened successfully.
-        public async Task OnSuccessfulPairing(string pairingCode)
-        {
-            var connectionId = await guestConnectionRepository.GetConnectionIdByCodeAsync(pairingCode);
-            await guestConnectionRepository.RemoveConnectionAsync(pairingCode);
-        }
+        // public async Task OnSuccessfulPairing(string pairingCode)
+        // {
+        //     var connectionId = await guestConnectionRepository.GetConnectionIdByCodeAsync(pairingCode);
+        //     await guestConnectionRepository.RemoveConnectionAsync(pairingCode);
+        // }
 
         
         public override async Task OnDisconnectedAsync(Exception? exception)
@@ -56,26 +68,43 @@ public class GuestHub(GuestConnectionRepository guestConnectionRepository, ILogg
         /// <exception cref="IncorrectPairingCodeException">
         /// Thrown when pairing code is incorrect in its format.
         /// </exception>
+        // private async Task SendMessageToClient<T>(string pairCode, string method, T message)
+        // {
+        //     var connectionId = await guestConnectionRepository.GetConnectionIdByCodeAsync(pairCode);
+        //     if (!string.IsNullOrEmpty(connectionId))
+        //         if (connectionId != Context.ConnectionId)
+        //             throw new IncorrectPairingCodeException();
+        //         else
+        //             await Clients.Client(connectionId).SendAsync(method, message);
+        //     else
+        //     {
+        //         logger.LogInformation($"[DEBUG] Connection does not exist for paring code: {pairCode}");
+        //         throw new PairingCodeDoesNotExistException();
+        //     }
+        // }
+        
         private async Task SendMessageToClient<T>(string pairCode, string method, T message)
         {
             var connectionId = await guestConnectionRepository.GetConnectionIdByCodeAsync(pairCode);
             if (!string.IsNullOrEmpty(connectionId))
-                if (connectionId != Context.ConnectionId)
-                    throw new IncorrectPairingCodeException();
-                else
-                    await Clients.Client(connectionId).SendAsync(method, message);
+            {
+                await Clients.Client(connectionId).SendAsync(method, message);
+            }
             else
             {
-                logger.LogInformation($"[DEBUG] Connection does not exist for paring code: {pairCode}");
+                logger.LogInformation($"[DEBUG] Connection does not exist for pairing code: {pairCode}");
                 throw new PairingCodeDoesNotExistException();
             }
         }
+
+        
+        
         
 
         public async Task SendMessageAddScreen(string pairCode, ScreenDto screenDto)
         {
             await SendMessageToClient(pairCode,MsgScreenAdded, screenDto);
-            await guestConnectionRepository.RemoveConnectionAsync(pairCode);
+            //await guestConnectionRepository.RemoveConnectionAsync(pairCode);
         }
         
         private async Task SendMessagePairCode(string pairCode)
