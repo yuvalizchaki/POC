@@ -1,0 +1,10 @@
+@startuml
+class PairCodeGenerator {
+    - <<const>> Chars : string = "0123456789"
+    + <<async>> GenerateAsync(length:int) : Task<string>
+}
+class Task {
+...
+}
+PairCodeGenerator ..> Task: <<use>>
+@enduml

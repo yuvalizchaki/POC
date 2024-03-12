@@ -1,0 +1,38 @@
+@startuml
+class CreateScreenProfileCommandHandler {
+    + <<async>> Handle(request:CreateScreenProfileCommand, cancellationToken:CancellationToken) : Task<ScreenProfileDto>
+}
+"IRequestHandler`2" "<CreateScreenProfileCommand,ScreenProfileDto>" <|-- CreateScreenProfileCommandHandler
+CreateScreenProfileCommandHandler ..> CreateScreenProfileCommand: <<use>>
+class CreateScreenProfileCommand {
+    + CreateScreenProfileDto : CreateScreenProfileDto <<get>>
+}
+"IRequest`1" "<ScreenProfileDto>" <|-- CreateScreenProfileCommand
+CreateScreenProfileCommand ..> CreateScreenProfileDto: <<use>>
+class CreateScreenProfileDto {
+    + Name : string <<get>> <<set>>
+}
+CreateScreenProfileCommandHandler ..> ScreenProfileDto: <<use>>
+class ScreenProfileDto {
+    + Id : int <<get>> <<set>>
+    + Name : string <<get>> <<set>>
+    + Screens : List<ScreenDto> <<get>> <<set>>
+}
+ScreenProfileDto ..> ScreenDto: <<use>>
+class ScreenDto {
+    + Id : int <<get>> <<set>>
+    + ScreenProfileId : int <<get>> <<set>>
+}
+class List {
+...
+}
+ScreenProfileDto ..> List: <<use>>
+class CancellationToken {
+...
+}
+CreateScreenProfileCommandHandler ..> CancellationToken: <<use>>
+class Task {
+...
+}
+CreateScreenProfileCommandHandler ..> Task: <<use>>
+@enduml

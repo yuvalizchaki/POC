@@ -1,0 +1,5 @@
+@startuml
+class GetAllScreensQuery {
+}
+"IRequest`1" "<List<ScreenDto>>" <|-- GetAllScreensQuery
+@enduml

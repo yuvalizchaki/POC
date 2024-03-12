@@ -1,0 +1,5 @@
+@startuml
+class GetAllScreenProfilesQuery {
+}
+"IRequest`1" "<List<ScreenProfileDto>>" <|-- GetAllScreenProfilesQuery
+@enduml

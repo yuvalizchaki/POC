@@ -1,0 +1,11 @@
+@startuml
+class ScreenHub {
+    - {static} <<readonly>> MsgOrderAdded : string = "orderAdded"
+    - {static} <<readonly>> MsgOrderUpdated : string = "orderUpdated"
+    - {static} <<readonly>> MsgOrderDeleted : string = "orderDeleted"
+    + <<async>> AddOrder(orderDto:OrderDto) : Task
+    + <<async>> UpdateOrder(orderDto:OrderDto) : Task
+    + <<async>> DeleteOrder(orderId:int) : Task
+}
+Hub <|-- ScreenHub
+@enduml

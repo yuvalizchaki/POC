@@ -1,0 +1,6 @@
+@startuml
+class CreateScreenProfileCommandHandler {
+    + <<async>> Handle(request:CreateScreenProfileCommand, cancellationToken:CancellationToken) : Task<ScreenProfileDto>
+}
+"IRequestHandler`2" "<CreateScreenProfileCommand,ScreenProfileDto>" <|-- CreateScreenProfileCommandHandler
+@enduml

@@ -1,0 +1,7 @@
+@startuml
+class ErrorResponse {
+    + Errors : Dictionary<string, string> <<get>> <<set>>
+    + ErrorResponse(errors:List<ValidationFailure>)
+    + ErrorResponse(errors:Dictionary<string, string>)
+}
+@enduml

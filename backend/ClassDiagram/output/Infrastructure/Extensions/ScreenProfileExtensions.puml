@@ -1,0 +1,36 @@
+@startuml
+class ScreenProfileExtensions <<static>> {
+    + {static} ToScreenProfileDto(screenProfile:ScreenProfile) : ScreenProfileDto
+}
+ScreenProfileExtensions ..> ScreenProfile: <<use>>
+class ScreenProfile {
+    + Id : int <<get>> <<set>>
+    + Name : string <<get>> <<set>>
+    + Screens : List<Screen> <<get>> <<set>>
+}
+class List {
+...
+}
+ScreenProfile ..> List: <<use>>
+ScreenProfile ..> Screen: <<use>>
+class Screen {
+    + Id : int <<get>> <<set>>
+    + ScreenProfileId : int <<get>> <<set>>
+    + ScreenProfile : ScreenProfile <<get>> <<set>>
+}
+ScreenProfileExtensions ..> ScreenProfileDto: <<use>>
+class ScreenProfileDto {
+    + Id : int <<get>> <<set>>
+    + Name : string <<get>> <<set>>
+    + Screens : List<ScreenDto> <<get>> <<set>>
+}
+ScreenProfileDto ..> ScreenDto: <<use>>
+class ScreenDto {
+    + Id : int <<get>> <<set>>
+    + ScreenProfileId : int <<get>> <<set>>
+}
+class List {
+...
+}
+ScreenProfileDto ..> List: <<use>>
+@enduml

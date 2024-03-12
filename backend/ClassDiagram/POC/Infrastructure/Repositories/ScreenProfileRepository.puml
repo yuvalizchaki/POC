@@ -1,0 +1,12 @@
+@startuml
+class ScreenProfileRepository {
+    - <<readonly>> _screenProfiles : List<ScreenProfile>
+    + GetAllAsync() : Task<List<ScreenProfile>>
+    + GetByIdAsync(id:int) : Task<ScreenProfile?>
+    + AddAsync(profile:ScreenProfile) : Task
+    + UpdateAsync(profile:ScreenProfile) : Task<bool>
+    + DeleteAsync(id:int) : Task<bool>
+    - GetNextId() : int
+    + updateScreenDeleteAsync(screenId:int, screenProfileId:int) : Task
+}
+@enduml

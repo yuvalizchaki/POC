@@ -1,0 +1,6 @@
+@startuml
+class PairScreenCommandHandler {
+    + <<async>> Handle(request:PairScreenCommand, cancellationToken:CancellationToken) : Task<ScreenDto>
+}
+"IRequestHandler`2" "<PairScreenCommand,ScreenDto>" <|-- PairScreenCommandHandler
+@enduml

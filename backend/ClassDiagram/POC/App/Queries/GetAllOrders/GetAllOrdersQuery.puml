@@ -1,0 +1,5 @@
+@startuml
+class GetAllOrdersQuery {
+}
+"IRequest`1" "<List<OrderDto>>" <|-- GetAllOrdersQuery
+@enduml

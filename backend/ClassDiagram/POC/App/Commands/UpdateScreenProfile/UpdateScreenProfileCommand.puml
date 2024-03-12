@@ -1,0 +1,8 @@
+@startuml
+class UpdateScreenProfileCommand {
+    + Id : int <<get>>
+    + ScreenProfile : UpdateScreenProfileDto <<get>>
+    + UpdateScreenProfileCommand(id:int, screenProfile:UpdateScreenProfileDto)
+}
+"IRequest`1" "<ScreenProfileDto>" <|-- UpdateScreenProfileCommand
+@enduml

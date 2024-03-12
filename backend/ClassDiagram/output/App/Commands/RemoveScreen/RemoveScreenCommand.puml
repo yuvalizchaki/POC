@@ -1,0 +1,6 @@
+@startuml
+class RemoveScreenCommand {
+    + Id : int <<get>> <<set>>
+}
+IRequest <|-- RemoveScreenCommand
+@enduml

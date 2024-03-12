@@ -1,0 +1,8 @@
+@startuml
+class GetAllOrdersQueryHandler {
+    - <<readonly>> _crmAdapter : CrmAdapter
+    + GetAllOrdersQueryHandler(crmAdapter:CrmAdapter)
+    + <<async>> Handle(request:GetAllOrdersQuery, cancellationToken:CancellationToken) : Task<List<OrderDto>>
+}
+"IRequestHandler`2" "<GetAllOrdersQuery,List<OrderDto>>" <|-- GetAllOrdersQueryHandler
+@enduml

@@ -1,0 +1,6 @@
+@startuml
+class GetAllScreenProfilesQueryHandler {
+    + <<async>> Handle(request:GetAllScreenProfilesQuery, cancellationToken:CancellationToken) : Task<List<ScreenProfileDto>>
+}
+"IRequestHandler`2" "<GetAllScreenProfilesQuery,List<ScreenProfileDto>>" <|-- GetAllScreenProfilesQueryHandler
+@enduml

@@ -1,0 +1,11 @@
+@startuml
+class ScreensController {
+    - <<readonly>> _mediator : IMediator
+    + ScreensController(mediator:IMediator)
+    + <<async>> PairScreen(pairScreenDto:PairScreenDto) : Task<IActionResult>
+    + <<async>> RemoveScreen(id:int) : Task<IActionResult>
+    + <<async>> GetScreen(id:int) : Task<ActionResult<ScreenDto>>
+    + <<async>> GetAllScreens() : Task<ActionResult<List<ScreenDto>>>
+}
+ControllerBase <|-- ScreensController
+@enduml

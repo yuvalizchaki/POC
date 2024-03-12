@@ -1,0 +1,29 @@
+@startuml
+class PairScreenCommandHandler {
+    + <<async>> Handle(request:PairScreenCommand, cancellationToken:CancellationToken) : Task<ScreenDto>
+}
+"IRequestHandler`2" "<PairScreenCommand,ScreenDto>" <|-- PairScreenCommandHandler
+class Task {
+...
+}
+PairScreenCommandHandler ..> Task: <<use>>
+PairScreenCommandHandler ..> ScreenDto: <<use>>
+class ScreenDto {
+    + Id : int <<get>> <<set>>
+    + ScreenProfileId : int <<get>> <<set>>
+}
+class CancellationToken {
+...
+}
+PairScreenCommandHandler ..> CancellationToken: <<use>>
+PairScreenCommandHandler ..> PairScreenCommand: <<use>>
+class PairScreenCommand {
+    + PairScreenDto : PairScreenDto <<get>> <<set>>
+}
+"IRequest`1" "<ScreenDto>" <|-- PairScreenCommand
+PairScreenCommand ..> PairScreenDto: <<use>>
+class PairScreenDto {
+    + PairingCode : string <<get>> <<set>>
+    + ScreenProfileId : int <<get>> <<set>>
+}
+@enduml

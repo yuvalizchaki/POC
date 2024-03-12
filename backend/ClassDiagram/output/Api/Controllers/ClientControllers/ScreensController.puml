@@ -1,0 +1,41 @@
+@startuml
+class ScreensController {
+    - <<readonly>> _mediator : IMediator
+    + ScreensController(mediator:IMediator)
+    + <<async>> PairScreen(pairScreenDto:PairScreenDto) : Task<IActionResult>
+    + <<async>> RemoveScreen(id:int) : Task<IActionResult>
+    + <<async>> GetScreen(id:int) : Task<ActionResult<ScreenDto>>
+    + <<async>> GetAllScreens() : Task<ActionResult<List<ScreenDto>>>
+}
+ControllerBase <|-- ScreensController
+interface IMediator {
+...
+}
+ScreensController ..> IMediator: <<use>>
+interface IActionResult {
+...
+}
+ScreensController ..> IActionResult: <<use>>
+class ActionResult {
+...
+}
+ScreensController ..> ActionResult: <<use>>
+ScreensController ..> PairScreenDto: <<use>>
+class PairScreenDto {
+    + PairingCode : string <<get>> <<set>>
+    + ScreenProfileId : int <<get>> <<set>>
+}
+ScreensController ..> ScreenDto: <<use>>
+class ScreenDto {
+    + Id : int <<get>> <<set>>
+    + ScreenProfileId : int <<get>> <<set>>
+}
+class List {
+...
+}
+ScreensController ..> List: <<use>>
+class Task {
+...
+}
+ScreensController ..> Task: <<use>>
+@enduml

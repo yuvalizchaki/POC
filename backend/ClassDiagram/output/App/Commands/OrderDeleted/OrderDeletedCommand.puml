@@ -1,0 +1,6 @@
+@startuml
+class OrderDeletedCommand {
+    + Id : int <<get>>
+}
+IRequest <|-- OrderDeletedCommand
+@enduml

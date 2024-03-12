@@ -1,0 +1,6 @@
+@startuml
+class GetScreenQueryHandler {
+    + <<async>> Handle(request:GetScreenQuery, cancellationToken:CancellationToken) : Task<ScreenDto>
+}
+"IRequestHandler`2" "<GetScreenQuery,ScreenDto>" <|-- GetScreenQueryHandler
+@enduml

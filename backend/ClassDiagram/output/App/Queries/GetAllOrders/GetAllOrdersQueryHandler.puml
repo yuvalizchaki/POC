@@ -1,0 +1,57 @@
+@startuml
+class GetAllOrdersQueryHandler {
+    - <<readonly>> _crmAdapter : CrmAdapter
+    + GetAllOrdersQueryHandler(crmAdapter:CrmAdapter)
+    + <<async>> Handle(request:GetAllOrdersQuery, cancellationToken:CancellationToken) : Task<List<OrderDto>>
+}
+"IRequestHandler`2" "<GetAllOrdersQuery,List<OrderDto>>" <|-- GetAllOrdersQueryHandler
+GetAllOrdersQueryHandler ..> GetAllOrdersQuery: <<use>>
+class GetAllOrdersQuery {
+}
+"IRequest`1" "<List<OrderDto>>" <|-- GetAllOrdersQuery
+GetAllOrdersQueryHandler ..> OrderDto: <<use>>
+class OrderDto {
+    + Id : int <<get>> <<set>>
+    + CustomerId : int <<get>> <<set>>
+    + ClientName : string? <<get>> <<set>>
+}
+class CancellationToken {
+...
+}
+GetAllOrdersQueryHandler ..> CancellationToken: <<use>>
+class List {
+...
+}
+GetAllOrdersQueryHandler ..> List: <<use>>
+GetAllOrdersQueryHandler ..> CrmAdapter: <<use>>
+class CrmAdapter {
+    - <<readonly>> _crmApiClient : HttpClient
+    - _logger : ILogger<CrmAdapter>
+    - _crmJsonSerializerOptions : JsonSerializerOptions
+    + CrmAdapter(httpClientFactory:IHttpClientFactory, logger:ILogger<CrmAdapter>)
+    + <<async>> GetAllOrdersAsync() : Task<List<OrderDto>>
+    + <<async>> GetOrderById(id:int) : Task<OrderDto>
+}
+class HttpClient {
+...
+}
+CrmAdapter ..> HttpClient: <<use>>
+interface IHttpClientFactory {
+...
+}
+CrmAdapter ..> IHttpClientFactory: <<use>>
+class JsonSerializerOptions {
+...
+}
+CrmAdapter ..> JsonSerializerOptions: <<use>>
+CrmAdapter ..> List: <<use>>
+interface ILogger {
+...
+}
+CrmAdapter ..> ILogger: <<use>>
+CrmAdapter ..> Task: <<use>>
+class Task {
+...
+}
+GetAllOrdersQueryHandler ..> Task: <<use>>
+@enduml

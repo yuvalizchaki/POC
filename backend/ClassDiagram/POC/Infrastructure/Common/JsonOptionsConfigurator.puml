@@ -1,0 +1,6 @@
+@startuml
+class JsonOptionsConfigurator <<static>> {
+    + {static} GetConfiguredOptions() : JsonSerializerOptions
+    + {static} ConfigureJsonOptions(options:JsonSerializerOptions) : void
+}
+@enduml

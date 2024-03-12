@@ -1,0 +1,5 @@
+@startuml
+class ScreenProfileExtensions <<static>> {
+    + {static} ToScreenProfileDto(screenProfile:ScreenProfile) : ScreenProfileDto
+}
+@enduml

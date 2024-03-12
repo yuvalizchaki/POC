@@ -1,0 +1,6 @@
+@startuml
+class OrderUpdatedCommandHandler {
+    + <<async>> Handle(request:OrderUpdatedCommand, cancellationToken:CancellationToken) : Task
+}
+"IRequestHandler`1" "<OrderUpdatedCommand>" <|-- OrderUpdatedCommandHandler
+@enduml

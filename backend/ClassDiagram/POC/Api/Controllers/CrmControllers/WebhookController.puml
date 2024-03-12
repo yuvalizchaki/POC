@@ -1,0 +1,10 @@
+@startuml
+class WebhookController {
+    - <<readonly>> _mediator : IMediator
+    + WebhookController(mediator:IMediator)
+    + <<async>> WebhookOrderAdded(orderDto:OrderDto) : Task<ActionResult<OrderDto>>
+    + <<async>> WebhookOrderUpdated(id:int, orderDto:OrderDto) : Task<ActionResult<OrderDto>>
+    + <<async>> WebhookOrderDeleted(id:int) : Task<ActionResult>
+}
+ControllerBase <|-- WebhookController
+@enduml

@@ -1,0 +1,7 @@
+@startuml
+class GetAllScreensQueryHandler {
+    - <<readonly>> _screenRepository : ScreenRepository
+    + <<async>> Handle(request:GetAllScreensQuery, cancellationToken:CancellationToken) : Task<List<ScreenDto>>
+}
+"IRequestHandler`2" "<GetAllScreensQuery,List<ScreenDto>>" <|-- GetAllScreensQueryHandler
+@enduml

@@ -1,0 +1,19 @@
+@startuml
+class RemoveScreenCommandHandler {
+    + <<async>> Handle(request:RemoveScreenCommand, cancellationToken:CancellationToken) : Task
+}
+"IRequestHandler`1" "<RemoveScreenCommand>" <|-- RemoveScreenCommandHandler
+class CancellationToken {
+...
+}
+RemoveScreenCommandHandler ..> CancellationToken: <<use>>
+RemoveScreenCommandHandler ..> RemoveScreenCommand: <<use>>
+class RemoveScreenCommand {
+    + Id : int <<get>> <<set>>
+}
+IRequest <|-- RemoveScreenCommand
+class Task {
+...
+}
+RemoveScreenCommandHandler ..> Task: <<use>>
+@enduml

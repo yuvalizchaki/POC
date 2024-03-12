@@ -1,0 +1,24 @@
+@startuml
+class GetScreenQueryHandler {
+    + <<async>> Handle(request:GetScreenQuery, cancellationToken:CancellationToken) : Task<ScreenDto>
+}
+"IRequestHandler`2" "<GetScreenQuery,ScreenDto>" <|-- GetScreenQueryHandler
+GetScreenQueryHandler ..> ScreenDto: <<use>>
+class ScreenDto {
+    + Id : int <<get>> <<set>>
+    + ScreenProfileId : int <<get>> <<set>>
+}
+GetScreenQueryHandler ..> GetScreenQuery: <<use>>
+class GetScreenQuery {
+    + Id : int <<get>> <<set>>
+}
+"IRequest`1" "<ScreenDto>" <|-- GetScreenQuery
+class CancellationToken {
+...
+}
+GetScreenQueryHandler ..> CancellationToken: <<use>>
+class Task {
+...
+}
+GetScreenQueryHandler ..> Task: <<use>>
+@enduml

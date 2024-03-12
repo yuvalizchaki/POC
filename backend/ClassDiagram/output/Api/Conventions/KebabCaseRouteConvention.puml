@@ -1,0 +1,10 @@
+@startuml
+class KebabCaseRouteConvention {
+    + Apply(controller:ControllerModel) : void
+}
+IControllerModelConvention <|-- KebabCaseRouteConvention
+class ControllerModel {
+...
+}
+KebabCaseRouteConvention ..> ControllerModel: <<use>>
+@enduml

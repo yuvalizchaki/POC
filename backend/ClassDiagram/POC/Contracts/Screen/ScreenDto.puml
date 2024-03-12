@@ -1,0 +1,6 @@
+@startuml
+class ScreenDto {
+    + Id : int <<get>> <<set>>
+    + ScreenProfileId : int <<get>> <<set>>
+}
+@enduml

@@ -1,0 +1,12 @@
+@startuml
+class OrderAddedCommand {
+    + OrderDto : OrderDto <<get>> <<set>>
+}
+IRequest <|-- OrderAddedCommand
+OrderAddedCommand ..> OrderDto: <<use>>
+class OrderDto {
+    + Id : int <<get>> <<set>>
+    + CustomerId : int <<get>> <<set>>
+    + ClientName : string? <<get>> <<set>>
+}
+@enduml

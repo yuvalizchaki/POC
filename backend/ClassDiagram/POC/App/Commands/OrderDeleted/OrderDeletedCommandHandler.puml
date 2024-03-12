@@ -1,0 +1,6 @@
+@startuml
+class OrderDeletedCommandHandler {
+    + <<async>> Handle(request:OrderDeletedCommand, cancellationToken:CancellationToken) : Task
+}
+"IRequestHandler`1" "<OrderDeletedCommand>" <|-- OrderDeletedCommandHandler
+@enduml

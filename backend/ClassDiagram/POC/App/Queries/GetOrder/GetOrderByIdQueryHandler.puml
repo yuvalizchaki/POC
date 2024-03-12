@@ -1,0 +1,8 @@
+@startuml
+class GetOrderByIdQueryHandler {
+    - <<readonly>> _crmAdapter : CrmAdapter
+    + GetOrderByIdQueryHandler(crmAdapter:CrmAdapter)
+    + <<async>> Handle(request:GetOrderByIdQuery, cancellationToken:CancellationToken) : Task<OrderDto>
+}
+"IRequestHandler`2" "<GetOrderByIdQuery,OrderDto>" <|-- GetOrderByIdQueryHandler
+@enduml

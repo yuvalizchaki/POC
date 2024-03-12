@@ -1,0 +1,5 @@
+@startuml
+class ScreenExtensions <<static>> {
+    + {static} ToScreenDto(screen:Screen) : ScreenDto
+}
+@enduml

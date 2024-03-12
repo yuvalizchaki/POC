@@ -1,0 +1,57 @@
+@startuml
+class ScreenProfilesController {
+    - <<readonly>> _mediator : IMediator
+    - <<readonly>> _logger : ILogger<ScreenProfilesController>
+    + ScreenProfilesController(mediator:IMediator, logger:ILogger<ScreenProfilesController>)
+    + <<async>> CreateScreenProfile(createScreenProfile:CreateScreenProfileDto) : Task<IActionResult>
+    + <<async>> GetScreenProfile(id:int) : Task<ActionResult<ScreenProfileDto>>
+    + <<async>> UpdateScreenProfile(id:int, screenProfile:UpdateScreenProfileDto) : Task<IActionResult>
+    + <<async>> DeleteScreenProfile(id:int) : Task<IActionResult>
+    + <<async>> GetAllScreenProfiles() : Task<ActionResult<List<ScreenProfileDto>>>
+}
+ControllerBase <|-- ScreenProfilesController
+interface IMediator {
+...
+}
+ScreenProfilesController ..> IMediator: <<use>>
+ScreenProfilesController ..> UpdateScreenProfileDto: <<use>>
+class UpdateScreenProfileDto {
+    + Name : string <<get>> <<set>>
+}
+interface IActionResult {
+...
+}
+ScreenProfilesController ..> IActionResult: <<use>>
+ScreenProfilesController ..> ScreenProfileDto: <<use>>
+class ScreenProfileDto {
+    + Id : int <<get>> <<set>>
+    + Name : string <<get>> <<set>>
+    + Screens : List<ScreenDto> <<get>> <<set>>
+}
+ScreenProfileDto ..> ScreenDto: <<use>>
+class ScreenDto {
+    + Id : int <<get>> <<set>>
+    + ScreenProfileId : int <<get>> <<set>>
+}
+ScreenProfileDto ..> List: <<use>>
+class ActionResult {
+...
+}
+ScreenProfilesController ..> ActionResult: <<use>>
+ScreenProfilesController ..> CreateScreenProfileDto: <<use>>
+class CreateScreenProfileDto {
+    + Name : string <<get>> <<set>>
+}
+class List {
+...
+}
+ScreenProfilesController ..> List: <<use>>
+interface ILogger {
+...
+}
+ScreenProfilesController ..> ILogger: <<use>>
+class Task {
+...
+}
+ScreenProfilesController ..> Task: <<use>>
+@enduml
