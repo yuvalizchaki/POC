@@ -1,0 +1,48 @@
+@startuml
+class ScreenProfileNotFoundExceptionExtensions <<static>> {
+    + {static} ToErrorResponse(ex:ScreenProfileNotFoundException) : ErrorResponse
+}
+class IncorrectPairingCodeExceptionExtensions <<static>> {
+    + {static} ToErrorResponse(ex:IncorrectPairingCodeException) : ErrorResponse
+}
+class PairingCodeDoesNotExistExceptionExtensions <<static>> {
+    + {static} ToErrorResponse(ex:PairingCodeDoesNotExistException) : ErrorResponse
+}
+class ExceptionExtensions <<static>> {
+    + {static} MapToErrorResponse(ex:Exception) : ErrorResponse
+}
+ExceptionExtensions ..> PairingCodeDoesNotExistException: <<use>>
+class PairingCodeDoesNotExistException {
+}
+Exception <|-- PairingCodeDoesNotExistException
+ExceptionExtensions ..> ErrorResponse: <<use>>
+class ErrorResponse {
+    + Errors : Dictionary<string, string> <<get>> <<set>>
+    + ErrorResponse(errors:List<ValidationFailure>)
+    + ErrorResponse(errors:Dictionary<string, string>)
+}
+class List {
+...
+}
+ErrorResponse ..> List: <<use>>
+class Dictionary {
+...
+}
+ErrorResponse ..> Dictionary: <<use>>
+class ValidationFailure {
+...
+}
+ErrorResponse ..> ValidationFailure: <<use>>
+class Exception {
+...
+}
+ExceptionExtensions ..> Exception: <<use>>
+ExceptionExtensions ..> ScreenProfileNotFoundException: <<use>>
+class ScreenProfileNotFoundException {
+}
+Exception <|-- ScreenProfileNotFoundException
+ExceptionExtensions ..> IncorrectPairingCodeException: <<use>>
+class IncorrectPairingCodeException {
+}
+Exception <|-- IncorrectPairingCodeException
+@enduml

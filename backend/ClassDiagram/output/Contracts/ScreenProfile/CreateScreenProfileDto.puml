@@ -1,0 +1,5 @@
+@startuml
+class CreateScreenProfileDto {
+    + Name : string <<get>> <<set>>
+}
+@enduml

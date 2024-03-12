@@ -1,0 +1,25 @@
+@startuml
+class OrderUpdatedCommandHandler {
+    + <<async>> Handle(request:OrderUpdatedCommand, cancellationToken:CancellationToken) : Task
+}
+"IRequestHandler`1" "<OrderUpdatedCommand>" <|-- OrderUpdatedCommandHandler
+OrderUpdatedCommandHandler ..> OrderUpdatedCommand: <<use>>
+class OrderUpdatedCommand {
+    + OrderDto : OrderDto <<get>> <<set>>
+}
+IRequest <|-- OrderUpdatedCommand
+OrderUpdatedCommand ..> OrderDto: <<use>>
+class OrderDto {
+    + Id : int <<get>> <<set>>
+    + CustomerId : int <<get>> <<set>>
+    + ClientName : string? <<get>> <<set>>
+}
+class CancellationToken {
+...
+}
+OrderUpdatedCommandHandler ..> CancellationToken: <<use>>
+class Task {
+...
+}
+OrderUpdatedCommandHandler ..> Task: <<use>>
+@enduml

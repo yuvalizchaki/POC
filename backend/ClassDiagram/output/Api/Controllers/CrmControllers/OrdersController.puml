@@ -1,0 +1,25 @@
+@startuml
+class OrdersController {
+    + <<async>> GetAllOrders() : Task<ActionResult<List<OrderDto>>>
+    + <<async>> GetOrderById(id:int) : Task<ActionResult<OrderDto>>
+}
+ControllerBase <|-- OrdersController
+OrdersController ..> OrderDto: <<use>>
+class OrderDto {
+    + Id : int <<get>> <<set>>
+    + CustomerId : int <<get>> <<set>>
+    + ClientName : string? <<get>> <<set>>
+}
+class List {
+...
+}
+OrdersController ..> List: <<use>>
+class ActionResult {
+...
+}
+OrdersController ..> ActionResult: <<use>>
+class Task {
+...
+}
+OrdersController ..> Task: <<use>>
+@enduml

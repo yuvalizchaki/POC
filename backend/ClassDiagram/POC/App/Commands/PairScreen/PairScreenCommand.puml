@@ -1,0 +1,6 @@
+@startuml
+class PairScreenCommand {
+    + PairScreenDto : PairScreenDto <<get>> <<set>>
+}
+"IRequest`1" "<ScreenDto>" <|-- PairScreenCommand
+@enduml

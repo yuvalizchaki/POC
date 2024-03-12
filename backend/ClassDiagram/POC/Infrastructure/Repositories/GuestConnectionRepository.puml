@@ -1,0 +1,9 @@
+@startuml
+class GuestConnectionRepository {
+    - <<readonly>> _PairingCodeToConnectionIdMap : Dictionary<string, string>
+    - <<readonly>> _pairCodeGenerator : PairCodeGenerator
+    + AddConnectionAsync(paringCode:string, connectionId:string) : Task
+    + RemoveConnectionAsync(paringCode:string) : Task
+    + GetConnectionIdByCodeAsync(paringCode:string) : Task<string>
+}
+@enduml

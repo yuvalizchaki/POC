@@ -1,0 +1,6 @@
+@startuml
+class GetScreenQuery {
+    + Id : int <<get>> <<set>>
+}
+"IRequest`1" "<ScreenDto>" <|-- GetScreenQuery
+@enduml

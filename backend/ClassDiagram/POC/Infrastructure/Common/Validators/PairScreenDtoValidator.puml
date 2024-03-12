@@ -1,0 +1,6 @@
+@startuml
+class PairScreenDtoValidator {
+    + PairScreenDtoValidator()
+}
+"AbstractValidator`1" "<PairScreenDto>" <|-- PairScreenDtoValidator
+@enduml

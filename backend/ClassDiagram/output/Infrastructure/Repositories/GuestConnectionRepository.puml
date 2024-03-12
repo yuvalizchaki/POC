@@ -1,0 +1,23 @@
+@startuml
+class GuestConnectionRepository {
+    - <<readonly>> _PairingCodeToConnectionIdMap : Dictionary<string, string>
+    - <<readonly>> _pairCodeGenerator : PairCodeGenerator
+    + AddConnectionAsync(paringCode:string, connectionId:string) : Task
+    + RemoveConnectionAsync(paringCode:string) : Task
+    + GetConnectionIdByCodeAsync(paringCode:string) : Task<string>
+}
+GuestConnectionRepository ..> PairCodeGenerator: <<use>>
+class PairCodeGenerator {
+    - <<const>> Chars : string = "0123456789"
+    + <<async>> GenerateAsync(length:int) : Task<string>
+}
+PairCodeGenerator ..> Task: <<use>>
+class Dictionary {
+...
+}
+GuestConnectionRepository ..> Dictionary: <<use>>
+class Task {
+...
+}
+GuestConnectionRepository ..> Task: <<use>>
+@enduml

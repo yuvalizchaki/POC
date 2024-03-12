@@ -1,0 +1,33 @@
+@startuml
+class GuestHub {
+    - {static} <<readonly>> MsgScreenAdded : string = "screenAdded"
+    - {static} <<readonly>> MsgPairCode : string = "pairCode"
+    - <<readonly>> _pairCodeGenerator : PairCodeGenerator
+    + <<override>> <<async>> OnConnectedAsync() : Task
+    + <<async>> OnSuccessfulPairing(pairingCode:string) : Task
+    + <<override>> <<async>> OnDisconnectedAsync(exception:Exception?) : Task
+    - <<async>> SendMessageToClient(pairCode:string, method:string, message:T) : Task
+    + <<async>> SendMessageAddScreen(pairCode:string, screenDto:ScreenDto) : Task
+    - <<async>> SendMessagePairCode(pairCode:string) : Task
+}
+Hub <|-- GuestHub
+GuestHub ..> PairCodeGenerator: <<use>>
+class PairCodeGenerator {
+    - <<const>> Chars : string = "0123456789"
+    + <<async>> GenerateAsync(length:int) : Task<string>
+}
+PairCodeGenerator ..> Task: <<use>>
+class Exception {
+...
+}
+GuestHub ..> Exception: <<use>>
+GuestHub ..> ScreenDto: <<use>>
+class ScreenDto {
+    + Id : int <<get>> <<set>>
+    + ScreenProfileId : int <<get>> <<set>>
+}
+class Task {
+...
+}
+GuestHub ..> Task: <<use>>
+@enduml

@@ -1,0 +1,6 @@
+@startuml
+class DeleteScreenProfileCommand {
+    + Id : int <<get>>
+}
+IRequest <|-- DeleteScreenProfileCommand
+@enduml

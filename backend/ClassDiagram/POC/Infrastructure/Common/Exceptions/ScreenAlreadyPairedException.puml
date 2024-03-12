@@ -1,0 +1,5 @@
+@startuml
+class ScreenAlreadyPairedException {
+}
+Exception <|-- ScreenAlreadyPairedException
+@enduml

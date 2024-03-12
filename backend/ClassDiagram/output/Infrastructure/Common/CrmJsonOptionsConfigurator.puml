@@ -1,0 +1,14 @@
+@startuml
+class UpperCaseCamelCaseNamingPolicy {
+    + <<override>> ConvertName(name:string) : string
+}
+class CrmJsonOptionsConfigurator {
+    + {static} GetConfiguredOptions() : JsonSerializerOptions
+    + {static} ConfigureJsonOptions(options:JsonSerializerOptions) : void
+}
+JsonNamingPolicy <|-- UpperCaseCamelCaseNamingPolicy
+class JsonSerializerOptions {
+...
+}
+CrmJsonOptionsConfigurator ..> JsonSerializerOptions: <<use>>
+@enduml

@@ -1,0 +1,14 @@
+@startuml
+class ScreenProfileNotFoundExceptionExtensions <<static>> {
+    + {static} ToErrorResponse(ex:ScreenProfileNotFoundException) : ErrorResponse
+}
+class IncorrectPairingCodeExceptionExtensions <<static>> {
+    + {static} ToErrorResponse(ex:IncorrectPairingCodeException) : ErrorResponse
+}
+class PairingCodeDoesNotExistExceptionExtensions <<static>> {
+    + {static} ToErrorResponse(ex:PairingCodeDoesNotExistException) : ErrorResponse
+}
+class ExceptionExtensions <<static>> {
+    + {static} MapToErrorResponse(ex:Exception) : ErrorResponse
+}
+@enduml

@@ -1,0 +1,6 @@
+@startuml
+class CreateScreenProfileCommand {
+    + CreateScreenProfileDto : CreateScreenProfileDto <<get>>
+}
+"IRequest`1" "<ScreenProfileDto>" <|-- CreateScreenProfileCommand
+@enduml

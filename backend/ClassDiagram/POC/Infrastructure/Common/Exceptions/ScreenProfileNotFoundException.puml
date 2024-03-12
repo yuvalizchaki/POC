@@ -1,0 +1,5 @@
+@startuml
+class ScreenProfileNotFoundException {
+}
+Exception <|-- ScreenProfileNotFoundException
+@enduml

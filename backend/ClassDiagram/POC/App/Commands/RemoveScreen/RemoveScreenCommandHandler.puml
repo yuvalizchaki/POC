@@ -1,0 +1,6 @@
+@startuml
+class RemoveScreenCommandHandler {
+    + <<async>> Handle(request:RemoveScreenCommand, cancellationToken:CancellationToken) : Task
+}
+"IRequestHandler`1" "<RemoveScreenCommand>" <|-- RemoveScreenCommandHandler
+@enduml

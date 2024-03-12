@@ -1,0 +1,40 @@
+@startuml
+class UpdateScreenProfileCommandHandler {
+    + <<async>> Handle(request:UpdateScreenProfileCommand, cancellationToken:CancellationToken) : Task<ScreenProfileDto>
+}
+"IRequestHandler`2" "<UpdateScreenProfileCommand,ScreenProfileDto>" <|-- UpdateScreenProfileCommandHandler
+UpdateScreenProfileCommandHandler ..> ScreenProfileDto: <<use>>
+class ScreenProfileDto {
+    + Id : int <<get>> <<set>>
+    + Name : string <<get>> <<set>>
+    + Screens : List<ScreenDto> <<get>> <<set>>
+}
+ScreenProfileDto ..> ScreenDto: <<use>>
+class ScreenDto {
+    + Id : int <<get>> <<set>>
+    + ScreenProfileId : int <<get>> <<set>>
+}
+class List {
+...
+}
+ScreenProfileDto ..> List: <<use>>
+UpdateScreenProfileCommandHandler ..> UpdateScreenProfileCommand: <<use>>
+class UpdateScreenProfileCommand {
+    + Id : int <<get>>
+    + ScreenProfile : UpdateScreenProfileDto <<get>>
+    + UpdateScreenProfileCommand(id:int, screenProfile:UpdateScreenProfileDto)
+}
+"IRequest`1" "<ScreenProfileDto>" <|-- UpdateScreenProfileCommand
+UpdateScreenProfileCommand ..> UpdateScreenProfileDto: <<use>>
+class UpdateScreenProfileDto {
+    + Name : string <<get>> <<set>>
+}
+class CancellationToken {
+...
+}
+UpdateScreenProfileCommandHandler ..> CancellationToken: <<use>>
+class Task {
+...
+}
+UpdateScreenProfileCommandHandler ..> Task: <<use>>
+@enduml

@@ -1,0 +1,12 @@
+@startuml
+class ScreenRepository {
+    - <<readonly>> _screens : List<Screen>
+    + GetAllAsync() : Task<List<Screen>>
+    + GetByIdAsync(id:int) : Task<Screen?>
+    + AddAsync(screen:Screen) : Task
+    + UpdateAsync(screen:Screen) : Task
+    + DeleteAsync(id:int) : Task<bool>
+    + updateScreenProfileDeleteAsync(screenProfileId:int) : Task
+    - GetNextId() : int
+}
+@enduml

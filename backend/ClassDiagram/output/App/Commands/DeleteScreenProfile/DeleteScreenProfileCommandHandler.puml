@@ -1,0 +1,19 @@
+@startuml
+class DeleteScreenProfileCommandHandler {
+    + <<async>> Handle(request:DeleteScreenProfileCommand, cancellationToken:CancellationToken) : Task
+}
+"IRequestHandler`1" "<DeleteScreenProfileCommand>" <|-- DeleteScreenProfileCommandHandler
+class CancellationToken {
+...
+}
+DeleteScreenProfileCommandHandler ..> CancellationToken: <<use>>
+DeleteScreenProfileCommandHandler ..> DeleteScreenProfileCommand: <<use>>
+class DeleteScreenProfileCommand {
+    + Id : int <<get>>
+}
+IRequest <|-- DeleteScreenProfileCommand
+class Task {
+...
+}
+DeleteScreenProfileCommandHandler ..> Task: <<use>>
+@enduml

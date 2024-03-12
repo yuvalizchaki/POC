@@ -1,0 +1,7 @@
+@startuml
+class Screen {
+    + Id : int <<get>> <<set>>
+    + ScreenProfileId : int <<get>> <<set>>
+    + ScreenProfile : ScreenProfile <<get>> <<set>>
+}
+@enduml

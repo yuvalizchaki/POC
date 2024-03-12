@@ -1,0 +1,28 @@
+@startuml
+class WebhookController {
+    - <<readonly>> _mediator : IMediator
+    + WebhookController(mediator:IMediator)
+    + <<async>> WebhookOrderAdded(orderDto:OrderDto) : Task<ActionResult<OrderDto>>
+    + <<async>> WebhookOrderUpdated(id:int, orderDto:OrderDto) : Task<ActionResult<OrderDto>>
+    + <<async>> WebhookOrderDeleted(id:int) : Task<ActionResult>
+}
+ControllerBase <|-- WebhookController
+interface IMediator {
+...
+}
+WebhookController ..> IMediator: <<use>>
+WebhookController ..> OrderDto: <<use>>
+class OrderDto {
+    + Id : int <<get>> <<set>>
+    + CustomerId : int <<get>> <<set>>
+    + ClientName : string? <<get>> <<set>>
+}
+class ActionResult {
+...
+}
+WebhookController ..> ActionResult: <<use>>
+class Task {
+...
+}
+WebhookController ..> Task: <<use>>
+@enduml

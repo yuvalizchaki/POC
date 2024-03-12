@@ -1,0 +1,13 @@
+@startuml
+class ScreenProfilesController {
+    - <<readonly>> _mediator : IMediator
+    - <<readonly>> _logger : ILogger<ScreenProfilesController>
+    + ScreenProfilesController(mediator:IMediator, logger:ILogger<ScreenProfilesController>)
+    + <<async>> CreateScreenProfile(createScreenProfile:CreateScreenProfileDto) : Task<IActionResult>
+    + <<async>> GetScreenProfile(id:int) : Task<ActionResult<ScreenProfileDto>>
+    + <<async>> UpdateScreenProfile(id:int, screenProfile:UpdateScreenProfileDto) : Task<IActionResult>
+    + <<async>> DeleteScreenProfile(id:int) : Task<IActionResult>
+    + <<async>> GetAllScreenProfiles() : Task<ActionResult<List<ScreenProfileDto>>>
+}
+ControllerBase <|-- ScreenProfilesController
+@enduml

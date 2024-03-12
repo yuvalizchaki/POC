@@ -1,0 +1,6 @@
+@startuml
+class "LoggingBehavior`2"<TRequest,TResponse> {
+    + <<async>> Handle(request:TRequest, next:RequestHandlerDelegate<TResponse>, cancellationToken:CancellationToken) : Task<TResponse>
+}
+"IPipelineBehavior`2" "<TRequest,TResponse>" <|-- "LoggingBehavior`2"
+@enduml

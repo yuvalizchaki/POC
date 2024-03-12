@@ -1,0 +1,6 @@
+@startuml
+class CreateScreenProfileDtoValidator {
+    + CreateScreenProfileDtoValidator()
+}
+"AbstractValidator`1" "<CreateScreenProfileDto>" <|-- CreateScreenProfileDtoValidator
+@enduml

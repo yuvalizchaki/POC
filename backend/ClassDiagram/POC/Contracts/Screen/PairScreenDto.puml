@@ -1,0 +1,6 @@
+@startuml
+class PairScreenDto {
+    + PairingCode : string <<get>> <<set>>
+    + ScreenProfileId : int <<get>> <<set>>
+}
+@enduml

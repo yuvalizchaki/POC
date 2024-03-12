@@ -1,0 +1,6 @@
+@startuml
+class OrderAddedCommand {
+    + OrderDto : OrderDto <<get>> <<set>>
+}
+IRequest <|-- OrderAddedCommand
+@enduml

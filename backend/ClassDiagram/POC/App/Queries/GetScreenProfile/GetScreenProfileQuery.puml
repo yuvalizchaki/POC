@@ -1,0 +1,6 @@
+@startuml
+class GetScreenProfileQuery {
+    + Id : int <<get>> <<set>>
+}
+"IRequest`1" "<ScreenProfileDto>" <|-- GetScreenProfileQuery
+@enduml

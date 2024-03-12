@@ -1,0 +1,7 @@
+@startuml
+class GetOrderByIdQuery {
+    + Id : int <<get>> <<set>>
+    + GetOrderByIdQuery(id:int)
+}
+"IRequest`1" "<OrderDto>" <|-- GetOrderByIdQuery
+@enduml
