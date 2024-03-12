@@ -38,6 +38,7 @@ builder.Services.AddSignalR()
 builder.Services.AddSingleton<ScreenProfileRepository>();
 builder.Services.AddSingleton<ScreenRepository>();
 builder.Services.AddSingleton<GuestConnectionRepository>();
+builder.Services.AddSingleton<ScreenConnectionRepository>();
 builder.Services.AddSingleton<ScreenHub>();
 builder.Services.AddSingleton<GuestHub>();
 

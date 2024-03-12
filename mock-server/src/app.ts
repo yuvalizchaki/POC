@@ -7,9 +7,9 @@ const port = 8008;
 
 // Middleware to avoid caching
 app.use((req, res, next) => {
-    res.setHeader("Cache-Control", "no-store");
-    next();
-  });
+  res.setHeader("Cache-Control", "no-store");
+  next();
+});
 app.use(express.json());
 app.use(ordersRouter);
 

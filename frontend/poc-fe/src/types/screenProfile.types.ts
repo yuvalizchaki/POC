@@ -1,11 +1,11 @@
 export interface ScreenProfile {
     id: number;
     name: string;
-    screens: Screen[];
+    screens: ScreenDto[];
   }
 
 
-export interface Screen {
+export interface ScreenDto {
     id: number;
     screenProfileId: number;
   }

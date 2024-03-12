@@ -25,7 +25,7 @@ import {
   pairScreen,
 } from "../../../services/adminService";
 import { ScreenComponent } from "./components/screenComponent";
-import { useState, useEffect, ChangeEvent } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
 const style = {
   position: "absolute",
   top: "50%",
@@ -150,8 +150,17 @@ function AdminDashboard() {
       </Box>
       {profiles.map((p) => {
         return (
-          <>
-            <Accordion variant="outlined" sx={{ borderRadius: 2 }}>
+          <React.Fragment key={p.id}>
+            <Accordion
+              variant="outlined"
+              sx={{ borderRadius: 2 }}
+              onClick={(e: React.MouseEvent<HTMLDivElement>) => {
+                console.log("[DEBUG] e: ", e);
+                if (e.target !== e.currentTarget) {
+                  e.preventDefault();
+                }
+              }}
+            >
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Stack direction="row" alignItems="center" width="100%">
                   <Typography>{p.name}</Typography>
@@ -160,11 +169,40 @@ function AdminDashboard() {
                     size="small"
                     variant="text"
                     startIcon={<AddIcon />}
-                    onClick={handleAddScreenOpen}
+                    onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                      e.stopPropagation();
+                      handleAddScreenOpen();
+                    }}
                   >
                     Add Screen
                   </Button>
-                  <Modal
+                  <IconButton
+                    color="error"
+                    size="small"
+                    onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                      e.stopPropagation();
+                      handleDeleteScreenProfile(p.id);
+                    }}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Stack>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Stack direction="column" spacing={1}>
+                  {p.screens.map((s, i) => (
+                    <React.Fragment key={s.id}>
+                      {i > 0 && <Divider />}
+                      <ScreenComponent
+                        screen={s}
+                        fetchScreenProfiles={fetchScreenProfiles}
+                      />
+                    </React.Fragment>
+                  ))}
+                </Stack>
+              </AccordionDetails>
+            </Accordion>
+            <Modal
                     open={addScreenOpen}
                     onClose={handleAddScreenClose}
                     aria-labelledby="parent-modal-title"
@@ -205,29 +243,7 @@ function AdminDashboard() {
                       </Grid>
                     </Box>
                   </Modal>
-                  <IconButton
-                    color="error"
-                    size="small"
-                    onClick={() => {
-                      handleDeleteScreenProfile(p.id);
-                    }}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </Stack>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Stack direction="column" spacing={1}>
-                  {p.screens.map((s, i) => (
-                    <>
-                      {i > 0 && <Divider />}
-                      <ScreenComponent screen={s} fetchScreenProfiles={fetchScreenProfiles}/>
-                    </>
-                  ))}
-                </Stack>
-              </AccordionDetails>
-            </Accordion>
-          </>
+          </React.Fragment>
         );
       })}
     </Stack>

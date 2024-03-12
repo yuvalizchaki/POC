@@ -1,4 +1,5 @@
 import { OrderDto } from "./crmTypes.types";
+import { ScreenDto } from "./screenProfile.types";
 
 export type SignalRHandler<T> = (payload: T) => void;
 
@@ -26,12 +27,14 @@ export interface GuestHubHandlers {
 export type OrderAddedDto = OrderDto;
 export type OrderUpdatedDto = OrderDto;
 export type OrderDeletedDto = number;
+export type ScreenRemovedDto = ScreenDto;
 
 // Aligned with backend hub command strings
 export interface ScreenHubHandlers {
   orderAdded: SignalRHandler<OrderAddedDto>;
   orderUpdated: SignalRHandler<OrderUpdatedDto>;
   orderDeleted: SignalRHandler<OrderDeletedDto>;
+  screenRemoved: SignalRHandler<ScreenRemovedDto>;
 }
 
 // #endregion \======================================== Screen Hub Commands ========================================/

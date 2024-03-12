@@ -4,10 +4,10 @@ import { IconButton, Stack, Typography } from "@mui/material";
 import ConnectedTvIcon from "@mui/icons-material/ConnectedTv";
 
 import CloseIcon from "@mui/icons-material/Close";
-import { Screen } from "../../../../types/screenProfile.types";
+import { ScreenDto } from "../../../../types/screenProfile.types";
 import { removeScreen } from "../../../../services/adminService";
 interface ScreenProps {
-  screen: Screen;
+  screen: ScreenDto;
   fetchScreenProfiles: () => void;
 }
 

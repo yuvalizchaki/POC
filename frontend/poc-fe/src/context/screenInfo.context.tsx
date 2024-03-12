@@ -7,7 +7,7 @@ interface ScreenInfoProviderProps {
 
 export interface ScreenInfoContextType {
   screenInfo: ScreenInfo | null;
-  setScreenInfo: (info: ScreenInfo) => void;
+  setScreenInfo: (info: ScreenInfo | null) => void;
 }
 
 export const ScreenInfoContext = createContext<ScreenInfoContextType>({

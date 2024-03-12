@@ -4,12 +4,15 @@ import { useSignalR } from "../../../hooks/useSignalR";
 import { API_BASE_URL, API_SCREEN_HUB_URL } from "../../../config";
 import { ScreenInfo } from "../../../types/screenInfo.types";
 import { Box, Divider, Paper, Typography } from "@mui/material";
+import { useScreenInfo } from "../../../hooks/useScreenInfo";
 
 interface OrdersScreenProps {
   screenInfo: ScreenInfo;
 }
 
 export const OrdersScreen = ({ screenInfo }: OrdersScreenProps) => {
+  const { setScreenInfo } = useScreenInfo();
+
   const [orders, setOrders] = useState<OrderDto[]>([]);
 
   const fetchOrders = useCallback(async () => {
@@ -75,6 +78,11 @@ export const OrdersScreen = ({ screenInfo }: OrdersScreenProps) => {
           return prevOrders.filter((order) => order.id !== orderDeletedDto);
         });
       },
+      screenRemoved: (/* screenRemovedDto */) =>{
+        // TODO: Check this logic
+        console.log('[DEBUG] Disconnected')
+        setScreenInfo(null)
+      }
     },
   });
   return (
