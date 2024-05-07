@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-public class ScreenProfileRepository
+public class ScreenProfileRepository(
+    ProjectDbContext dbContext //should be injected here
+    )
 {
     private readonly List<ScreenProfile> _screenProfiles = new();
 

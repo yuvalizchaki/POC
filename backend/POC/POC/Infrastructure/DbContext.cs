@@ -1,6 +1,8 @@
-﻿namespace POC.Infrastructure;
+﻿using Microsoft.EntityFrameworkCore;
 
-public class DbContext
+namespace POC.Infrastructure;
+
+public class ProjectDbContext(DbContextOptions<ProjectDbContext> options) : DbContext(options)
 {
-    
+
 }

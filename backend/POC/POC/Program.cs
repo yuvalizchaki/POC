@@ -2,6 +2,7 @@ using MediatR;
 using POC.Api.Conventions;
 using POC.Api.Hubs;
 using POC.App.Behaviors;
+using POC.Infrastructure;
 using POC.Infrastructure.Adapters;
 using POC.Infrastructure.Common;
 using POC.Infrastructure.Repositories;
@@ -55,6 +56,8 @@ builder.Services.AddSingleton<CrmAdapter>();
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
+// Register the DbContext
+builder.AddNpgsqlDbContext<ProjectDbContext>("postgresdb");
 
 var app = builder.Build();
 
