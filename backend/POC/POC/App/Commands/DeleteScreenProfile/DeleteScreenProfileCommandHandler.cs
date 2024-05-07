@@ -15,7 +15,7 @@ public class DeleteScreenProfileCommandHandler(ScreenProfileRepository repositor
         if (!result) throw new ScreenProfileNotFoundException();
         
         //TODO DELETE THIS WHEN WE HAVE A PROPER DB THAT DOES THIS FOR US
-        await screenRepository.updateScreenProfileDeleteAsync(request.Id);
+        //await screenRepository.updateScreenProfileDeleteAsync(request.Id);
         //
     }
 }
