@@ -4,10 +4,17 @@ using POC.Api.Hubs;
 using POC.App.Behaviors;
 using POC.Infrastructure.Adapters;
 using POC.Infrastructure.Common;
+using POC.Infrastructure.Generators;
+using POC.Infrastructure.IRepositories;
 using POC.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddStackExchangeRedisCache(redisOptions =>
+{
+    string connection = builder.Configuration.GetConnectionString("Redis");
+    redisOptions.Configuration = connection;
+});
+ 
 builder.Logging.AddConsole();
 
 // ========== Add services to the container. ==========
@@ -38,6 +45,7 @@ builder.Services.AddSignalR()
 builder.Services.AddSingleton<ScreenProfileRepository>();
 builder.Services.AddSingleton<ScreenRepository>();
 builder.Services.AddSingleton<GuestConnectionRepository>();
+builder.Services.AddSingleton<IGuestConnectionRepository, CachedGuestConnectionRepository>();
 builder.Services.AddSingleton<ScreenConnectionRepository>();
 builder.Services.AddSingleton<ScreenHub>();
 builder.Services.AddSingleton<GuestHub>();
