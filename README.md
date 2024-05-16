@@ -1,0 +1,39 @@
+# Development
+
+## Database setup
+
+### pgAdmin Url:
+
+```
+https://localhost:5050
+```
+
+### pgAdmin Credentials:
+
+```
+Username:   user@example.com
+Password:   admin
+```
+
+Postgres Url:
+
+### Host name for pgAdmin:
+
+```
+host.docker.internal
+```
+
+### Postgres Credentials
+
+```
+Database:   mydatabase
+Username:   user
+Password:   password
+```
+
+### .NET migrate database:
+Run under `POC\backend\POC\POC>`:
+```sh
+dotnet ef migrations add InitialCreate
+dotnet ef database update
+```
