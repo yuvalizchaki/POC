@@ -29,13 +29,13 @@ function AdminDashboard() {
   return (
     <Stack direction="column" spacing={2}>
       <AddScreenProfileComponent
-        style={style}
+        sx={style}
         fetchScreenProfiles={fetchScreenProfiles}
       />
       {profiles.map((p) => {
         return (
           <ProfileComponent
-            style={style}
+            sx={style}
             profile={p}
             fetchScreenProfiles={fetchScreenProfiles}
           />

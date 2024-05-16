@@ -1,15 +1,23 @@
-import { Box, Button, Grid, Modal, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Grid,
+  Modal,
+  SxProps,
+  TextField,
+  Typography,
+} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { createScreenProfile } from "../../../../services/adminService";
 import { useState, ChangeEvent } from "react";
 
 interface AddScreenProfileProps {
-  style: any;
+  sx: SxProps;
   fetchScreenProfiles: () => void;
 }
 
 export const AddScreenProfileComponent = ({
-  style,
+  sx,
   fetchScreenProfiles,
 }: AddScreenProfileProps) => {
   const [addScreenProfileOpen, setAddScreenProfileOpen] = useState(false);
@@ -53,7 +61,7 @@ export const AddScreenProfileComponent = ({
         aria-labelledby="parent-modal-title"
         aria-describedby="parent-modal-description"
       >
-        <Box sx={{ ...style, width: 400 }}>
+        <Box sx={{ ...sx, width: 400 }}>
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <TextField

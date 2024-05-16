@@ -1,21 +1,38 @@
-import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Divider, Grid, IconButton, Modal, Stack, TextField, Typography } from "@mui/material";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Button,
+  Divider,
+  Grid,
+  IconButton,
+  Modal,
+  Stack,
+  SxProps,
+  TextField,
+  Typography,
+} from "@mui/material";
 // import DesktopAccessDisabledIcon from "@mui/icons-material/DesktopAccessDisabled";
 import AddIcon from "@mui/icons-material/Add";
 // import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { ScreenProfile } from "../../../../types/screenProfile.types";
-import { deleteScreenProfile, pairScreen } from "../../../../services/adminService";
+import {
+  deleteScreenProfile,
+  pairScreen,
+} from "../../../../services/adminService";
 import React, { useState, ChangeEvent, useEffect } from "react";
 import { ScreenComponent } from "./screenComponent";
 interface ProfileProps {
-  style: any;
+  sx: SxProps;
   profile: ScreenProfile;
   fetchScreenProfiles: () => void;
 }
 
 export const ProfileComponent = ({
-  style,
+  sx,
   profile,
   fetchScreenProfiles,
 }: ProfileProps) => {
@@ -112,7 +129,7 @@ export const ProfileComponent = ({
         aria-labelledby="parent-modal-title"
         aria-describedby="parent-modal-description"
       >
-        <Box sx={{ ...style, width: 400 }}>
+        <Box sx={{ ...sx, width: 400 }}>
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <TextField
