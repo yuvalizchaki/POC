@@ -22,7 +22,7 @@ public class RemoveScreenCommandHandler(ScreenRepository repository,
                 throw new ScreenNotFoundException($"Screen with ID {request.Id} not found.");
             }
 
-            await screenProfileRepository.updateScreenDeleteAsync(screen.Id, screen.ScreenProfileId);
+            //await screenProfileRepository.updateScreenDeleteAsync(screen.Id, screen.ScreenProfileId);
 
             var result = await repository.DeleteAsync(request.Id);
             if (!result)

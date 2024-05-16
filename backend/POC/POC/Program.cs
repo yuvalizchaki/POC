@@ -1,7 +1,9 @@
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using POC.Api.Conventions;
 using POC.Api.Hubs;
 using POC.App.Behaviors;
+using POC.Infrastructure;
 using POC.Infrastructure.Adapters;
 using POC.Infrastructure.Common;
 using POC.Infrastructure.Generators;
@@ -42,8 +44,8 @@ builder.Services.AddSignalR()
     .AddJsonProtocol(options => { JsonOptionsConfigurator.ConfigureJsonOptions(options.PayloadSerializerOptions); });
 
 // Register in-memory repositories
-builder.Services.AddSingleton<ScreenProfileRepository>();
-builder.Services.AddSingleton<ScreenRepository>();
+// builder.Services.AddSingleton<ScreenProfileRepository>();
+// builder.Services.AddSingleton<ScreenRepository>();
 builder.Services.AddSingleton<GuestConnectionRepository>();
 builder.Services.AddSingleton<IGuestConnectionRepository, CachedGuestConnectionRepository>();
 builder.Services.AddSingleton<ScreenConnectionRepository>();
@@ -63,6 +65,16 @@ builder.Services.AddSingleton<CrmAdapter>();
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
+//register the repository
+builder.Services.AddScoped<ScreenProfileRepository>();
+builder.Services.AddScoped<ScreenRepository>();
+
+//Register the DbContext
+builder.Services.AddDbContext<OurDbContext>(options =>
+{
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+    
+});
 
 var app = builder.Build();
 
