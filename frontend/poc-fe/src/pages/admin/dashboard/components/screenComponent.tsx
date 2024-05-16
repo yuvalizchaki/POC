@@ -1,11 +1,10 @@
 import { IconButton, Stack, Typography } from "@mui/material";
-
 // import DesktopAccessDisabledIcon from "@mui/icons-material/DesktopAccessDisabled";
 import ConnectedTvIcon from "@mui/icons-material/ConnectedTv";
-
 import CloseIcon from "@mui/icons-material/Close";
 import { ScreenDto } from "../../../../types/screenProfile.types";
 import { removeScreen } from "../../../../services/adminService";
+
 interface ScreenProps {
   screen: ScreenDto;
   fetchScreenProfiles: () => void;
