@@ -11,12 +11,9 @@ using POC.Infrastructure.IRepositories;
 using POC.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddStackExchangeRedisCache(redisOptions =>
-{
-    string connection = builder.Configuration.GetConnectionString("Redis");
-    redisOptions.Configuration = connection;
-});
- 
+
+builder.Configuration.AddEnvironmentVariables();
+
 builder.Logging.AddConsole();
 
 // ========== Add services to the container. ==========
@@ -72,8 +69,11 @@ builder.Services.AddScoped<ScreenRepository>();
 //Register the DbContext
 builder.Services.AddDbContext<OurDbContext>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
-    
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Postgres"));
+});
+builder.Services.AddStackExchangeRedisCache(redisOptions =>
+{
+    redisOptions.Configuration = builder.Configuration.GetConnectionString("Redis");;
 });
 
 var app = builder.Build();

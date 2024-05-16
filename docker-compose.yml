@@ -1,0 +1,65 @@
+﻿version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    command: redis-server --requirepass "redispassword"
+    environment:
+      REDIS_PASSWORD: redispassword
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: redis-commander
+    environment:
+      REDIS_HOSTS: local:redis:6379
+      REDIS_PASSWORD: redispassword
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+  # dotnet-app:
+  #   build:
+  #     context: ./backend/POC
+  #     dockerfile: POC/Dockerfile
+  #   container_name: dotnet-app
+  #   environment:
+  #     ASPNETCORE_ENVIRONMENT: Production
+  #     ConnectionStrings__Postgres: "Host=postgres;Port=5432;Database=mydatabase;Username=user;Password=password"
+  #     ConnectionStrings__Redis: "redis:6379,password=redispassword"
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #   ports:
+  #     - "5000:80"
+
+volumes:
+  postgres_data:
+  redis_data:
