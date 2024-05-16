@@ -1,51 +1,58 @@
 using MediatR;
 using POC.Api.Hubs;
+using POC.App.Commands.PairScreen;
 using POC.Contracts.Screen;
-using POC.Infrastructure.Models;
-using POC.Infrastructure.Repositories;
-using POC.Api.Hubs;
-using POC.Contracts;
 using POC.Infrastructure.Common.Exceptions;
 using POC.Infrastructure.Extensions;
+using POC.Infrastructure.IRepositories;
+using POC.Infrastructure.Models;
+using POC.Infrastructure.Repositories;
 
-namespace POC.App.Commands.PairScreen;
-
-public class PairScreenCommandHandler(
-    GuestHub hub,
-    ScreenProfileRepository screenProfileRepository,
-    ScreenRepository screenRepository)
-    : IRequestHandler<PairScreenCommand, ScreenDto>
+public class PairScreenCommandHandler : IRequestHandler<PairScreenCommand, ScreenDto>
 {
+    private readonly GuestHub _hub;
+    private readonly ScreenProfileRepository _screenProfileRepository;
+    private readonly ScreenRepository _screenRepository;
+    private readonly IGuestConnectionRepository _guestConnectionRepository;
+
+    public PairScreenCommandHandler(GuestHub hub, ScreenProfileRepository screenProfileRepository, 
+                                    ScreenRepository screenRepository, IGuestConnectionRepository guestConnectionRepository)
+    {
+        _hub = hub;
+        _screenProfileRepository = screenProfileRepository;
+        _screenRepository = screenRepository;
+        _guestConnectionRepository = guestConnectionRepository;
+    }
 
     public async Task<ScreenDto> Handle(PairScreenCommand request, CancellationToken cancellationToken)
     {
-        // var screens = await screenRepository.GetAllAsync();
-        // var s = screens.FirstOrDefault(s => s.IpAddress == request.PairScreenDto.IpAddress);
-        // var s = screenRepository.GetScreenByIp(request.PairScreenDto.IpAddress);
-        // if (s != null) throw new ScreenAlreadyPairedException();
-        
-        // var exists = await hub.IsIpConnected(request.PairScreenDto.IpAddress);
-        // if (!exists) throw new IpNotInGuestHubException();
-        
-        var screenProfile = await screenProfileRepository.GetByIdAsync(request.PairScreenDto.ScreenProfileId);
-        if (screenProfile == null) throw new ScreenProfileNotFoundException();
-        
+        // Retrieve the screen profile
+        var screenProfile = await _screenProfileRepository.GetByIdAsync(request.PairScreenDto.ScreenProfileId);
+        if (screenProfile == null)
+            throw new ScreenProfileNotFoundException();
+
+        // Check if the pairing code exists in the cache
+        var connectionId = await _guestConnectionRepository.GetConnectionIdByCodeAsync(request.PairScreenDto.PairingCode, cancellationToken);
+        if (string.IsNullOrEmpty(connectionId))
+            throw new Exception("PairingCodeNotFoundException");
+
+        // Create a new screen object
         var screen = new Screen
         {
-            // IpAddress = request.PairScreenDto.PairingCode,
             ScreenProfileId = request.PairScreenDto.ScreenProfileId,
             ScreenProfile = screenProfile
         };
-        
-        var screenDto = screen.ToScreenDto();
-        //throws exception so should be prior to adding to the repository
-        await hub.SendMessageAddScreen(request.PairScreenDto.PairingCode, screenDto);
-        
-        await screenRepository.AddAsync(screen);
-        
+
+        // Send the screen profile to the smart TV screen
+        await _hub.SendMessageAddScreen(request.PairScreenDto.PairingCode, screen.ToScreenDto());
+
+        // Add the screen to the repository
+        await _screenRepository.AddAsync(screen);
+
+        // Associate the screen with the screen profile
         screenProfile.Screens.Add(screen);
-        await screenProfileRepository.UpdateAsync(screenProfile);
-        
-        return screenDto;
+        await _screenProfileRepository.UpdateAsync(screenProfile);
+
+        return screen.ToScreenDto();
     }
 }

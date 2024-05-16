@@ -1,6 +1,9 @@
-﻿namespace POC.Infrastructure.Repositories;
+﻿using POC.Infrastructure.IRepositories;
 
-public class ScreenConnectionRepository
+namespace POC.Infrastructure.Repositories;
+
+public class ScreenConnectionRepository: IScreenConnectionRepository
+    
 {
     private readonly Dictionary<int, string> _screenIdToConnectionIdMap = new();
 
@@ -16,7 +19,7 @@ public class ScreenConnectionRepository
         return Task.CompletedTask;
     }
 
-    public Task<string> GetConnectionIdByScreenIdAsync(int screenId)
+    public Task<string?> GetConnectionIdByScreenIdAsync(int screenId)
     {
         if (_screenIdToConnectionIdMap.TryGetValue(screenId, out string connectionId))
         {
