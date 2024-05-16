@@ -6,6 +6,7 @@ using POC.App.Queries.GetAllScreens;
 using POC.App.Queries.GetScreen;
 using POC.Contracts.Response;
 using POC.Contracts.Screen;
+using POC.Infrastructure;
 using POC.Infrastructure.Common.Exceptions;
 using POC.Infrastructure.Common.Validators;
 using POC.Infrastructure.Extensions;
