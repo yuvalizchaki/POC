@@ -2,6 +2,16 @@
 
 ## Database setup
 
+### Run:
+```sh
+docker-compose up -d
+```
+
+### Redis Commander Url:
+```
+https://localhost:8081
+```
+
 ### pgAdmin Url:
 
 ```
