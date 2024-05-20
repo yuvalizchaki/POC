@@ -21,7 +21,7 @@ https://localhost:5050
 ### pgAdmin Credentials:
 
 ```
-Username:   user@example.com
+Username:   admin@example.com
 Password:   admin
 ```
 
