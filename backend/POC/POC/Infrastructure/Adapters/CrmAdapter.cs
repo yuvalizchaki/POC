@@ -1,51 +1,66 @@
 ﻿using System.Net;
+using System.Net.Http.Headers;
 using System.Text.Json;
+using Microsoft.Extensions.Logging;
 using POC.Contracts.CrmDTOs;
 using POC.Infrastructure.Common;
+using POC.Infrastructure.Common.Exceptions;
 
-namespace POC.Infrastructure.Adapters;
-
-public class CrmAdapter
+namespace POC.Infrastructure.Adapters
 {
-    private readonly HttpClient _crmApiClient;
-    private ILogger<CrmAdapter> _logger;
-    private JsonSerializerOptions _crmJsonSerializerOptions;
-    public CrmAdapter(IHttpClientFactory httpClientFactory, ILogger<CrmAdapter> logger)
+    // TODO: Implement CRM adapter and related classes
+    public class CrmAdapter
     {
-        _logger = logger;
-        _crmApiClient = httpClientFactory.CreateClient("CrmApiClient");  
-        _crmApiClient.BaseAddress = new Uri("http://localhost:8008");
-        _crmJsonSerializerOptions = CrmJsonOptionsConfigurator.GetConfiguredOptions(); // Using external Crm format
-    }
+        private readonly HttpClient _httpClient;
+        private readonly CrmTokenAdapter _tokenAdapter;
+        private readonly ILogger<CrmAdapter> _logger;
+        private readonly JsonSerializerOptions _crmApiJsonSerializerOptions;
+        private readonly string _apiBaseUrl;
 
-    // private async Task EnsureCrmApiConnectionAsync()
-    // {
-    //     var response = await _crmApiClient.GetAsync("health-check");
-    //     response.EnsureSuccessStatusCode();
-    // }
+        public CrmAdapter(IHttpClientFactory httpClientFactory, CrmTokenAdapter tokenAdapter, ILogger<CrmAdapter> logger, IConfiguration configuration)
+        {
+            _apiBaseUrl = configuration.GetValue<string>("ToyCrm_ApiBaseUrl") ?? throw new CrmAdapterError("Could not find configuration ToyCrm_ApiBaseUrl");
+            _httpClient = httpClientFactory.CreateClient("CrmApiClient");
+            _tokenAdapter = tokenAdapter;
+            _logger = logger;
+            _crmApiJsonSerializerOptions = CrmApiJsonOptionsConfigurator.GetConfiguredOptions();
+        }
 
-    public async Task<List<OrderDto>> GetAllOrdersAsync()
-    { 
-        // await EnsureCrmApiConnectionAsync();
-        var response = await _crmApiClient.GetAsync("orders");
-        if (response.StatusCode == HttpStatusCode.NotFound)
-            throw new HttpRequestException($"Resource not found at {_crmApiClient.BaseAddress}orders");
-        _logger.LogInformation($"[DEBUG] crm response: {response}");
-        response.EnsureSuccessStatusCode();
-        var responseContent = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<List<OrderDto>>(responseContent, _crmJsonSerializerOptions);
-    }
+        private async Task AddAuthenticationHeaderAsync()
+        {
+            var token = await _tokenAdapter.GetTokenAsync();
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        }
 
-    public async Task<OrderDto> GetOrderById(int id)
-    {
-        // await EnsureCrmApiConnectionAsync();
-        var response = await _crmApiClient.GetAsync($"orders/{id}");
-        if (response.StatusCode == HttpStatusCode.NotFound)
-            throw new HttpRequestException($"Order with ID {id} not found.");
+        public async Task<List<OrderDto>> GetAllOrdersAsync(int companyId, string queryContentJson)
+        {
+            await AddAuthenticationHeaderAsync();
 
-        response.EnsureSuccessStatusCode();
-        var responseContent = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<OrderDto>(responseContent, _crmJsonSerializerOptions);
+            string crmOrdersUrl = getCrmOrderUrlFromCompany(companyId);
+
+            var request = new HttpRequestMessage(HttpMethod.Post, _apiBaseUrl + crmOrdersUrl);
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            request.Content = new StringContent(queryContentJson, System.Text.Encoding.UTF8, "application/json");
+
+            // _logger.LogInformation("[DEBUG] Request: {Method} {Uri} - Headers: {Headers} - Content: {Content}", request.Method, request.RequestUri, string.Join(", ", request.Headers.Select(h => $"{h.Key}: {string.Join(", ", h.Value)}")), await request.Content.ReadAsStringAsync());
+            _httpClient.BaseAddress = new Uri(_apiBaseUrl);
+            var response = await _httpClient.SendAsync(request);
+            if (response.StatusCode == HttpStatusCode.NotFound)
+                throw new HttpRequestException($"Resource not found at {_apiBaseUrl}{crmOrdersUrl}");
+
+
+            response.EnsureSuccessStatusCode();
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            // _logger.LogInformation("[DEBUG] CRM response content: {ResponseContent}", responseContent);
+
+            var jsonResponseContent = JsonSerializer.Deserialize<OrderQueryResponse>(responseContent, _crmApiJsonSerializerOptions) ?? throw new CrmAdapterError("Failed to deserialize crm response.");
+            return jsonResponseContent.Items;
+        }
+
+        private string getCrmOrderUrlFromCompany(int companyId)
+        {
+            return "orders/" + companyId + "/search";
+        }
     }
 }
-

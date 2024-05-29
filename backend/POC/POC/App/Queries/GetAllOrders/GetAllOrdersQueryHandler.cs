@@ -14,9 +14,30 @@ public class GetAllOrdersQueryHandler : IRequestHandler<GetAllOrdersQuery, List<
         _crmAdapter = crmAdapter;
     }
 
+
+    // TODO: Implement CRM adapter and related classes
     public async Task<List<OrderDto>> Handle(GetAllOrdersQuery request, CancellationToken cancellationToken)
     {
-        return await _crmAdapter.GetAllOrdersAsync();
+        int companyId = 1;
+        string queryContent = """
+        {
+            "skipCount": true,
+            "framing": {
+                "skip": 0,
+                "take": 10
+            },
+            "sorts": [
+                {
+                    "sortBy": "Id",
+                    "inverseOrder": true
+                }
+            ],
+            "filters": []
+        }
+        """;
+        return await _crmAdapter.GetAllOrdersAsync(companyId, queryContent);
+
     }
-    
+
+
 }

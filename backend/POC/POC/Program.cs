@@ -52,10 +52,11 @@ builder.Services.AddSingleton<GuestHub>();
 // Add the custom route convention
 builder.Services.AddControllers(options => { options.Conventions.Add(new KebabCaseRouteConvention()); });
 
-//builder.Services.AddHttpClient<CrmAdapter>();
+builder.Services.AddHttpClient<CrmTokenAdapter>("CrmAuthClient");
 builder.Services.AddHttpClient<CrmAdapter>("CrmApiClient");
 
 // Register adapters
+builder.Services.AddSingleton<CrmTokenAdapter>();
 builder.Services.AddSingleton<CrmAdapter>();
 
 // Register MediatR and handlers
@@ -73,7 +74,7 @@ builder.Services.AddDbContext<OurDbContext>(options =>
 });
 builder.Services.AddStackExchangeRedisCache(redisOptions =>
 {
-    redisOptions.Configuration = builder.Configuration.GetConnectionString("Redis");;
+    redisOptions.Configuration = builder.Configuration.GetConnectionString("Redis"); ;
 });
 
 var app = builder.Build();
