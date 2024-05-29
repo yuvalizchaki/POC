@@ -28,6 +28,16 @@ const ScreenPairingPage = lazy(
   () => import("./pages/screen/screen-pairing.page")
 );
 
+// TODO: remove
+const ScreenDemoOrdersTemplate = lazy(
+  () => import("./pages/screen/demo/screen-orders-demo.page")
+);
+
+// TODO: remove
+const ScreenDemoInventoryTemplate = lazy(
+  () => import("./pages/screen/demo/screen-inventory-demo.page")
+);
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -61,6 +71,8 @@ const router = createBrowserRouter([
           { index: true, element: <Navigate to="content" replace /> },
           { path: "content", element: <ScreenContentPage /> },
           { path: "pair", element: <ScreenPairingPage /> },
+          { path: "demo-orders", element: <ScreenDemoOrdersTemplate /> }, // TODO: remove
+          { path: "demo-inventory", element: <ScreenDemoInventoryTemplate /> }, // TODO: remove
         ],
       },
     ],
