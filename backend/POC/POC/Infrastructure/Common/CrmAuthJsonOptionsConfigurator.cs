@@ -2,18 +2,19 @@
 
 namespace POC.Infrastructure.Common;
 
-public class UpperCaseCamelCaseNamingPolicy : JsonNamingPolicy
+public class SnakeCaseNamingPolicy : JsonNamingPolicy
 {
     public override string ConvertName(string name)
     {
-        if (string.IsNullOrEmpty(name) || char.IsUpper(name[0]))
+        if (string.IsNullOrEmpty(name))
             return name;
 
-        return char.ToUpper(name[0]) + name.Substring(1);
+        return string.Concat(name.Select((x, i) => i > 0 && char.IsUpper(x) ? "_" + x : x.ToString())).ToLower();
     }
 }
 
-public class CrmJsonOptionsConfigurator
+/** Used for the /auth endpoint (snake_case) */
+public class CrmAuthJsonOptionsConfigurator
 {
     public static JsonSerializerOptions GetConfiguredOptions()
     {
@@ -25,7 +26,9 @@ public class CrmJsonOptionsConfigurator
     public static void ConfigureJsonOptions(JsonSerializerOptions options)
     {
         // Use custom UpperCaseCamelCase naming policy
-        options.PropertyNamingPolicy = new UpperCaseCamelCaseNamingPolicy();
+        options.PropertyNamingPolicy = new SnakeCaseNamingPolicy();
+        options.PropertyNameCaseInsensitive = true;
+
 
         // Add other configurations as needed
     }
