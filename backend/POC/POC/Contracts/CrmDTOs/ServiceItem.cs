@@ -2,9 +2,9 @@
 
 namespace POC.Infrastructure.Models;
 
-public class ServiceItem
+public class ServiceItemDto
 {
-    [Key]
+
     public int Id { get; set; }
     public int DepartmentId { get; set; }
     public int Quantity { get; set; }
@@ -18,7 +18,5 @@ public class ServiceItem
     public decimal Amount { get; set; }
     public decimal Price { get; set; }
 
-    // Foreign key
-    public int OrderId { get; set; }
-    public Order Order { get; set; }
+
 }

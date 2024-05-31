@@ -2,9 +2,8 @@
 
 namespace POC.Infrastructure.Models;
 
-public class PeopleOrderItem
+public class PeopleOrderItemDto
 {
-    [Key]
     public int Id { get; set; }
     public int PeopleProfileId { get; set; }
     public int DepartmentId { get; set; }
@@ -15,8 +14,4 @@ public class PeopleOrderItem
     public List<string> PeopleProfileImages { get; set; }
     public int Amount { get; set; }
     public decimal Price { get; set; }
-
-    // Foreign key
-    public int OrderId { get; set; }
-    public Order Order { get; set; }
 }
