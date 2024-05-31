@@ -76,7 +76,7 @@ public static class ScreenProfileFilteringExtensions
     static string status = "Status";
     static string isPickup = "IsPickup";
     static string isSale = "IsSale";
-    static string entityIds = "EntityIds";
+    static string entityIds = "DepartmentId";
     static string startDate = "StartDate";
     static string endDate = "EndDate";
     //to dto
@@ -114,13 +114,15 @@ public static class ScreenProfileFilteringExtensions
         {
             searchRequest = searchRequest.AppendFiltering(isSale, screenProfileFilteringDto.IsSale == TriState.True ? "true" : "false");
         }
-        // if (screenProfileFilteringDto.EntityIds != null)
-        // {
-        //     foreach (var entityId in screenProfileFilteringDto.EntityIds)
-        //     {
-        //         searchRequest = searchRequest.AppendFiltering("EntityIds", entityId.ToString());
-        //     }
-        // }
+        if (screenProfileFilteringDto.EntityIds != null)
+        {
+            var entityIdsList = screenProfileFilteringDto.EntityIds.Select(s =>
+            {
+                var number = s;
+                return number.ToString();
+            });
+            searchRequest = searchRequest.AppendFiltering(entityIds, FilterOperation.In,entityIdsList.ToArray());
+        }
         return searchRequest.Build();
     }
 }
