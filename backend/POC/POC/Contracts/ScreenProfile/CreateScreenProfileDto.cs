@@ -5,6 +5,7 @@ public class CreateScreenProfileDto
     // TODO: Implement CRM adapter and related classes
 
     public string Name { get; set; }
-    // Add other properties necessary for creating a ScreenProfile
-    // For example, configuration settings, etc.
+    public int CompanyId { get; set; } = 1;
+    public ScreenProfileFilteringDto ScreenProfileFiltering { get; set; }
+    
 }

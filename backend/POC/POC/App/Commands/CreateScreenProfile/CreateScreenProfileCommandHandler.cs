@@ -15,6 +15,20 @@ public class CreateScreenProfileCommandHandler(ScreenProfileRepository repositor
         var screenProfile = new ScreenProfile
         {
             Name = request.CreateScreenProfileDto.Name,
+            CompanyId = request.CreateScreenProfileDto.CompanyId,
+            ScreenProfileFiltering = new ScreenProfileFiltering
+            {
+                OrderTimeRange = new OrderTimeRange
+                {
+                    StartDate = request.CreateScreenProfileDto.ScreenProfileFiltering.OrderTimeRange.StartDate,
+                    EndDate = request.CreateScreenProfileDto.ScreenProfileFiltering.OrderTimeRange.EndDate
+                },
+                OrderStatusses = request.CreateScreenProfileDto.ScreenProfileFiltering.OrderStatusses,
+                IsPickup = request.CreateScreenProfileDto.ScreenProfileFiltering.IsPickup,
+                IsSale = request.CreateScreenProfileDto.ScreenProfileFiltering.IsSale,
+                EntityIds = request.CreateScreenProfileDto.ScreenProfileFiltering.EntityIds
+            },
+            
             // Other properties
         };
         

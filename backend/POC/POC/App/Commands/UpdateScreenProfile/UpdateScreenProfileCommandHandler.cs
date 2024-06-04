@@ -18,6 +18,7 @@ public class UpdateScreenProfileCommandHandler(ScreenProfileRepository repositor
         if (screenToUpdate == null) throw new ScreenProfileNotFoundException();
         
         screenToUpdate.Name = request.ScreenProfile.Name;
+        screenToUpdate.ScreenProfileFiltering = request.ScreenProfile.ScreenProfileFiltering.ToScreenProfileFiltering();
         
         await repository.UpdateAsync(screenToUpdate);
         

@@ -23,6 +23,19 @@ public class OurDbContext(DbContextOptions<OurDbContext> options) : DbContext(op
             .WithOne(s => s.ScreenProfile)             // Each Screen has one ScreenProfile
             .HasForeignKey(s => s.ScreenProfileId);   // Foreign key property in Screen
         
+        modelBuilder.Entity<ScreenProfile>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.OwnsOne(e => e.ScreenProfileFiltering, spf =>
+            {
+                spf.OwnsOne(s => s.OrderTimeRange);
+                spf.Property(s => s.IsPickup);
+                spf.Property(s => s.IsSale);
+                spf.Property(s => s.OrderStatusses);
+                spf.Property(s => s.EntityIds);
+            });
+        });
+        
         //non nullable foreign keys lead to automatic cascade delete
         
         base.OnModelCreating(modelBuilder);

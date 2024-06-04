@@ -1,10 +1,12 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using POC.Contracts.CrmDTOs;
 using POC.Infrastructure.Common;
 using POC.Infrastructure.Common.Exceptions;
+using POC.Infrastructure.Models.CrmSearchQuery;
 
 namespace POC.Infrastructure.Adapters
 {
@@ -32,7 +34,7 @@ namespace POC.Infrastructure.Adapters
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
 
-        public async Task<List<OrderDto>> GetAllOrdersAsync(int companyId, string queryContentJson)
+        public async Task<List<OrderDto>> GetAllOrdersAsync(int companyId, SearchRequest queryContent)
         {
             await AddAuthenticationHeaderAsync();
 
@@ -40,9 +42,8 @@ namespace POC.Infrastructure.Adapters
 
             var request = new HttpRequestMessage(HttpMethod.Post, _apiBaseUrl + crmOrdersUrl);
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            request.Content = new StringContent(queryContentJson, System.Text.Encoding.UTF8, "application/json");
-
-            // _logger.LogInformation("[DEBUG] Request: {Method} {Uri} - Headers: {Headers} - Content: {Content}", request.Method, request.RequestUri, string.Join(", ", request.Headers.Select(h => $"{h.Key}: {string.Join(", ", h.Value)}")), await request.Content.ReadAsStringAsync());
+            request.Content = new StringContent(JsonSerializer.Serialize(queryContent, _crmApiJsonSerializerOptions), Encoding.UTF8, "application/json");
+             _logger.LogInformation("[DEBUG] Request: {Method} {Uri} - Headers: {Headers} - Content: {Content}", request.Method, request.RequestUri, string.Join(", ", request.Headers.Select(h => $"{h.Key}: {string.Join(", ", h.Value)}")), await request.Content.ReadAsStringAsync());
             _httpClient.BaseAddress = new Uri(_apiBaseUrl);
             var response = await _httpClient.SendAsync(request);
             if (response.StatusCode == HttpStatusCode.NotFound)
