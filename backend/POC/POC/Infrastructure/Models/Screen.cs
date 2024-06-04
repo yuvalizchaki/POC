@@ -11,5 +11,8 @@ public class Screen
     
     //foreign key
     public int ScreenProfileId { get; set; }
+    public string? HashToken { get; set; }
     public ScreenProfile ScreenProfile { get; set; }
+   
+
 }
