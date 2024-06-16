@@ -1,5 +1,7 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using POC.Api.Helpers;
 using POC.App.Commands.PairScreen;
 using POC.App.Commands.RemoveScreen;
 using POC.App.Queries.GetAllScreens;
@@ -15,6 +17,8 @@ namespace POC.Api.Controllers.ClientControllers;
 
 [ApiController]
 [Route("[controller]")]
+[Authorize(Roles = "Admin")] 
+[Authorize(Policy = "CompanyIdIsOne")]
 public class ScreensController : ControllerBase 
 {
     private readonly IMediator _mediator;

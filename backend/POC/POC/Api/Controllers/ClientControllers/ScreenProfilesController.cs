@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using POC.App.Commands.CreateScreenProfile;
 using POC.App.Commands.DeleteScreenProfile;
@@ -14,6 +15,8 @@ namespace POC.Api.Controllers.ClientControllers;
 
 [ApiController]
 [Route("[controller]")]
+[Authorize(Roles = "Admin")]
+[Authorize(Policy = "CompanyIdIsOne")]
 public class ScreenProfilesController : ControllerBase 
 {
     private readonly IMediator _mediator;

@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using POC.App.Queries.GetAllOrders;
 using POC.App.Queries.GetOrder;
@@ -8,6 +9,8 @@ using POC.Contracts.CrmDTOs;
 namespace POC.Api.Controllers.CrmControllers;
 [ApiController]
 [Route("[controller]")]
+[Authorize(Roles = "Screen,Admin")]
+[Authorize(Policy = "CompanyIdIsOne")]
 public class OrdersController(IMediator mediator) : ControllerBase
 {
     [HttpGet]

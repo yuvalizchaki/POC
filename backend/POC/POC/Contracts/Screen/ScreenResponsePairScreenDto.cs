@@ -1,8 +1,8 @@
 ﻿namespace POC.Contracts.Screen;
 
-public class ScreenDto
+public class ScreenResponsePairScreenDto
 {
     public int Id { get; set; }
-    //public string Ip { get; set; }
     public int ScreenProfileId { get; set; }
+    public string Token { get; set; }
 }
