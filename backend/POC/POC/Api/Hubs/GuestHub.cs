@@ -50,9 +50,9 @@ public class GuestHub(IGuestConnectionRepository guestConnectionRepository, ILog
             }
         }
         
-        public async Task SendMessageAddScreen(string pairCode, ScreenDto screenDto)
+        public async Task SendMessageAddScreen(string pairCode, ScreenResponsePairScreenDto screenResponsePairScreenDto)
         {
-            await SendMessageToClient(pairCode,MsgScreenAdded, screenDto);
+            await SendMessageToClient(pairCode,MsgScreenAdded, screenResponsePairScreenDto);
             //await guestConnectionRepository.RemoveConnectionAsync(pairCode);
         }
         

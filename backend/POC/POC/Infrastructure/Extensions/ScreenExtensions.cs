@@ -12,7 +12,16 @@ public static class ScreenExtensions
         {
             Id = screen.Id,
             // Ip = screen.IpAddress,
-            ScreenProfileId = screen.ScreenProfileId
+            ScreenProfileId = screen.ScreenProfileId,
+        };
+    }
+    public static ScreenResponsePairScreenDto ToScreenResponsePairScreenDto(this Screen screen, String token)
+    {
+        return new ScreenResponsePairScreenDto()
+        {
+            Id = screen.Id,
+            ScreenProfileId = screen.ScreenProfileId,
+            Token = token
         };
     }
 }

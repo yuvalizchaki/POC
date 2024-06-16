@@ -22,6 +22,8 @@ public class ScreenProfileRepository(
     public Task<ScreenProfile?> GetByIdAsync(int id)
     {
         var screenProfile = dbContext.ScreenProfiles.Include(sp => sp.Screens).FirstOrDefault(sp => sp.Id == id);
+        // var screenProfile = dbContext.ScreenProfiles.FirstOrDefault(sp => sp.Id == id);
+
         return Task.FromResult(screenProfile);
     }
 

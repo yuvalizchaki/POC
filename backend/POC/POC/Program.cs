@@ -1,12 +1,17 @@
+using System.Text;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using POC.Api.Controllers.ClientControllers;
 using POC.Api.Conventions;
+using POC.Api.Helpers;
 using POC.Api.Hubs;
 using POC.App.Behaviors;
 using POC.Infrastructure;
 using POC.Infrastructure.Adapters;
 using POC.Infrastructure.Common;
-using POC.Infrastructure.Generators;
 using POC.Infrastructure.IRepositories;
 using POC.Infrastructure.Repositories;
 
@@ -17,6 +22,31 @@ builder.Configuration.AddEnvironmentVariables();
 builder.Logging.AddConsole();
 
 // ========== Add services to the container. ==========
+
+// add authentication
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidIssuer = AuthSettings.Issuer,
+            ValidAudience = AuthSettings.Audience,
+            IssuerSigningKey =
+                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AuthSettings.PrivateKey)),
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            
+        };
+    });
+
+// add authorization
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("CompanyIdIsOne", policy => policy.RequireClaim("CompanyId", "1"));
+});
+
 builder.Services.AddLogging();
 
 // when accepting a request, accept request.
@@ -36,7 +66,43 @@ builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavi
 builder.Services.AddControllers()
     .AddJsonOptions(options => { JsonOptionsConfigurator.ConfigureJsonOptions(options.JsonSerializerOptions); });
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddSwaggerGen(swagger =>
+{
+    //This is to generate the Default UI of Swagger Documentation
+    swagger.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "JWT Token Authentication API",
+        Description = ".NET 8 Web API"
+    });
+    // To Enable authorization using Swagger (JWT)
+    swagger.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 12345abcdef\"",
+    });
+    swagger.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+
+        }
+    });
+});
+
 builder.Services.AddSignalR()
     .AddJsonProtocol(options => { JsonOptionsConfigurator.ConfigureJsonOptions(options.PayloadSerializerOptions); });
 
@@ -90,8 +156,8 @@ app.UseCors("CorsPolicy");
 app.UseHttpsRedirection();
 app.UseRouting();
 
-// app.UseAuthentication(); // Add this if you have authentication
-// app.UseAuthorization();  // Add this if you have authorizatio
+app.UseAuthentication();
+app.UseAuthorization();
 
 // Map SignalR hubs
 app.MapHub<ScreenHub>("/screen-hub");
