@@ -120,8 +120,7 @@ namespace POC.Migrations
                                         .HasForeignKey("ScreenProfileFilteringScreenProfileId");
                                 });
 
-                            b1.Navigation("OrderTimeRange")
-                                .IsRequired();
+                            b1.Navigation("OrderTimeRange");
                         });
 
                     b.Navigation("ScreenProfileFiltering")

@@ -16,7 +16,13 @@ public class OrdersController(IMediator mediator) : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<OrderDto>>> GetAllOrders()
     {
-        var query = new GetAllOrdersQuery();
+        var cid = User.FindFirst("CompanyId");
+        var sid = User.FindFirst("ScreenProfileId");
+        if (cid == null || sid == null)
+        {
+            return Unauthorized();
+        }
+        var query = new GetAllOrdersQuery(int.Parse(sid.Value), int.Parse(cid.Value));
         try
         {
             var result = await mediator.Send(query);
