@@ -39,7 +39,8 @@ public class AuthService
         {
             new Claim(ClaimTypes.Role, "Screen"),
             new Claim(ClaimTypes.SerialNumber, screen.Id.ToString()),
-            new Claim("CompanyId", "1") //refers to the companyID = 1 for now
+            new Claim("CompanyId", "1"), //refers to the companyID = 1 for now
+            new Claim("ScreenProfileId", screen.ScreenProfileId.ToString())
         };
         return claims;
     }

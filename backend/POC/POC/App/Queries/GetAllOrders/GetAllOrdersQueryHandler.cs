@@ -24,8 +24,8 @@ public class GetAllOrdersQueryHandler : IRequestHandler<GetAllOrdersQuery, List<
     // TODO: Implement CRM adapter and related classes
     public async Task<List<OrderDto>> Handle(GetAllOrdersQuery request, CancellationToken cancellationToken)
     {
-        int profileId = 5;
-        int companyId = 1;
+        int profileId = request.profileId;
+        int companyId = request.companyId;
         
         var screenProfile = await _screenProfileRepository.GetByIdAsync(profileId);
         var temp = screenProfile.ScreenProfileFiltering;
