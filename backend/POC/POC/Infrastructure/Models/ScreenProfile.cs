@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.VisualBasic;
 using POC.Infrastructure.Common.Constants;
+using POC.Infrastructure.Common.utils;
 
 namespace POC.Infrastructure.Models;
 
@@ -17,15 +18,31 @@ public class ScreenProfile
 
 public class ScreenProfileFiltering
 {
-    public OrderTimeRange? OrderTimeRange { get; set; }
-    public List<OrderStatus>? OrderStatusses { get; set; }
-    public TriState IsPickup { get; set; }
-    public TriState IsSale { get; set; } 
+    public OrderFiltering OrderFiltering { get; set; } = new OrderFiltering();
+    public InventoryFiltering? InventoryFiltering { get; set; }
+    public List<string> InventorySorting { get; set; } = new List<string>();
+    public DisplayConfig DisplayConfig { get; set; } = new DisplayConfig();
+}
+
+
+public class OrderFiltering
+{
+    public TimeRangePart From { get; set; } = null!;
+    public TimeRangePart To { get; set; } = null!;
+    
+    public List<OrderStatus>? OrderStatuses { get; set; }
+    public bool? IsPickup { get; set; }
+    public bool? IsSale { get; set; } 
     public List<int>? EntityIds { get; set; }
 }
 
-public class OrderTimeRange
+public class InventoryFiltering
 {
-    public DateTime StartDate { get; set; }
-    public DateTime EndDate { get; set; }
+    public List<int>? EntityIds { get; set; }
+}
+
+public class DisplayConfig
+{
+    public bool IsPaging { get; set; }
+    public int DisplayTemplate { get; set; } // Enum: Table, Graph, Notes, whatever
 }

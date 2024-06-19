@@ -18,18 +18,3 @@ public class ScreenProfileDto
     public ScreenProfileFilteringDto ScreenProfileFiltering { get; set; } = null!;
 
 }
-
-public class ScreenProfileFilteringDto
-{
-    public OrderTimeRangeDto OrderTimeRange { get; set; } = null!;
-    public List<OrderStatus>? OrderStatusses { get; set; }
-    public TriState IsPickup { get; set; }
-    public TriState IsSale { get; set; } 
-    public List<int>? EntityIds { get; set; }
-}
-
-public class OrderTimeRangeDto
-{
-    public DateTime StartDate { get; set; }
-    public DateTime EndDate { get; set; }
-}
