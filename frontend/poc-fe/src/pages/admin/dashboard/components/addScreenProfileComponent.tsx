@@ -8,8 +8,10 @@ import {
   Typography,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import { createScreenProfile } from "../../../../services/adminService";
 import { useState, ChangeEvent } from "react";
+import { ScreenProfileAddData } from "../../../../types/screenProfile.types";
+import moment from "moment";
+import { useAdminInfo } from "../../../../hooks/useAdminInfo";
 
 interface AddScreenProfileProps {
   sx: SxProps;
@@ -22,6 +24,7 @@ export const AddScreenProfileComponent = ({
 }: AddScreenProfileProps) => {
   const [addScreenProfileOpen, setAddScreenProfileOpen] = useState(false);
   const [name, setName] = useState("");
+  const { createScreenProfile } = useAdminInfo();
 
   const handleAddScreenProfileOpen = () => {
     setAddScreenProfileOpen(true);
@@ -32,7 +35,22 @@ export const AddScreenProfileComponent = ({
   };
 
   const handleAddScreenProfile = () => {
-    createScreenProfile(name).then(() => {
+    // TODO: Add other information and fields
+    const data: ScreenProfileAddData = {
+      name: name,
+      companyId: 1, // <-- TODO: Remove This!
+      screenProfileFiltering: {
+        orderTimeRange: {
+          startDate: moment().startOf("day").toISOString(),
+          endDate: moment().endOf("day").toISOString(),
+        },
+        // orderStatusses: [];
+        // isPickup: false;
+        // isSale: false;
+        // entityIds: [];
+      },
+    };
+    createScreenProfile(data).then(() => {
       fetchScreenProfiles();
     });
     setAddScreenProfileOpen(false);

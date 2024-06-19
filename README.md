@@ -43,7 +43,7 @@ Password:   password
 
 ### .NET migrate database:
 Run under `POC\backend\POC\POC>`:
-```sh
+```
 dotnet ef migrations add InitialCreate
 dotnet ef database update
 ```

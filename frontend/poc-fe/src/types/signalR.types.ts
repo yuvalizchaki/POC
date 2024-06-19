@@ -5,11 +5,7 @@ export type SignalRHandler<T> = (payload: T) => void;
 
 // #region    /======================================== Guest Hub Commands ========================================\
 
-export interface ScreenAddedDto {
-  id: number;
-  pairingCode: string;
-  screenProfileId: number;
-}
+export type ScreenAddedDto = string;
 
 export type PairingCodeDto = string
 

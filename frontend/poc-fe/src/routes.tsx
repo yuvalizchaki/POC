@@ -44,7 +44,7 @@ const router = createBrowserRouter([
     element: <MainPage />,
     errorElement: <NotFoundPage />,
     children: [
-      { index: true, element: <Navigate to="screen/pair" replace /> },
+      { index: true, element: <Navigate to="screen" replace /> },
       {
         path: "admin",
         element: <AdminPage />,
@@ -61,7 +61,7 @@ const router = createBrowserRouter([
               { path: "screen-management", element: <ScreenManagementPage /> },
               { path: "settings", element: <SettingsPage /> },
             ],
-          }
+          },
         ],
       },
       {

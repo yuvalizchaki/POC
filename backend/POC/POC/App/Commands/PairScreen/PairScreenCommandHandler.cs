@@ -49,9 +49,9 @@ public class PairScreenCommandHandler : IRequestHandler<PairScreenCommand, Scree
         String token = AuthService.GenerateScreenToken(screen);
         
         // Send the screen profile to the smart TV screen
-        await _hub.SendMessageAddScreen(request.PairScreenDto.PairingCode, screen.ToScreenResponsePairScreenDto(token));
+        await _hub.SendMessageAddScreen(request.PairScreenDto.PairingCode, (token));
 
-        // Hash the token
+        // Hash the token   
         byte[] result = SHA256.Create().ComputeHash(Encoding.ASCII.GetBytes(token));
         screen.HashToken = Encoding.Default.GetString(result);
         

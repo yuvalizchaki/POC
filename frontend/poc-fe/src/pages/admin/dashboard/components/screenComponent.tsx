@@ -3,7 +3,7 @@ import { IconButton, Stack, Typography } from "@mui/material";
 import ConnectedTvIcon from "@mui/icons-material/ConnectedTv";
 import CloseIcon from "@mui/icons-material/Close";
 import { ScreenDto } from "../../../../types/screenProfile.types";
-import { removeScreen } from "../../../../services/adminService";
+import { useAdminInfo } from "../../../../hooks/useAdminInfo";
 
 interface ScreenProps {
   screen: ScreenDto;
@@ -14,6 +14,7 @@ export const ScreenComponent = ({
   screen,
   fetchScreenProfiles,
 }: ScreenProps) => {
+  const { removeScreen } = useAdminInfo();
   const handleRemoveScreen = () => {
     removeScreen(screen.id).then(() => {
       fetchScreenProfiles();
