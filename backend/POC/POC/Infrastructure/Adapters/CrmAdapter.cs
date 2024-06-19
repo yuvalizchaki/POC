@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using POC.Contracts.CrmDTOs;
 using POC.Infrastructure.Common;
 using POC.Infrastructure.Common.Exceptions;
+using POC.Infrastructure.Models;
 using POC.Infrastructure.Models.CrmSearchQuery;
 
 namespace POC.Infrastructure.Adapters
@@ -59,9 +60,38 @@ namespace POC.Infrastructure.Adapters
             return jsonResponseContent.Items;
         }
 
+        public async Task<List<InventoryItemDto>> GetAllInventoryItemsAsync(int companyId, SearchRequest queryContent)
+        {
+            await AddAuthenticationHeaderAsync();
+
+            string crmOrdersUrl = getCrmOrderUrlFromCompany(companyId);
+
+            var request = new HttpRequestMessage(HttpMethod.Post, _apiBaseUrl + crmOrdersUrl);
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            request.Content = new StringContent(JsonSerializer.Serialize(queryContent, _crmApiJsonSerializerOptions), Encoding.UTF8, "application/json");
+            _logger.LogInformation("[DEBUG] Request: {Method} {Uri} - Headers: {Headers} - Content: {Content}", request.Method, request.RequestUri, string.Join(", ", request.Headers.Select(h => $"{h.Key}: {string.Join(", ", h.Value)}")), await request.Content.ReadAsStringAsync());
+            _httpClient.BaseAddress = new Uri(_apiBaseUrl);
+            var response = await _httpClient.SendAsync(request);
+            if (response.StatusCode == HttpStatusCode.NotFound)
+                throw new HttpRequestException($"Resource not found at {_apiBaseUrl}{crmOrdersUrl}");
+
+
+            response.EnsureSuccessStatusCode();
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            // _logger.LogInformation("[DEBUG] CRM response content: {ResponseContent}", responseContent);
+
+            var jsonResponseContent = JsonSerializer.Deserialize<OrderQueryResponse>(responseContent, _crmApiJsonSerializerOptions) ?? throw new CrmAdapterError("Failed to deserialize crm response.");
+           
+            //TODO: fix that to fetch inventory items
+            //return empty list for now
+            return new List<InventoryItemDto>();
+        }
+        
         private string getCrmOrderUrlFromCompany(int companyId)
         {
             return "orders/" + companyId + "/search";
         }
+        
     }
 }
