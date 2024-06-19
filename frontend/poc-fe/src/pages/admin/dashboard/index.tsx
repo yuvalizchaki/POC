@@ -1,5 +1,5 @@
 import { Suspense, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 
 import { DashbaordSidebar } from "../../../components/admin-dashboard";
 import LoadingPage from "../../loading.page";
@@ -7,12 +7,19 @@ import { DashboardAppBar } from "../../../components/admin-dashboard/app-bar.com
 import { Box, Theme, useMediaQuery } from "@mui/material";
 import { SIDEBAR_WIDTH } from "../../../components/admin-dashboard/sidebar.component";
 import { DashboardPageWrapper } from "../../../components/admin-dashboard/page-wrapper.component";
+import { useAdminInfo } from "../../../context/adminInfo.context";
 
 const DashboardPage = () => {
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const { isLoggedIn } = useAdminInfo();
+
+  if (!isLoggedIn()) {
+    return <Navigate to="/admin/login" />;
+  }
 
   return (
     <>
@@ -40,11 +47,12 @@ const DashboardPage = () => {
         />
         <Suspense fallback={<LoadingPage />}>
           <DashboardPageWrapper>
-          <Outlet />
+            <Outlet />
           </DashboardPageWrapper>
         </Suspense>
       </Box>
     </>
   );
 };
+
 export default DashboardPage;

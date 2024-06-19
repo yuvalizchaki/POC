@@ -1,9 +1,8 @@
 import { Stack } from "@mui/material";
-import { ScreenProfile } from "../../../types/screenProfile.types";
-import { getAllScreenProfiles } from "../../../services/adminService";
-import { useState } from "react";
 import { AddScreenProfileComponent } from "./components/addScreenProfileComponent";
 import { ProfileComponent } from "./components/profileComponent";
+import LoadingPage from "../../loading.page";
+import { useScreenProfiles } from "../../../hooks/useScreenProfiles";
 
 const style = {
   position: "absolute",
@@ -19,30 +18,26 @@ const style = {
   pb: 3,
 };
 
-function AdminDashboard() {
-  const [profiles, setProfiles] = useState<ScreenProfile[]>([]);
-  const fetchScreenProfiles = () => {
-    getAllScreenProfiles().then((data) => {
-      setProfiles(data);
-    });
-  };
+const AdminDashboard = () => {
+  const { profiles, isLoading, refetch } = useScreenProfiles();
+
   return (
     <Stack direction="column" spacing={2}>
-      <AddScreenProfileComponent
-        sx={style}
-        fetchScreenProfiles={fetchScreenProfiles}
-      />
-      {profiles.map((p) => {
-        return (
+      <AddScreenProfileComponent sx={style} fetchScreenProfiles={refetch} />
+      {isLoading ? (
+        <LoadingPage />
+      ) : (
+        profiles.map((p) => (
           <ProfileComponent
+            key={p.id}
             sx={style}
             profile={p}
-            fetchScreenProfiles={fetchScreenProfiles}
+            fetchScreenProfiles={refetch}
           />
-        );
-      })}
+        ))
+      )}
     </Stack>
   );
-}
+};
 
 export default AdminDashboard;

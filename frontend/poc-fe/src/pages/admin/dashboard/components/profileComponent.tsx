@@ -19,12 +19,10 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { ScreenProfile } from "../../../../types/screenProfile.types";
-import {
-  deleteScreenProfile,
-  pairScreen,
-} from "../../../../services/adminService";
-import React, { useState, ChangeEvent, useEffect } from "react";
+import React, { useState, ChangeEvent } from "react";
 import { ScreenComponent } from "./screenComponent";
+import { useAdminInfo } from "../../../../context/adminInfo.context";
+
 interface ProfileProps {
   sx: SxProps;
   profile: ScreenProfile;
@@ -38,6 +36,8 @@ export const ProfileComponent = ({
 }: ProfileProps) => {
   const [addScreenOpen, setAddScreenOpen] = useState(false);
   const [code, setCode] = useState("");
+
+  const { pairScreen, deleteScreenProfile } = useAdminInfo();
 
   const handleCodeChange = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -66,10 +66,6 @@ export const ProfileComponent = ({
     });
   };
 
-  useEffect(() => {
-    fetchScreenProfiles();
-  }, []);
-
   return (
     <React.Fragment key={profile.id}>
       <Accordion
@@ -82,7 +78,17 @@ export const ProfileComponent = ({
           }
         }}
       >
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          sx={{
+            [`.MuiAccordionSummary-expandIconWrapper:not(.Mui-expanded)`]: {
+              transform: "rotate(90deg)",
+            },
+            [`.MuiAccordionSummary-expandIconWrapper.Mui-expanded`]: {
+              transform: "rotate(0deg)",
+            },
+          }}
+        >
           <Stack direction="row" alignItems="center" width="100%">
             <Typography>{profile.name}</Typography>
             <div style={{ flex: "1 0 0" }} />

@@ -7,8 +7,8 @@ export type SignalRHandler<T> = (payload: T) => void;
 
 export interface ScreenAddedDto {
   id: number;
-  pairingCode: string;
   screenProfileId: number;
+  token: string;
 }
 
 export type PairingCodeDto = string
