@@ -1,5 +1,5 @@
 import { Navigate } from "react-router-dom";
-import { useAdminInfo } from "../../context/adminInfo.context";
+import { useAdminInfo } from "../../hooks/useAdminInfo";
 
 const AdminLogoutPage = () => {
   const { logoutAdmin } = useAdminInfo();

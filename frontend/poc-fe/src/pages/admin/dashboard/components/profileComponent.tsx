@@ -21,7 +21,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { ScreenProfile } from "../../../../types/screenProfile.types";
 import React, { useState, ChangeEvent } from "react";
 import { ScreenComponent } from "./screenComponent";
-import { useAdminInfo } from "../../../../context/adminInfo.context";
+import { useAdminInfo } from "../../../../hooks/useAdminInfo";
 
 interface ProfileProps {
   sx: SxProps;

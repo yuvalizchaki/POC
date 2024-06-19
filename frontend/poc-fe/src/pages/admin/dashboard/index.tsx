@@ -7,7 +7,7 @@ import { DashboardAppBar } from "../../../components/admin-dashboard/app-bar.com
 import { Box, Theme, useMediaQuery } from "@mui/material";
 import { SIDEBAR_WIDTH } from "../../../components/admin-dashboard/sidebar.component";
 import { DashboardPageWrapper } from "../../../components/admin-dashboard/page-wrapper.component";
-import { useAdminInfo } from "../../../context/adminInfo.context";
+import { useAdminInfo } from "../../../hooks/useAdminInfo";
 
 const DashboardPage = () => {
   const isMobile = useMediaQuery((theme: Theme) =>

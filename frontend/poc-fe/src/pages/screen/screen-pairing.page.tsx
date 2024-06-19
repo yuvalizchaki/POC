@@ -8,18 +8,19 @@ import { useNavigate } from "react-router-dom";
 import { Box, Typography } from "@mui/material";
 import { AppLoader } from "../../components/common";
 
+// TODO: Use specific endpoint for setScreenInfo (instead of hard coded), with display name
 const ScreenPairingPage = () => {
-  const { setScreenInfo } = useScreenInfo();
+  const { setToken } = useScreenInfo();
   const [pairingCode, setPairingCode] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const handleScreenAdded = useCallback(
     (message: ScreenAddedDto) => {
       console.log("[DEBUG] screen added", message);
-      setScreenInfo(message);
+      setToken(message);
       navigate({ pathname: "/screen/content" });
     },
-    [setScreenInfo, navigate]
+    [setToken, navigate]
   );
 
   const handlePairingCode = useCallback(
@@ -58,7 +59,12 @@ const ScreenPairingPage = () => {
         Screen Pairing Code
       </Typography>
       {pairingCode ? (
-        <Typography variant="h1" color="primary" gutterBottom textAlign="center">
+        <Typography
+          variant="h1"
+          color="primary"
+          gutterBottom
+          textAlign="center"
+        >
           {pairingCode}
         </Typography>
       ) : (

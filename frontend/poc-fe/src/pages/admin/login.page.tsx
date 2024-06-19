@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, TextField, Container, Typography, Box } from "@mui/material";
-import { useAdminInfo } from "../../context/adminInfo.context";
 import { useCallback } from "react";
+import { useAdminInfo } from "../../hooks/useAdminInfo";
 
 const AdminLoginPage: React.FC = () => {
   const [username, setUsername] = useState("");

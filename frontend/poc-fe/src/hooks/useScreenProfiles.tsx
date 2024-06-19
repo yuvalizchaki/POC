@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { ScreenProfile } from "../types/screenProfile.types";
-import { useAdminInfo } from "../context/adminInfo.context";
+import { useAdminInfo } from "./useAdminInfo";
 
 export const useScreenProfiles = () => {
   const [profiles, setProfiles] = useState<ScreenProfile[]>([]);
@@ -25,4 +25,4 @@ export const useScreenProfiles = () => {
   }, [fetchScreenProfiles]);
 
   return { profiles, isLoading, refetch };
-}
+};

@@ -3,7 +3,7 @@ import { IconButton, Stack, Typography } from "@mui/material";
 import ConnectedTvIcon from "@mui/icons-material/ConnectedTv";
 import CloseIcon from "@mui/icons-material/Close";
 import { ScreenDto } from "../../../../types/screenProfile.types";
-import { useAdminInfo } from "../../../../context/adminInfo.context";
+import { useAdminInfo } from "../../../../hooks/useAdminInfo";
 
 interface ScreenProps {
   screen: ScreenDto;

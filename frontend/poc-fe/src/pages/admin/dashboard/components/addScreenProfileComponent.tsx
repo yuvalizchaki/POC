@@ -9,9 +9,9 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useState, ChangeEvent } from "react";
-import { useAdminInfo } from "../../../../context/adminInfo.context";
 import { ScreenProfileAddData } from "../../../../types/screenProfile.types";
 import moment from "moment";
+import { useAdminInfo } from "../../../../hooks/useAdminInfo";
 
 interface AddScreenProfileProps {
   sx: SxProps;

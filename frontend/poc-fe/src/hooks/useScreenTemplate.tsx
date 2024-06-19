@@ -1,8 +1,8 @@
 import { useCallback, useState } from "react";
 import { ScreenInfo } from "../types/screenInfo.types";
-import { useScreenInfo } from "./useScreenInfo";
 import { OrderDto } from "../types/crmTypes.types";
-import { API_BASE_URL, API_SCREEN_HUB_URL } from "../config";
+import { useScreenInfo } from "./useScreenInfo";
+import { API_SCREEN_HUB_URL } from "../config";
 import { useSignalR } from "./useSignalR";
 
 interface ScreenTemplateProps {
@@ -10,30 +10,24 @@ interface ScreenTemplateProps {
 }
 
 export const useScreenTemplate = ({ screenInfo }: ScreenTemplateProps) => {
-  const { setScreenInfo } = useScreenInfo();
+  const { setScreenInfo, fetchOrders } = useScreenInfo();
 
   const [orders, setOrders] = useState<OrderDto[]>([]);
 
-  const fetchOrders = useCallback(async () => {
+  const fetchAndSetOrders = useCallback(async () => {
     try {
-      console.log("[DEBUG] sending: ", `${API_BASE_URL}/orders`);
-      const response = await fetch(`${API_BASE_URL}/orders`);
-      console.log("[DEBUG] get orders response: ", response);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      setOrders(data);
+      const response = await fetchOrders();
+      setOrders(response.data);
     } catch (error) {
       console.error("Failed to fetch orders:", error);
     }
-  }, []);
+  }, [fetchOrders]);
 
   useSignalR({
     hubUrl: API_SCREEN_HUB_URL,
     onConnect: () => {
       console.log("[DEBUG] connected to screen hub");
-      fetchOrders();
+      fetchAndSetOrders();
     },
     commandHandlers: {
       orderAdded: (orderAddedDto) => {
@@ -42,7 +36,7 @@ export const useScreenTemplate = ({ screenInfo }: ScreenTemplateProps) => {
             console.warn(
               "Attempted to add an existing order. Fetching latest orders."
             );
-            fetchOrders();
+            fetchAndSetOrders();
             return prevOrders;
           }
           return [...prevOrders, orderAddedDto];
@@ -57,7 +51,7 @@ export const useScreenTemplate = ({ screenInfo }: ScreenTemplateProps) => {
             console.warn(
               "Attempted to update a non-existing order. Fetching latest orders."
             );
-            fetchOrders();
+            fetchAndSetOrders();
             return prevOrders;
           }
           const updatedOrders = [...prevOrders];
@@ -71,14 +65,13 @@ export const useScreenTemplate = ({ screenInfo }: ScreenTemplateProps) => {
             console.warn(
               "Attempted to delete a non-existing order. Fetching latest orders."
             );
-            fetchOrders();
+            fetchAndSetOrders();
             return prevOrders;
           }
           return prevOrders.filter((order) => order.id !== orderDeletedDto);
         });
       },
       screenRemoved: (/* screenRemovedDto */) => {
-        // TODO: Check this logic
         console.log("[DEBUG] Disconnected");
         setScreenInfo(null);
       },

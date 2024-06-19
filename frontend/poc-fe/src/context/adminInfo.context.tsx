@@ -4,7 +4,6 @@ import React, {
   ReactNode,
   useCallback,
   useState,
-  useContext,
   useMemo,
 } from "react";
 import axios, { AxiosResponse } from "axios";
@@ -198,5 +197,3 @@ export const AdminInfoProvider: React.FC<AdminInfoProviderProps> = ({
     </AdminInfoContext.Provider>
   );
 };
-
-export const useAdminInfo = () => useContext(AdminInfoContext);
