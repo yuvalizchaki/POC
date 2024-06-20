@@ -71,7 +71,7 @@ namespace POC.Infrastructure.Adapters
         {
             await AddAuthenticationHeaderAsync();
 
-            string crmOrdersUrl = getCrmOrderUrlFromCompany(companyId);
+            string crmOrdersUrl = getCrmInventoryUrlFromCompany(companyId);
 
             var request = new HttpRequestMessage(HttpMethod.Post, _apiBaseUrl + crmOrdersUrl);
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -98,6 +98,11 @@ namespace POC.Infrastructure.Adapters
         private string getCrmOrderUrlFromCompany(int companyId)
         {
             return "orders/" + companyId + "/search";
+        }
+        
+        private string getCrmInventoryUrlFromCompany(int companyId)
+        {
+            return "inventories/" + companyId + "/search";
         }
         
     }
