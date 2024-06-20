@@ -14,7 +14,8 @@ namespace POC.Infrastructure.Adapters
     // TODO: Implement CRM adapter and related classes
     public class CrmAdapter
     {
-        private readonly HttpClient _httpClient;
+        private readonly IHttpClientFactory _httpClientFactory;
+        private HttpClient _httpClient;
         private readonly CrmTokenAdapter _tokenAdapter;
         private readonly ILogger<CrmAdapter> _logger;
         private readonly JsonSerializerOptions _crmApiJsonSerializerOptions;
@@ -22,8 +23,8 @@ namespace POC.Infrastructure.Adapters
 
         public CrmAdapter(IHttpClientFactory httpClientFactory, CrmTokenAdapter tokenAdapter, ILogger<CrmAdapter> logger, IConfiguration configuration)
         {
+            _httpClientFactory = httpClientFactory;
             _apiBaseUrl = configuration.GetValue<string>("ToyCrm_ApiBaseUrl") ?? throw new CrmAdapterError("Could not find configuration ToyCrm_ApiBaseUrl");
-            _httpClient = httpClientFactory.CreateClient("CrmApiClient");
             _tokenAdapter = tokenAdapter;
             _logger = logger;
             _crmApiJsonSerializerOptions = CrmApiJsonOptionsConfigurator.GetConfiguredOptions();
@@ -32,6 +33,7 @@ namespace POC.Infrastructure.Adapters
         private async Task AddAuthenticationHeaderAsync()
         {
             var token = await _tokenAdapter.GetTokenAsync();
+            _httpClient = _httpClientFactory.CreateClient("CrmApiClient");
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
 
@@ -43,9 +45,14 @@ namespace POC.Infrastructure.Adapters
 
             var request = new HttpRequestMessage(HttpMethod.Post, _apiBaseUrl + crmOrdersUrl);
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            request.Content = new StringContent(JsonSerializer.Serialize(queryContent, _crmApiJsonSerializerOptions), Encoding.UTF8, "application/json");
+            var js = JsonSerializer.Serialize(queryContent, _crmApiJsonSerializerOptions);
+            
+            request.Content = new StringContent(js, Encoding.UTF8, "application/json");
              _logger.LogInformation("[DEBUG] Request: {Method} {Uri} - Headers: {Headers} - Content: {Content}", request.Method, request.RequestUri, string.Join(", ", request.Headers.Select(h => $"{h.Key}: {string.Join(", ", h.Value)}")), await request.Content.ReadAsStringAsync());
-            _httpClient.BaseAddress = new Uri(_apiBaseUrl);
+             if (_httpClient.BaseAddress == null)
+             {
+                 _httpClient.BaseAddress = new Uri(_apiBaseUrl);
+             }
             var response = await _httpClient.SendAsync(request);
             if (response.StatusCode == HttpStatusCode.NotFound)
                 throw new HttpRequestException($"Resource not found at {_apiBaseUrl}{crmOrdersUrl}");
