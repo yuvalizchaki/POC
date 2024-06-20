@@ -31,8 +31,9 @@ public class OrderFiltering
     public TimeRangePart To { get; set; } = null!;
     
     public List<OrderStatus>? OrderStatuses { get; set; }
-    public bool? IsPickup { get; set; }
     public bool? IsSale { get; set; } 
+    public bool? IsPickup { get; set; }
+
     public List<int>? EntityIds { get; set; }
 }
 
