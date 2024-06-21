@@ -33,6 +33,7 @@
 
     <ItemGroup>
       <Folder Include="Infrastructure\Models\CrmSearchQuery\" />
+      <Folder Include="Migrations\" />
       <Folder Include="redis_infastracture\" />
     </ItemGroup>
 

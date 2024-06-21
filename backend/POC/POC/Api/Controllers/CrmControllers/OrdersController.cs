@@ -11,7 +11,7 @@ using POC.Infrastructure.Models;
 namespace POC.Api.Controllers.CrmControllers;
 [ApiController]
 [Route("[controller]")]
-[Authorize(Roles = "Screen,Admin")]
+[Authorize(Roles = "Screen")]
 [Authorize(Policy = "CompanyIdIsOne")]
 
 public class OrdersController(IMediator mediator, ILogger<OrdersController> logger) : ControllerBase
