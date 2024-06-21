@@ -23,8 +23,8 @@ public class OrderDto
     public DateTime? UpdatedOn { get; set; }
     
     // Navigation properties
-    public List<InventoryItemDto> InventoryItems { get; set; }
-    public List<ServiceItemDto> ServiceItems { get; set; }
+    public List<InventoryItemDto> OrderItems { get; set; }
+    public List<ServiceItemDto> ServiceOrderItems { get; set; }
     public List<PeopleOrderItemDto> PeopleOrderItems { get; set; }
     public List<OneTimeOrderItemDto> OneTimeOrderItems { get; set; }
 }
