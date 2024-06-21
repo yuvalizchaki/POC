@@ -1,5 +1,6 @@
 ﻿using POC.Infrastructure.Common.Constants;
 using POC.Infrastructure.Common.utils;
+using POC.Infrastructure.Models;
 
 namespace POC.Contracts.ScreenProfile;
 
@@ -22,6 +23,8 @@ public class OrderFilteringDto
     public bool? IsPickup { get; set; }
     public bool? IsSale { get; set; } 
     public List<int>? EntityIds { get; set; }
+    
+    public List<OrderTags>? Tags { get; set; } 
 }
 
 public class InventoryFilteringDto
@@ -32,5 +35,5 @@ public class InventoryFilteringDto
 public class DisplayConfigDto
 {
     public bool IsPaging { get; set; }
-    public int DisplayTemplate { get; set; } // Enum: Table, Graph, Notes, whatever
+    public DisplayTemplateType DisplayTemplate { get; set; } // Enum: Table, Graph, Notes, whatever
 }

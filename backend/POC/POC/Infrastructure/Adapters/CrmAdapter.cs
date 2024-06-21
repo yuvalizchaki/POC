@@ -71,16 +71,16 @@ namespace POC.Infrastructure.Adapters
         {
             await AddAuthenticationHeaderAsync();
 
-            string crmOrdersUrl = getCrmInventoryUrlFromCompany(companyId);
+            string crmInventorysUrl = getCrmInventoryUrlFromCompany(companyId);
 
-            var request = new HttpRequestMessage(HttpMethod.Post, _apiBaseUrl + crmOrdersUrl);
+            var request = new HttpRequestMessage(HttpMethod.Post, _apiBaseUrl + crmInventorysUrl);
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             request.Content = new StringContent(JsonSerializer.Serialize(queryContent, _crmApiJsonSerializerOptions), Encoding.UTF8, "application/json");
             _logger.LogInformation("[DEBUG] Request: {Method} {Uri} - Headers: {Headers} - Content: {Content}", request.Method, request.RequestUri, string.Join(", ", request.Headers.Select(h => $"{h.Key}: {string.Join(", ", h.Value)}")), await request.Content.ReadAsStringAsync());
             _httpClient.BaseAddress = new Uri(_apiBaseUrl);
             var response = await _httpClient.SendAsync(request);
             if (response.StatusCode == HttpStatusCode.NotFound)
-                throw new HttpRequestException($"Resource not found at {_apiBaseUrl}{crmOrdersUrl}");
+                throw new HttpRequestException($"Resource not found at {_apiBaseUrl}{crmInventorysUrl}");
 
 
             response.EnsureSuccessStatusCode();

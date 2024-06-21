@@ -35,6 +35,8 @@ public class OrderFiltering
     public bool? IsPickup { get; set; }
 
     public List<int>? EntityIds { get; set; }
+    
+    public List<OrderTags>? Tags { get; set; }
 }
 
 public class InventoryFiltering
@@ -45,5 +47,18 @@ public class InventoryFiltering
 public class DisplayConfig
 {
     public bool IsPaging { get; set; }
-    public int DisplayTemplate { get; set; } // Enum: Table, Graph, Notes, whatever
+    public DisplayTemplateType DisplayTemplate { get; set; } // Enum: Table, Graph, Notes, whatever
+}
+
+public enum DisplayTemplateType
+{
+    Table,
+    Graph,
+    Notes
+}
+
+public enum OrderTags
+{
+    NeedWashing = 36,
+    VIP = 3
 }

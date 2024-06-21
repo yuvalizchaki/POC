@@ -145,6 +145,9 @@ namespace POC.Migrations
                                     b2.Property<int[]>("OrderStatuses")
                                         .HasColumnType("integer[]");
 
+                                    b2.Property<int[]>("Tags")
+                                        .HasColumnType("integer[]");
+
                                     b2.HasKey("ScreenProfileFilteringScreenProfileId");
 
                                     b2.ToTable("ScreenProfiles");

@@ -33,7 +33,6 @@ public class GetAllOrdersQueryHandler : IRequestHandler<GetAllOrdersQuery, List<
         var query = temp.ToSearchRequest(); //translating into a query request object
         
         return await _crmAdapter.GetAllOrdersAsync(companyId, query);
-
     }
 
 

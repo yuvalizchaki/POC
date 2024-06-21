@@ -29,7 +29,8 @@ public static class ScreenProfileFilterDtoExtensions
             OrderStatuses = orderFiltering.OrderStatuses,
             IsPickup = orderFiltering.IsPickup,
             IsSale = orderFiltering.IsSale,
-            EntityIds = orderFiltering.EntityIds
+            EntityIds = orderFiltering.EntityIds,
+            Tags = orderFiltering.Tags
         };
     }
 
@@ -73,7 +74,8 @@ public static class ScreenProfileFilterExtensions
             OrderStatuses = orderFilteringDto.OrderStatuses,
             IsPickup = orderFilteringDto.IsPickup,
             IsSale = orderFilteringDto.IsSale,
-            EntityIds = orderFilteringDto.EntityIds
+            EntityIds = orderFilteringDto.EntityIds,
+            Tags = orderFilteringDto.Tags
         };
     }
 
@@ -105,6 +107,7 @@ public static class ScreenProfileFilteringExtensions
     static string entityIds = "DepartmentId";
     static string startDate = "StartDate";
     static string endDate = "EndDate";
+    private static string tags = "OrderTagIds";
 
     public static SearchRequest ToSearchRequest(this ScreenProfileFiltering screenProfileFiltering)
     {
@@ -115,23 +118,23 @@ public static class ScreenProfileFilteringExtensions
         var (fromStart, fromEnd) = from.ToFormattedDateTime(DateTime.Now, format);
         var (toStart, toEnd) = to.ToFormattedDateTime(DateTime.Now, format);
         
-        searchRequest = searchRequest.AppendFiltering(
-            startDate,
-            FilterOperation.Gt,
-            fromStart);
-        searchRequest = searchRequest.AppendFiltering(
-            startDate,
-            FilterOperation.Lt,
-            fromEnd);
-        
-        searchRequest = searchRequest.AppendFiltering(
-            endDate,
-            FilterOperation.Gt,
-            toStart);
-        searchRequest = searchRequest.AppendFiltering(
-            endDate,
-            FilterOperation.Lt,
-            toEnd);
+        // searchRequest = searchRequest.AppendFiltering(
+        //     startDate,
+        //     FilterOperation.Gt,
+        //     fromStart);
+        // searchRequest = searchRequest.AppendFiltering(
+        //     startDate,
+        //     FilterOperation.Lt,
+        //     fromEnd);
+        //
+        // searchRequest = searchRequest.AppendFiltering(
+        //     endDate,
+        //     FilterOperation.Gt,
+        //     toStart);
+        // searchRequest = searchRequest.AppendFiltering(
+        //     endDate,
+        //     FilterOperation.Lt,
+        //     toEnd);
 
         if (screenProfileFiltering.OrderFiltering.OrderStatuses != null)
         {
@@ -152,6 +155,19 @@ public static class ScreenProfileFilteringExtensions
         if (screenProfileFiltering.OrderFiltering.EntityIds != null)
         {
             var entityIdsList = screenProfileFiltering.OrderFiltering.EntityIds.Select(s => s.ToString());
+            searchRequest = searchRequest.AppendFiltering(entityIds, FilterOperation.In, entityIdsList.ToArray());
+        }
+        
+        if (screenProfileFiltering.OrderFiltering.Tags != null)
+        {
+            var tagsInts = screenProfileFiltering.OrderFiltering.Tags.Select(s => (int)s);
+            var tagsList = tagsInts.Select(s => s.ToString());
+            searchRequest = searchRequest.AppendFiltering(tags, FilterOperation.In, tagsList.ToArray());
+        }
+        
+        if (screenProfileFiltering.InventoryFiltering is { EntityIds: not null })
+        {
+            var entityIdsList = screenProfileFiltering.InventoryFiltering.EntityIds.Select(s => s.ToString());
             searchRequest = searchRequest.AppendFiltering(entityIds, FilterOperation.In, entityIdsList.ToArray());
         }
 
