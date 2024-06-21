@@ -14,8 +14,11 @@ namespace POC.Api.Controllers.CrmControllers;
 [Authorize(Roles = "Screen,Admin")]
 [Authorize(Policy = "CompanyIdIsOne")]
 
-public class OrdersController(IMediator mediator) : ControllerBase
+public class OrdersController(IMediator mediator, ILogger<OrdersController> logger) : ControllerBase
 {
+    
+    private readonly ILogger<OrdersController> _logger = logger;
+    
     [HttpGet]
     public async Task<ActionResult<List<OrderDto>>> GetAllOrders()
     {
@@ -37,6 +40,7 @@ public class OrdersController(IMediator mediator) : ControllerBase
         }
         catch (Exception e)
         {
+            logger.LogError(e, "Error while fetching orders");
             // Log the exception
             return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
         }

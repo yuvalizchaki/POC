@@ -158,12 +158,13 @@ public static class ScreenProfileFilteringExtensions
             searchRequest = searchRequest.AppendFiltering(entityIds, FilterOperation.In, entityIdsList.ToArray());
         }
         
-        if (screenProfileFiltering.OrderFiltering.Tags != null)
-        {
-            var tagsInts = screenProfileFiltering.OrderFiltering.Tags.Select(s => (int)s);
-            var tagsList = tagsInts.Select(s => s.ToString());
-            searchRequest = searchRequest.AppendFiltering(tags, FilterOperation.In, tagsList.ToArray());
-        }
+        //TODO: see why tags makes problems when the request is sent into the crm server
+        // if (screenProfileFiltering.OrderFiltering.Tags != null)
+        // {
+        //     var tagsInts = screenProfileFiltering.OrderFiltering.Tags.Select(s => (int)s);
+        //     var tagsList = tagsInts.Select(s => s.ToString());
+        //     searchRequest = searchRequest.AppendFiltering(tags, FilterOperation.In, tagsList.ToArray());
+        // }
         
         if (screenProfileFiltering.InventoryFiltering is { EntityIds: not null })
         {
