@@ -7,7 +7,7 @@ public class InventoryItemDto
 
     public int Id { get; set; }
     public int DepartmentId { get; set; }
-    public int Amount { get; set; }
+    public decimal Amount { get; set; }
     public decimal Price { get; set; }
     public int ProductId { get; set; }
     public string ProductName { get; set; }
