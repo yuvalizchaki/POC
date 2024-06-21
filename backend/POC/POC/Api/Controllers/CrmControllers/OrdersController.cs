@@ -16,6 +16,7 @@ public class OrdersController(IMediator mediator) : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<OrderDto>>> GetAllOrders()
     {
+        //TODO: (note) admin doesnt have screen profile id, so he cant access this endpoint
         var cid = User.FindFirst("CompanyId");
         var sid = User.FindFirst("ScreenProfileId");
         if (cid == null || sid == null)

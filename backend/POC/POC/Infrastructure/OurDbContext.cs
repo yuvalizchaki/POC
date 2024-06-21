@@ -8,6 +8,8 @@ public class OurDbContext(DbContextOptions<OurDbContext> options) : DbContext(op
     public DbSet<ScreenProfile> ScreenProfiles { get; set; }
     public DbSet<Screen> Screens { get; set; }
     
+    public DbSet<Admin> Admins { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(OurDbContext).Assembly);
@@ -35,7 +37,10 @@ public class OurDbContext(DbContextOptions<OurDbContext> options) : DbContext(op
                 spf.Property(s => s.EntityIds);
             });
         });
-        
+        modelBuilder.Entity<Admin>(entity =>
+        {
+            entity.HasKey(a => a.Username);
+        });
         //non nullable foreign keys lead to automatic cascade delete
         
         base.OnModelCreating(modelBuilder);
