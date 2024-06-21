@@ -138,8 +138,9 @@ public static class ScreenProfileFilteringExtensions
 
         if (screenProfileFiltering.OrderFiltering.OrderStatuses != null)
         {
-            var orderStatuses = screenProfileFiltering.OrderFiltering.OrderStatuses.Select(s => s.ToString());
-            searchRequest = searchRequest.AppendFiltering(status, FilterOperation.In, orderStatuses.ToArray());
+            var orderStatusesInts = screenProfileFiltering.OrderFiltering.OrderStatuses.Select(s => (int)s);
+            var arrStatuses = orderStatusesInts.Select(s => s.ToString()).ToArray();
+            searchRequest = searchRequest.AppendFiltering(status, FilterOperation.In, arrStatuses);
         }
 
         if (screenProfileFiltering.OrderFiltering.IsPickup!=null)
@@ -149,7 +150,8 @@ public static class ScreenProfileFilteringExtensions
 
         if (screenProfileFiltering.OrderFiltering.IsSale !=null)
         {
-            searchRequest = searchRequest.AppendFiltering(isSale, screenProfileFiltering.OrderFiltering.IsSale.Value ?  "true" : "false");
+            //TODO: check if there is such a thing as sale filtering at all? i cant find it in the CRM filtering..
+            //searchRequest = searchRequest.AppendFiltering(isSale, screenProfileFiltering.OrderFiltering.IsSale.Value ?  "true" : "false");
         }
 
         if (screenProfileFiltering.OrderFiltering.EntityIds != null)
