@@ -7,11 +7,24 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace POC.Migrations
 {
     /// <inheritdoc />
-    public partial class fixingscreenProfilestructure : Migration
+    public partial class adminTable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Admins",
+                columns: table => new
+                {
+                    Username = table.Column<string>(type: "text", nullable: false),
+                    HashedPassword = table.Column<string>(type: "text", nullable: false),
+                    CompanyId = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Admins", x => x.Username);
+                });
+
             migrationBuilder.CreateTable(
                 name: "ScreenProfiles",
                 columns: table => new
@@ -30,6 +43,7 @@ namespace POC.Migrations
                     ScreenProfileFiltering_OrderFiltering_IsSale = table.Column<bool>(type: "boolean", nullable: true),
                     ScreenProfileFiltering_OrderFiltering_IsPickup = table.Column<bool>(type: "boolean", nullable: true),
                     ScreenProfileFiltering_OrderFiltering_EntityIds = table.Column<List<int>>(type: "integer[]", nullable: true),
+                    ScreenProfileFiltering_OrderFiltering_Tags = table.Column<int[]>(type: "integer[]", nullable: true),
                     ScreenProfileFiltering_InventoryFiltering_EntityIds = table.Column<List<int>>(type: "integer[]", nullable: true),
                     ScreenProfileFiltering_InventorySorting = table.Column<List<string>>(type: "text[]", nullable: false),
                     ScreenProfileFiltering_DisplayConfig_IsPaging = table.Column<bool>(type: "boolean", nullable: false),
@@ -69,6 +83,9 @@ namespace POC.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Admins");
+
             migrationBuilder.DropTable(
                 name: "Screens");
 

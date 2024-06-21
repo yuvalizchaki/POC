@@ -11,7 +11,7 @@ using POC.Infrastructure.Models;
 namespace POC.Api.Controllers.CrmControllers;
 [ApiController]
 [Route("[controller]")]
-[Authorize(Roles = "Screen,Admin")]
+[Authorize(Roles = "Screen")]
 [Authorize(Policy = "CompanyIdIsOne")]
 
 public class OrdersController(IMediator mediator, ILogger<OrdersController> logger) : ControllerBase
@@ -22,6 +22,7 @@ public class OrdersController(IMediator mediator, ILogger<OrdersController> logg
     [HttpGet]
     public async Task<ActionResult<List<OrderDto>>> GetAllOrders()
     {
+        //TODO: (note) admin doesnt have screen profile id, so he cant access this endpoint
         var cid = User.FindFirst("CompanyId");
         var sid = User.FindFirst("ScreenProfileId");
         if (cid == null || sid == null)

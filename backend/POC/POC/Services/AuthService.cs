@@ -39,7 +39,7 @@ public class AuthService
         {
             new Claim(ClaimTypes.Role, "Screen"),
             new Claim(ClaimTypes.SerialNumber, screen.Id.ToString()),
-            new Claim("CompanyId", "1"), //refers to the companyID = 1 for now
+            new Claim("CompanyId", "1"), 
             new Claim("ScreenProfileId", screen.ScreenProfileId.ToString())
         };
         return claims;
@@ -50,7 +50,7 @@ public class AuthService
         {
             new Claim(ClaimTypes.Role, "Admin"),
             new Claim(ClaimTypes.NameIdentifier, username),
-            new Claim("CompanyId", "1"), //refers to the companyID = 1 for 
+            new Claim("CompanyId", "1"), 
             new Claim("Password", password) 
         };
         return claims;

@@ -132,6 +132,7 @@ builder.Services.AddMediatR(cfg =>
 //register the repository
 builder.Services.AddScoped<ScreenProfileRepository>();
 builder.Services.AddScoped<ScreenRepository>();
+builder.Services.AddScoped<AdminRepository>();
 
 //Register the DbContext
 builder.Services.AddDbContext<OurDbContext>(options =>

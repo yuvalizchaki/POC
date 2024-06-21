@@ -23,6 +23,24 @@ namespace POC.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("POC.Infrastructure.Models.Admin", b =>
+                {
+                    b.Property<string>("Username")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CompanyId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("HashedPassword")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Username");
+
+                    b.ToTable("Admins");
+                });
+
             modelBuilder.Entity("POC.Infrastructure.Models.Screen", b =>
                 {
                     b.Property<int>("Id")
