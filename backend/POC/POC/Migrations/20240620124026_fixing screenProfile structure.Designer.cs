@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using POC.Infrastructure;
@@ -12,9 +13,11 @@ using POC.Infrastructure;
 namespace POC.Migrations
 {
     [DbContext(typeof(OurDbContext))]
-    partial class OurDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240620124026_fixing screenProfile structure")]
+    partial class fixingscreenProfilestructure
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,24 +25,6 @@ namespace POC.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("POC.Infrastructure.Models.Admin", b =>
-                {
-                    b.Property<string>("Username")
-                        .HasColumnType("text");
-
-                    b.Property<string>("CompanyId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("HashedPassword")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Username");
-
-                    b.ToTable("Admins");
-                });
 
             modelBuilder.Entity("POC.Infrastructure.Models.Screen", b =>
                 {
@@ -161,9 +146,6 @@ namespace POC.Migrations
                                         .HasColumnType("boolean");
 
                                     b2.Property<int[]>("OrderStatuses")
-                                        .HasColumnType("integer[]");
-
-                                    b2.Property<int[]>("Tags")
                                         .HasColumnType("integer[]");
 
                                     b2.HasKey("ScreenProfileFilteringScreenProfileId");

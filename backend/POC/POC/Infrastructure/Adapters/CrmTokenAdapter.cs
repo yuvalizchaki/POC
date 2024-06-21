@@ -43,7 +43,10 @@ namespace POC.Infrastructure.Adapters
             });
 
             request.Content = content;
-            _httpClient.BaseAddress = new Uri(_authBaseUrl);
+            if (_httpClient.BaseAddress == null)
+            {
+                _httpClient.BaseAddress = new Uri(_authBaseUrl);
+            }
             var response = await _httpClient.SendAsync(request);
 
             response.EnsureSuccessStatusCode();
