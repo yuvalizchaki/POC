@@ -1,20 +1,21 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
+using POC.Infrastructure.Generators;
 using POC.Infrastructure.IRepositories;
 
 namespace POC.Infrastructure.Repositories;
 
 public class CachedGuestConnectionRepository : IGuestConnectionRepository
 {
-    private readonly GuestConnectionRepository _decorated;
+    //private readonly GuestConnectionRepository _decorated;
     private readonly IDistributedCache _distributedCache;
     private readonly ILogger<CachedGuestConnectionRepository> _logger;
+    private readonly PairCodeGenerator _pairCodeGenerator = new();
 
-    public CachedGuestConnectionRepository(GuestConnectionRepository decorated, 
-        IDistributedCache distributedCache,
+    public CachedGuestConnectionRepository( IDistributedCache distributedCache,
         ILogger<CachedGuestConnectionRepository> logger)
     {
-        _decorated = decorated;
+        //_decorated = decorated;
         _distributedCache = distributedCache;
         _logger = logger;
     }
@@ -23,7 +24,15 @@ public class CachedGuestConnectionRepository : IGuestConnectionRepository
     {
         try
         {
-            var pairingCode = await _decorated.AddConnectionAsync(connectionId);
+            string pairingCode;
+            bool  exists;
+            
+            do
+            {
+                pairingCode = await _pairCodeGenerator.GenerateAsync();
+                var cachedValue = await _distributedCache.GetStringAsync(pairingCode);
+                exists = cachedValue != null;
+            } while (exists);
     
             var cacheOptions = new DistributedCacheEntryOptions
             {
@@ -46,8 +55,16 @@ public class CachedGuestConnectionRepository : IGuestConnectionRepository
         try
         { 
             string? cachedConnectionId = await _distributedCache.GetStringAsync(pairingCode, cancellationToken);
-           // return await _distributedCache.GetStringAsync(pairingCode, cancellationToken);
-           return cachedConnectionId;
+            if (cachedConnectionId != null)
+            {
+                // Reset the expiration time if the code is still valid
+                var cacheOptions = new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
+                };
+                await _distributedCache.SetStringAsync(pairingCode, cachedConnectionId, cacheOptions, cancellationToken);
+            }
+            return cachedConnectionId;
         }
         catch (Exception ex)
         {
@@ -56,14 +73,23 @@ public class CachedGuestConnectionRepository : IGuestConnectionRepository
         }
     }
     
-    public Task RemoveConnectionAsync(string paringCode)
+    public async Task RemoveConnectionAsync(string pairingCode)
     {
-        return _decorated.RemoveConnectionAsync(paringCode);
+        try
+        {
+            await _distributedCache.RemoveAsync(pairingCode);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to remove connection from cache");
+            throw;
+        }
     }
     
-    public Task<bool> IsConnectionExistsAsync(string paringCode)
+    public async Task<bool> IsConnectionExistsAsync(string pairingCode)
     {
-        return _decorated.IsConnectionExistsAsync(paringCode);
+        var cachedValue = await _distributedCache.GetStringAsync(pairingCode);
+        return cachedValue != null;
     }
     
     // public async Task<string> GetConnectionIdByCodeAsync(string paringCode, CancellationToken cancellationToken)

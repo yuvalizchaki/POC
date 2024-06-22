@@ -12,7 +12,6 @@ public class GuestHub(IGuestConnectionRepository guestConnectionRepository, ILog
     {
         private static readonly string MsgScreenAdded = "screenAdded";
         private static readonly string MsgPairCode = "pairCode";
-        private readonly PairCodeGenerator _pairCodeGenerator = new();
         
         public override async Task OnConnectedAsync()
         {
