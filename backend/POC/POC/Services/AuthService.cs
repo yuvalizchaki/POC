@@ -38,7 +38,7 @@ public class AuthService
         var claims = new[]
         {
             new Claim(ClaimTypes.Role, "Screen"),
-            new Claim(ClaimTypes.SerialNumber, screen.Id.ToString()),
+            new Claim("ScreenId", screen.Id.ToString()),
             new Claim("CompanyId", "1"), 
             new Claim("ScreenProfileId", screen.ScreenProfileId.ToString())
         };
@@ -50,8 +50,8 @@ public class AuthService
         {
             new Claim(ClaimTypes.Role, "Admin"),
             new Claim(ClaimTypes.NameIdentifier, username),
-            new Claim("CompanyId", "1"), 
-            new Claim("Password", password) 
+            new Claim("CompanyId", "1")
+          //  new Claim("Password", password) 
         };
         return claims;
     }
