@@ -109,7 +109,6 @@ builder.Services.AddSignalR()
 // Register in-memory repositories
 // builder.Services.AddSingleton<ScreenProfileRepository>();
 // builder.Services.AddSingleton<ScreenRepository>();
-builder.Services.AddSingleton<GuestConnectionRepository>();
 builder.Services.AddSingleton<IGuestConnectionRepository, CachedGuestConnectionRepository>();
 builder.Services.AddSingleton<ScreenConnectionRepository>();
 builder.Services.AddSingleton<ScreenHub>();
