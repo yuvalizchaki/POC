@@ -24,7 +24,7 @@ public class AdminLoginCommandHandler(AdminRepository repository)
             throw new AdminLoginException("Invalid email or password");
         }
         
-        String token = AuthService.GenerateAdminToken(request.LoginPostDto.Username, request.LoginPostDto.Password);
+        String token = AuthService.GenerateAdminToken(request.LoginPostDto.Username, request.LoginPostDto.Password, int.Parse(admin.CompanyId));
         return token;
     }
     

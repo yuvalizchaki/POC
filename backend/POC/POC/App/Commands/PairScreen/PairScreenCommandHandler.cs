@@ -38,25 +38,26 @@ public class PairScreenCommandHandler : IRequestHandler<PairScreenCommand, Scree
         var connectionId = await _guestConnectionRepository.GetConnectionIdByCodeAsync(request.PairScreenDto.PairingCode, cancellationToken);
         if (string.IsNullOrEmpty(connectionId))
             throw new Exception("PairingCodeNotFoundException");
-
+        
         // Create a new screen object
         var screen = new Screen
         {
             ScreenProfileId = request.PairScreenDto.ScreenProfileId,
             ScreenProfile = screenProfile
         };
-        // Generate a token for the screen
-        String token = AuthService.GenerateScreenToken(screen);
         
-        // Send the screen profile to the smart TV screen
-        await _hub.SendMessageAddScreen(request.PairScreenDto.PairingCode, (token));
-
+        // Generate a token for the screen
+        String token = AuthService.GenerateScreenToken(screen, screenProfile.CompanyId);
+        
         // Hash the token   
         byte[] result = SHA256.Create().ComputeHash(Encoding.ASCII.GetBytes(token));
         screen.HashToken = Encoding.Default.GetString(result);
         
         // Add the screen to the repository
         await _screenRepository.AddAsync(screen);
+        
+        // Send the screen profile to the smart TV screen
+        await _hub.SendMessageAddScreen(request.PairScreenDto.PairingCode, token);
 
         // Associate the screen with the screen profile
         screenProfile.Screens.Add(screen);

@@ -11,7 +11,6 @@ namespace POC.Api.Controllers.CrmControllers;
 [ApiController]
 [Route("[controller]")]
 [Authorize(Roles = "Screen,Admin")]
-[Authorize(Policy = "CompanyIdIsOne")]
 public class WebhookController : ControllerBase
 {
     private readonly IMediator _mediator;

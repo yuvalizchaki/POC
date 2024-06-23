@@ -18,7 +18,6 @@ namespace POC.Api.Controllers.ClientControllers;
 [ApiController]
 [Route("[controller]")]
 [Authorize(Roles = "Admin")] 
-[Authorize(Policy = "CompanyIdIsOne")]
 public class ScreensController : ControllerBase 
 {
     private readonly IMediator _mediator;
