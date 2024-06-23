@@ -114,6 +114,7 @@ builder.Services.AddSingleton<IGuestConnectionRepository, CachedGuestConnectionR
 builder.Services.AddSingleton<ScreenConnectionRepository>();
 builder.Services.AddSingleton<ScreenHub>();
 builder.Services.AddSingleton<GuestHub>();
+builder.Services.AddSingleton<AdminHub>();
 
 // Add the custom route convention
 builder.Services.AddControllers(options => { options.Conventions.Add(new KebabCaseRouteConvention()); });
@@ -163,6 +164,7 @@ app.UseAuthorization();
 // Map SignalR hubs
 app.MapHub<ScreenHub>("/screen-hub");
 app.MapHub<GuestHub>("/guest-hub");
+app.MapHub<AdminHub>("/admin-hub");
 
 app.MapControllers();
 

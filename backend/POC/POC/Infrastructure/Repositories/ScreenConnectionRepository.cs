@@ -41,5 +41,11 @@ public class ScreenConnectionRepository: IScreenConnectionRepository
         return Task.FromResult(connectionIds as IEnumerable<string>);
     }
 
+    public Task<IEnumerable<int>> GetConnectedScreensAsync()
+    {
+        var connectedScreens = _screenIdToConnectionIdMap.Keys.ToList();
+        return Task.FromResult(connectedScreens as IEnumerable<int>);
+    }
+
 }
 
