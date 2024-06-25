@@ -1,8 +1,10 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using POC.Api.Hubs;
 using POC.App.Commands.AdminLogin;
 using POC.App.Commands.CreateScreenProfile;
+using POC.App.Queries.GetAllConnectedScreens;
 using POC.Contracts.Auth;
 using POC.Contracts.Response;
 using POC.Contracts.ScreenProfile;
@@ -13,6 +15,7 @@ using POC.Services;
 namespace POC.Api.Controllers.ClientControllers;
 [ApiController]
 [Route("[controller]")]
+
 public class AdminController
     : ControllerBase
 {
@@ -24,8 +27,8 @@ public class AdminController
         _logger = logger;
         _mediator = mediator;
     }
-    [HttpPost]
     [AllowAnonymous]
+    [HttpPost]
     public async Task<IActionResult> Login([FromBody] LoginPostDto loginDto)
     {   
         var command = new AdminLoginCommand(loginDto);
@@ -45,5 +48,22 @@ public class AdminController
             return BadRequest();
         }
     }
+    [Authorize(Roles = "Admin")]
+    [HttpGet("connected-screens")]
+    public async Task<IActionResult> GetConnectedScreens()
+    {
+        var query = new GetAllConnectedScreensQuery();
+        try
+        {
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error getting all connected screens.");
+            return BadRequest(e.Message);
+        }
+    }
+    
 
 }
