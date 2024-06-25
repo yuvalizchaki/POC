@@ -9,7 +9,6 @@ namespace POC.Api.Controllers.CrmControllers;
 [ApiController]
 [Route("[controller]")]
 [Authorize(Roles = "Screen")]
-[Authorize(Policy = "CompanyIdIsOne")]
 public class InventoryItemsController(IMediator mediator) : ControllerBase
 {
     [HttpGet]

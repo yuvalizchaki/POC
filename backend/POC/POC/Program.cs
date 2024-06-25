@@ -40,12 +40,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             
         };
     });
+// Register IHttpContextAccessor
+builder.Services.AddHttpContextAccessor();
 
 // add authorization
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("CompanyIdIsOne", policy => policy.RequireClaim("CompanyId", "1"));
-});
+builder.Services.AddAuthorization();
 
 builder.Services.AddLogging();
 

@@ -10,14 +10,14 @@ namespace POC.Services;
 public class AuthService
 {
     public const int TokenExpirationDays = 60;
-    public static string GenerateScreenToken(Screen screen)
+    public static string GenerateScreenToken(Screen screen, int companyId)
     {
-        return GenerateToken(GenerateScreenClaims(screen));
+        return GenerateToken(GenerateScreenClaims(screen, companyId));
 
     }
-    public static string GenerateAdminToken(String username, String password)
+    public static string GenerateAdminToken(String username, String password, int companyId)
     {
-        return GenerateToken(GenerateAdminClaims(username, password));
+        return GenerateToken(GenerateAdminClaims(username, password, companyId));
     }
     private static string GenerateToken(Claim[] claims)
     {
@@ -33,24 +33,24 @@ public class AuthService
             signingCredentials: credentials);
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
-    private static Claim[] GenerateScreenClaims(Screen screen)
+    private static Claim[] GenerateScreenClaims(Screen screen, int companyId)
     {
         var claims = new[]
         {
             new Claim(ClaimTypes.Role, "Screen"),
             new Claim("ScreenId", screen.Id.ToString()),
-            new Claim("CompanyId", "1"), 
+            new Claim("CompanyId", companyId.ToString()), 
             new Claim("ScreenProfileId", screen.ScreenProfileId.ToString())
         };
         return claims;
     }
-    private static Claim[] GenerateAdminClaims(String username, String password)
+    private static Claim[] GenerateAdminClaims(String username, String password, int companyId)
     {
         var claims = new[]
         {
             new Claim(ClaimTypes.Role, "Admin"),
             new Claim(ClaimTypes.NameIdentifier, username),
-            new Claim("CompanyId", "1")
+            new Claim("CompanyId", companyId.ToString())
           //  new Claim("Password", password) 
         };
         return claims;

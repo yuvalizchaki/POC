@@ -16,7 +16,6 @@ namespace POC.Api.Controllers.ClientControllers;
 [ApiController]
 [Route("[controller]")]
 [Authorize(Roles = "Admin")]
-[Authorize(Policy = "CompanyIdIsOne")]
 public class ScreenProfilesController : ControllerBase 
 {
     private readonly IMediator _mediator;
@@ -39,6 +38,9 @@ public class ScreenProfilesController : ControllerBase
             var errorResponse = new ErrorResponse(validationResult.Errors);
             return BadRequest(errorResponse);
         }
+
+        if (createScreenProfile.CompanyId != int.Parse(User.FindFirst("CompanyId")?.Value))
+            return Unauthorized("Unauthorized to create screen profile for another company.");
         
         var command = new CreateScreenProfileCommand(createScreenProfile);
 

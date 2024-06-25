@@ -7,21 +7,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-public class ScreenProfileRepository(
-    OurDbContext dbContext
-    )
+public class ScreenProfileRepository
 {
+    private readonly OurDbContext _dbContext;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     // private readonly List<ScreenProfile> _screenProfiles = new();
-
+    public ScreenProfileRepository(OurDbContext dbContext, IHttpContextAccessor httpContextAccessor)
+    {
+        _dbContext = dbContext;
+        _httpContextAccessor = httpContextAccessor;
+    }
+    private string GetCompanyId()
+    {
+        return _httpContextAccessor.HttpContext?.User?.FindFirst("CompanyId")?.Value;
+    }
     public Task<List<ScreenProfile>> GetAllAsync()
     {
-        return dbContext.ScreenProfiles.Include(sp => sp.Screens).ToListAsync();
+        var companyId = int.Parse(GetCompanyId());
+        return _dbContext.ScreenProfiles.Where(sp => sp.CompanyId== companyId).Include(sp => sp.Screens).ToListAsync();
         // return Task.FromResult(_screenProfiles.ToList());
     }
 
     public Task<ScreenProfile?> GetByIdAsync(int id)
     {
-        var screenProfile = dbContext.ScreenProfiles.Include(sp => sp.Screens).FirstOrDefault(sp => sp.Id == id);
+        var companyId = int.Parse(GetCompanyId());
+        var screenProfile = _dbContext.ScreenProfiles.Include(sp => sp.Screens).FirstOrDefault(sp => sp.Id == id && sp.CompanyId == companyId);
         // var screenProfile = dbContext.ScreenProfiles.FirstOrDefault(sp => sp.Id == id);
 
         return Task.FromResult(screenProfile);
@@ -30,31 +40,33 @@ public class ScreenProfileRepository(
     public Task AddAsync(ScreenProfile profile)
     {
         //todo see how the db creates the id
-        dbContext.ScreenProfiles.Add(profile);
-        dbContext.SaveChanges();
+        _dbContext.ScreenProfiles.Add(profile);
+        _dbContext.SaveChanges();
         
         return Task.CompletedTask;
     }
 
     public Task<bool> UpdateAsync(ScreenProfile profile)
     {
-        var existingProfile = dbContext.ScreenProfiles.FirstOrDefault(sp => sp.Id == profile.Id);
+        var companyId = int.Parse(GetCompanyId());
+        var existingProfile = _dbContext.ScreenProfiles.FirstOrDefault(sp => sp.Id == profile.Id && sp.CompanyId == companyId && profile.CompanyId == companyId);
         
         if (existingProfile == null) return Task.FromResult(false);
         
-        dbContext.ScreenProfiles.Update(profile);
-        dbContext.SaveChanges();
+        _dbContext.ScreenProfiles.Update(profile);
+        _dbContext.SaveChanges();
         return Task.FromResult(true);
     }
 
     public Task<bool> DeleteAsync(int id)
     {
-        var profile = dbContext.ScreenProfiles.FirstOrDefault(sp => sp.Id == id);
+        var companyId = int.Parse(GetCompanyId());
+        var profile = _dbContext.ScreenProfiles.FirstOrDefault(sp => sp.Id == id && sp.CompanyId == companyId);
         
         if (profile == null) return Task.FromResult(false);
         
-        dbContext.ScreenProfiles.Remove(profile);
-        dbContext.SaveChanges();
+        _dbContext.ScreenProfiles.Remove(profile);
+        _dbContext.SaveChanges();
         return Task.FromResult(true);
     }
     
