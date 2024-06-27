@@ -25,7 +25,7 @@ public class CachedScreenConnectionRepository: IScreenConnectionRepository
         return _decorated.AddConnectionAsync(screenId, connectionId);
     }
 
-    public Task RemoveConnectionAsync(int screenId)
+    public Task<string?> RemoveConnectionAsync(int screenId)
     {
         return _decorated.RemoveConnectionAsync(screenId);
     }

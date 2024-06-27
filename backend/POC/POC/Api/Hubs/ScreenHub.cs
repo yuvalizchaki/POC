@@ -67,25 +67,23 @@ public class ScreenHub : Hub
         await Clients.All.SendAsync(MsgOrderDeleted, orderId);
     }
     
-   
+    
+    public async Task RemoveScreen(ScreenDto screen)
+    {
+        var connectionId = await _screenConnectionRepository.RemoveConnectionAsync(screen.Id);
+        _logger.LogInformation($"[DEBUG] connectionId: {connectionId} has been removed");
+        if (!string.IsNullOrEmpty(connectionId))
+        {
+            await Clients.Client(connectionId).SendAsync(MsgScreenRemoved, screen);
+        }
+    }
 
-    //public async Task RemoveScreen(ScreenDto screen)
-    //{
-    //    var connectionId = await _screenConnectionRepository.GetConnectionIdByScreenIdAsync(screen.Id);
-    //    _logger.LogInformation($"[DEBUG] connectionId: {connectionId}");
-    //    if (!string.IsNullOrEmpty(connectionId))
-    //    {
-    //        await Clients.Client(connectionId).SendAsync(MsgScreenRemoved, screen);
-    //    }
-    //}
-
-    //public async Task RemoveScreens(int[] screenIds)
-    //{
-    //    var connectionIds = await _screenConnectionRepository.GetConnectionIdsByScreenIdsAsync(screenIds);
-    //    foreach (var connectionId in connectionIds)
-    //    {
-    //        await Clients.Client(connectionId).SendAsync(MsgScreenRemoved, screenIds);
-    //    }
-    //}
+    public async Task RemoveScreens(ScreenDto[] screens)
+    {
+        foreach (var screen in screens)
+        {
+            await this.RemoveScreen(screen);
+        }
+    }
 
 }

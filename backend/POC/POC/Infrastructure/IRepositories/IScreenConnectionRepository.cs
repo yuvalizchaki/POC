@@ -3,7 +3,7 @@
 public interface IScreenConnectionRepository
 {
     Task AddConnectionAsync(int screenId, string connectionId);
-    Task RemoveConnectionAsync(int screenId);
+    Task<string?> RemoveConnectionAsync(int screenId);
     Task<string?> GetConnectionIdByScreenIdAsync(int screenId);
     Task<IEnumerable<string>> GetConnectionIdsByScreenIdsAsync(IEnumerable<int> screenIds);
 }
