@@ -13,11 +13,19 @@ public class ScreenConnectionRepository: IScreenConnectionRepository
         return Task.CompletedTask;
     }
 
-    public Task RemoveConnectionAsync(int screenId)
+    public Task<string?> RemoveConnectionAsync(int screenId)
     {
-        _screenIdToConnectionIdMap.Remove(screenId);
-        return Task.CompletedTask;
+        string? connectionId = null;
+        if (_screenIdToConnectionIdMap.TryGetValue(screenId, out connectionId))
+        {
+            _screenIdToConnectionIdMap.Remove(screenId);
+        }
+        return Task.FromResult(connectionId);
     }
+
+
+
+
 
     public Task<string?> GetConnectionIdByScreenIdAsync(int screenId)
     {
