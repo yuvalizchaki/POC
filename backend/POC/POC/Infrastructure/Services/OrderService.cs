@@ -7,7 +7,7 @@ namespace POC.Infrastructure.Services;
 public interface IOrderService
 {
     Task FetchAndReplicateOrdersAsync();
-    Task ProcessWebhookOrderAsync(OrderDto order); // New method
+    Task ProcessWebhookOrderAsync(OrderDto order); 
 }
 
 public class OrderService(IOrderRepository orderRepository, IOrderAdapter orderAdapter, ILogger<OrderService> logger)
@@ -22,10 +22,7 @@ public class OrderService(IOrderRepository orderRepository, IOrderAdapter orderA
             var orders = await orderAdapter.FetchOrdersAsync();
 
             // Process and save orders
-            foreach (var order in orders)
-            {
-                await orderRepository.AddOrUpdateOrderAsync(order);
-            }
+            await orderRepository.SetAllOrdersAsync(orders);
 
             logger.LogInformation("Orders replicated successfully at {Time}", DateTime.UtcNow);
         }
