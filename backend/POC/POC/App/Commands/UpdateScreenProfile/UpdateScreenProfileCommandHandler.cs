@@ -1,4 +1,5 @@
 using MediatR;
+using POC.Api.Hubs;
 using POC.Contracts.Screen;
 using POC.Contracts.ScreenProfile;
 using POC.Infrastructure.Common.Exceptions;
@@ -8,7 +9,9 @@ using POC.Infrastructure.Repositories;
 
 namespace POC.App.Commands.UpdateScreenProfile;
 
-public class UpdateScreenProfileCommandHandler(ScreenProfileRepository repository)
+public class UpdateScreenProfileCommandHandler(
+    ScreenProfileRepository repository,
+    ScreenHub screenHub)
     : IRequestHandler<UpdateScreenProfileCommand, ScreenProfileDto>
 {
     public async Task<ScreenProfileDto> Handle(UpdateScreenProfileCommand request, CancellationToken cancellationToken)
@@ -21,6 +24,8 @@ public class UpdateScreenProfileCommandHandler(ScreenProfileRepository repositor
         screenToUpdate.ScreenProfileFiltering = request.ScreenProfile.ScreenProfileFiltering.ToScreenProfileFiltering();
         
         await repository.UpdateAsync(screenToUpdate);
+        
+        //await screenHub.UpdateScreen(screenToUpdate.Screens.Select(s => s.id).ToArray());
         
         return screenToUpdate.ToScreenProfileDto();
     }
