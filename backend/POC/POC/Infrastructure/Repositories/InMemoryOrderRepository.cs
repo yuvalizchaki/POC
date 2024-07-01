@@ -13,9 +13,9 @@ public class InMemoryOrderRepository(
 
     private readonly string _cacheKey = "Orders";
     
-    public async Task<IEnumerable<OrderDto>> GetAllOrdersAsync()
+    public async Task<IEnumerable<OrderDto>> GetAllOrdersAsync(int companyId)
     {
-        return await GetAllOrdersFromCache();
+        return await GetAllOrdersFromCache(companyId);
     }
 
     public Task SetAllOrdersAsync(IEnumerable<OrderDto> orders)
@@ -48,7 +48,7 @@ public class InMemoryOrderRepository(
         }
     }
     
-    private async Task<List<OrderDto>> GetAllOrdersFromCache()
+    private async Task<List<OrderDto>> GetAllOrdersFromCache(int companyId = 1)
     {
         if (cache.TryGetValue(_cacheKey, out List<OrderDto> orders)) return orders;
         orders = new List<OrderDto>();

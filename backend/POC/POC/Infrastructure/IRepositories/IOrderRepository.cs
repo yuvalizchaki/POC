@@ -4,7 +4,7 @@ namespace POC.Infrastructure.IRepositories;
 
 public interface IOrderRepository
 {
-    Task<IEnumerable<OrderDto>> GetAllOrdersAsync();
+    Task<IEnumerable<OrderDto>> GetAllOrdersAsync(int companyId);
     
     Task SetAllOrdersAsync(IEnumerable<OrderDto> orders);
     Task AddOrUpdateOrderAsync(OrderDto order);

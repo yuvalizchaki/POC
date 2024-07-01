@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Microsoft.VisualBasic;
+using POC.Contracts.CrmDTOs;
 using POC.Contracts.ScreenProfile;
 using POC.Infrastructure.Common.Constants;
 using POC.Infrastructure.Common.utils;
@@ -175,5 +176,24 @@ public static class ScreenProfileFilteringExtensions
         }
 
         return searchRequest.Build();
+    }
+    
+    
+    //TODO notice that it already assumes here the company id of orders.
+    public static bool IsMatch(this ScreenProfileFiltering screenProfileFiltering, OrderDto order)
+    {
+        var orderFiltering = screenProfileFiltering.OrderFiltering;
+        return  (IsBetween(order.StartDate, orderFiltering.From) || IsBetween(order.EndDate, orderFiltering.From)) &&
+                (orderFiltering.OrderStatuses == null || orderFiltering.OrderStatuses.Contains(order.Status)) &&
+                (orderFiltering.IsPickup == null || orderFiltering.IsPickup == order.IsPickup) &&
+                (orderFiltering.EntityIds == null || orderFiltering.EntityIds.Contains(order.DepartmentId));
+    }
+    
+    private static bool IsBetween(DateTime date, TimeRangePart timeRangePart)
+    {
+        var (start, end) = timeRangePart.ToFormattedDateTime(DateTime.Now, format);
+        var startDate = DateTime.ParseExact(start, format, null);
+        var endDate = DateTime.ParseExact(end, format, null);
+        return date >= startDate && date <= endDate;
     }
 }
