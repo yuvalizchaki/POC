@@ -9,12 +9,6 @@ public static class OrdersFiltering
     private static string _format = "yyyy-MM-ddTHH:mm";
     
     //TODO notice that it already assumes here the company id of orders.
-    public static List<OrderDto> FilterOrderDtoList(IEnumerable<OrderDto> orders, ScreenProfileFiltering screenProfileFiltering)
-    {
-        var filteredOrders = orders.Where(order => OrderMatchesFilter(order, screenProfileFiltering.OrderFiltering)).ToList();
-        return filteredOrders;
-    }
-    
     public static bool OrderMatchesFilter(OrderDto order, OrderFiltering orderFiltering)
     {
         return  (IsBetween(order.StartDate, orderFiltering.From) || IsBetween(order.EndDate, orderFiltering.From)) &&
