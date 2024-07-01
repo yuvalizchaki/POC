@@ -14,7 +14,7 @@ using POC.Infrastructure.Adapters;
 using POC.Infrastructure.Common;
 using POC.Infrastructure.IRepositories;
 using POC.Infrastructure.Repositories;
-using POC.Infrastructure.Services;
+using POC.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

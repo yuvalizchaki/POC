@@ -2,7 +2,7 @@
 using POC.Infrastructure.Adapters;
 using POC.Infrastructure.IRepositories;
 
-namespace POC.Infrastructure.Services;
+namespace POC.Services;
 
 public interface IOrderService
 {

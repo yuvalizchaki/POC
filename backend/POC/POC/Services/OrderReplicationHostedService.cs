@@ -1,4 +1,4 @@
-﻿namespace POC.Infrastructure.Services;
+﻿namespace POC.Services;
 
 public class OrderReplicationHostedService(
     IServiceScopeFactory _serviceScopeFactory) : IHostedService, IDisposable
