@@ -12,6 +12,7 @@ public class InMemoryOrderRepository(
 {
 
     private readonly string _cacheKey = "Orders";
+    private int expirationMinutes = 15; //TODO PUT IT IN A PLACE MORE FITTING
     
     public async Task<IEnumerable<OrderDto>> GetAllOrdersAsync(int companyId)
     {
@@ -20,7 +21,7 @@ public class InMemoryOrderRepository(
 
     public Task SetAllOrdersAsync(IEnumerable<OrderDto> orders)
     {
-        cache.Set(_cacheKey, orders, TimeSpan.FromMinutes(15));
+        cache.Set(_cacheKey, orders, TimeSpan.FromMinutes(expirationMinutes));
         return Task.CompletedTask;
     }
     
@@ -34,7 +35,7 @@ public class InMemoryOrderRepository(
         }
         orders.Add(order);
         //TODO WHAT HAPPENS WHEN EXPIRES BEFORE THE REFRESH DUE TO A POSSIBLE(?) SCHEDULING AND THEN THE SCREEN TRIES TO GET THE DATA IN BETWEEN?
-        cache.Set(_cacheKey, orders, TimeSpan.FromMinutes(15));
+        cache.Set(_cacheKey, orders, TimeSpan.FromMinutes(expirationMinutes));
     }
     
     public async Task DeleteOrderAsync(int id)
@@ -44,7 +45,7 @@ public class InMemoryOrderRepository(
         if (order != null)
         {
             orders.Remove(order);
-            cache.Set(_cacheKey, orders, TimeSpan.FromMinutes(15));
+            cache.Set(_cacheKey, orders, TimeSpan.FromMinutes(expirationMinutes));
         }
     }
     
@@ -52,7 +53,7 @@ public class InMemoryOrderRepository(
     {
         if (cache.TryGetValue(_cacheKey, out List<OrderDto> orders)) return orders;
         orders = new List<OrderDto>();
-        cache.Set(_cacheKey, orders, TimeSpan.FromMinutes(15));
+        cache.Set(_cacheKey, orders, TimeSpan.FromMinutes(expirationMinutes));
 
         return orders;
     }

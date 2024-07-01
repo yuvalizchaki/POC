@@ -4,10 +4,11 @@ public class OrderReplicationHostedService(
     IServiceScopeFactory _serviceScopeFactory) : IHostedService, IDisposable
 {
     private Timer timer;
+    private int interval = 15; //TODO PUT IT IN A PLACE MORE FITTING
     
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        timer = new Timer(DoWork, null, TimeSpan.Zero, TimeSpan.FromMinutes(15));
+        timer = new Timer(DoWork, null, TimeSpan.Zero, TimeSpan.FromMinutes(interval));
         return Task.CompletedTask;
     }
 
