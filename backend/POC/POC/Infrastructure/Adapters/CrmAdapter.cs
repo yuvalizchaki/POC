@@ -108,9 +108,10 @@ namespace POC.Infrastructure.Adapters
         public Task<List<OrderDto>> FetchOrdersAsync(int companyId = 1)
         {
             //TODO integrate companyID separation in cache memory and get it passed into this method
-            //return GetAllOrdersAsync(companyId, new SearchRequest());
+            var request = SearchRequestBuilder.Empty.Build();
+            return GetAllOrdersAsync(companyId, request);
             //return empty list for now to see if the flow works
-            return Task.FromResult(new List<OrderDto>());
+            //return Task.FromResult(new List<OrderDto>());
         }
         
     }
