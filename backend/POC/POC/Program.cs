@@ -14,6 +14,7 @@ using POC.Infrastructure.Adapters;
 using POC.Infrastructure.Common;
 using POC.Infrastructure.IRepositories;
 using POC.Infrastructure.Repositories;
+using POC.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -128,10 +129,18 @@ builder.Services.AddSingleton<CrmAdapter>();
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
+//Cache
+builder.Services.AddMemoryCache();
+
 //register the repository
 builder.Services.AddScoped<ScreenProfileRepository>();
 builder.Services.AddScoped<ScreenRepository>();
 builder.Services.AddScoped<AdminRepository>();
+
+builder.Services.AddScoped<IOrderRepository, InMemoryOrderRepository>();
+builder.Services.AddScoped<IOrderAdapter, CrmAdapter>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddHostedService<OrderReplicationHostedService>();
 
 //Register the DbContext
 builder.Services.AddDbContext<OurDbContext>(options =>
