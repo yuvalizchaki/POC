@@ -189,6 +189,12 @@ public static class ScreenProfileFilteringExtensions
                 (orderFiltering.EntityIds == null || orderFiltering.EntityIds.Contains(order.DepartmentId));
     }
     
+    public static bool IsInventoryMatch(this ScreenProfileFiltering screenProfileFiltering, InventoryItemDto orderItem)
+    {
+        var inventoryFiltering = screenProfileFiltering.InventoryFiltering;
+        return inventoryFiltering == null || inventoryFiltering.EntityIds.Contains(orderItem.DepartmentId);
+    }
+    
     private static bool IsBetween(DateTime date, TimeRangePart timeRangePart)
     {
         var (start, end) = timeRangePart.ToFormattedDateTime(DateTime.Now, format);
