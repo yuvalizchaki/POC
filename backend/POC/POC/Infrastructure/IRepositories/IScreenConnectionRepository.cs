@@ -6,6 +6,8 @@ public interface IScreenConnectionRepository
     Task<string?> RemoveConnectionAsync(int screenId);
     Task<string?> GetConnectionIdByScreenIdAsync(int screenId);
     Task<IEnumerable<string>> GetConnectionIdsByScreenIdsAsync(IEnumerable<int> screenIds);
+    
+    Task<IEnumerable<int>> GetConnectedScreensAsync();
 }
 
 
