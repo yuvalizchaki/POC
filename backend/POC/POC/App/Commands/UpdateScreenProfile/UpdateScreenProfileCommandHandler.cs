@@ -25,7 +25,7 @@ public class UpdateScreenProfileCommandHandler(
         
         await repository.UpdateAsync(screenToUpdate);
         
-        //await screenHub.UpdateScreen(screenToUpdate.Screens.Select(s => s.id).ToArray());
+        await screenHub.NotifyUpdateProfile(screenToUpdate.Screens.Select(s => s.Id).ToArray());
         
         return screenToUpdate.ToScreenProfileDto();
     }

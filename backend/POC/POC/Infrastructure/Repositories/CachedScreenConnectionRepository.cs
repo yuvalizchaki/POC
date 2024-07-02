@@ -65,4 +65,9 @@ public class CachedScreenConnectionRepository: IScreenConnectionRepository
     {
         return _decorated.GetConnectionIdsByScreenIdsAsync(screenIds);
     }
+
+    public Task<IEnumerable<int>> GetConnectedScreensAsync()
+    {
+        return _decorated.GetConnectedScreensAsync();
+    }
 }
