@@ -41,9 +41,13 @@ export const ScreenInfoProvider: React.FC<ScreenInfoProviderProps> = ({
     return localStorage.getItem(LOCALSTORAGE_KEY_SCREEN_TOKEN);
   });
 
-  const setToken = useCallback((newToken: string) => {
+  const setToken = useCallback((newToken: string | null) => {
     setTokenState(newToken);
-    localStorage.setItem(LOCALSTORAGE_KEY_SCREEN_TOKEN, newToken);
+    if (newToken !== null) {
+      localStorage.setItem(LOCALSTORAGE_KEY_SCREEN_TOKEN, newToken);
+    } else {
+      localStorage.removeItem(LOCALSTORAGE_KEY_SCREEN_TOKEN);
+    }
   }, []);
 
   // Sync token state with local storage
@@ -60,6 +64,8 @@ export const ScreenInfoProvider: React.FC<ScreenInfoProviderProps> = ({
       axiosInstance.defaults.headers.common[
         "Authorization"
       ] = `Bearer ${token}`;
+    } else {
+      client.defaults.headers.common["Authorization"] = "";
     }
     return axiosInstance;
   }, [token]);

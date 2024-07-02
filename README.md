@@ -47,3 +47,11 @@ Run under `POC\backend\POC\POC>`:
 dotnet ef migrations add InitialCreate
 dotnet ef database update
 ```
+
+## System Admin Credentials:
+username: admin
+password: admin
+
+### To add admin to database run:
+INSERT INTO public."Admins"("Username", "HashedPassword", "CompanyId")
+VALUES ('admin', '�iv�A���M�߱g��s�K��o*�H�', '1');
