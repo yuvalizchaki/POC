@@ -18,6 +18,7 @@ public class ScreenHub : Hub
     private static readonly string MsgScreenRemoved = "screenRemoved";
     private static readonly string ScreenConnected = "screenConnected";
     private static readonly string ScreenDisconnected = "screenDisconnected";
+    private static readonly string ProfileUpdated = "profileUpdated";
 
     public ScreenHub(ScreenConnectionRepository screenConnectionRepository, ILogger<ScreenHub> logger, IHubContext<AdminHub> adminHubContext)
     {
@@ -38,7 +39,6 @@ public class ScreenHub : Hub
         await base.OnConnectedAsync();
     }
     
-    
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         var screenId = Context.User.FindFirst("ScreenId");
@@ -50,23 +50,6 @@ public class ScreenHub : Hub
         }
         await base.OnDisconnectedAsync(exception);
     }
-
-
-    public async Task AddOrder(OrderDto orderDto)
-    {
-        await Clients.All.SendAsync(MsgOrderAdded, orderDto);
-    }
-
-    public async Task UpdateOrder(OrderDto orderDto)
-    {
-        await Clients.All.SendAsync(MsgOrderUpdated, orderDto);
-    }
-
-    public async Task DeleteOrder(int orderId)
-    {
-        await Clients.All.SendAsync(MsgOrderDeleted, orderId);
-    }
-    
     
     public async Task RemoveScreen(ScreenDto screen)
     {
@@ -82,8 +65,59 @@ public class ScreenHub : Hub
     {
         foreach (var screen in screens)
         {
-            await this.RemoveScreen(screen);
+            await RemoveScreen(screen);
         }
     }
 
+    public async Task NotifyUpdateProfile(int[] screenIds)
+    {
+        foreach (var id in screenIds)
+        {
+            var connectionId = _screenConnectionRepository.GetConnectionIdByScreenIdAsync(id);
+            if (!string.IsNullOrEmpty(connectionId.Result))
+            {
+                await Clients.Client(connectionId.Result).SendAsync(ProfileUpdated);
+            }
+
+        }
+    }
+
+    public async Task UpdateOrder(int[] screenIds, OrderDto orderDto)
+    {
+        foreach (var id in screenIds)
+        {
+            var connectionId = _screenConnectionRepository.GetConnectionIdByScreenIdAsync(id);
+            if (!string.IsNullOrEmpty(connectionId.Result))
+            {
+                await Clients.Client(connectionId.Result).SendAsync(MsgOrderUpdated, orderDto);
+            }
+
+        }
+    }
+    
+    public async Task AddOrder(int[] screenIds, OrderDto orderDto)
+    {
+        foreach (var id in screenIds)
+        {
+            var connectionId = _screenConnectionRepository.GetConnectionIdByScreenIdAsync(id);
+            if (!string.IsNullOrEmpty(connectionId.Result))
+            {
+                await Clients.Client(connectionId.Result).SendAsync(MsgOrderAdded, orderDto);
+            }
+
+        }
+    }
+    
+    public async Task DeleteOrder(int[] screenIds, int orderId)
+    {
+        foreach (var id in screenIds)
+        {
+            var connectionId = _screenConnectionRepository.GetConnectionIdByScreenIdAsync(id);
+            if (!string.IsNullOrEmpty(connectionId.Result))
+            {
+                await Clients.Client(connectionId.Result).SendAsync(MsgOrderDeleted, orderId);
+            }
+
+        } 
+    }
 }
