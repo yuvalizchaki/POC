@@ -12,7 +12,7 @@ using POC.Infrastructure.Models.CrmSearchQuery;
 namespace POC.Infrastructure.Adapters
 {
     // TODO: Implement CRM adapter and related classes
-    public class CrmAdapter
+    public class CrmAdapter : IOrderAdapter
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private HttpClient _httpClient;
@@ -103,6 +103,15 @@ namespace POC.Infrastructure.Adapters
         private string getCrmInventoryUrlFromCompany(int companyId)
         {
             return "inventories/" + companyId + "/search";
+        }
+
+        public Task<List<OrderDto>> FetchOrdersAsync(int companyId = 1)
+        {
+            //TODO integrate companyID separation in cache memory and get it passed into this method
+            var request = SearchRequestBuilder.Empty.Build();
+            return GetAllOrdersAsync(companyId, request);
+            //return empty list for now to see if the flow works
+            //return Task.FromResult(new List<OrderDto>());
         }
         
     }
