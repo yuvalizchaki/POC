@@ -3,21 +3,19 @@ import { IconButton, Stack, Typography } from "@mui/material";
 import ConnectedTvIcon from "@mui/icons-material/ConnectedTv";
 import CloseIcon from "@mui/icons-material/Close";
 import { ScreenDto } from "../../../../types/screenProfile.types";
-import { useAdminInfo } from "../../../../hooks/useAdminInfo";
+import { useAdminInfoContext } from "../../../../hooks/useAdminInfoContext";
+import { useScreenProfilesContext } from "../../../../hooks/useScreenProfilesContext";
 
 interface ScreenProps {
   screen: ScreenDto;
-  fetchScreenProfiles: () => void;
 }
 
-export const ScreenComponent = ({
-  screen,
-  fetchScreenProfiles,
-}: ScreenProps) => {
-  const { removeScreen } = useAdminInfo();
+export const ScreenComponent = ({ screen }: ScreenProps) => {
+  const { removeScreen } = useAdminInfoContext();
+  const { refetch } = useScreenProfilesContext();
   const handleRemoveScreen = () => {
     removeScreen(screen.id).then(() => {
-      fetchScreenProfiles();
+      refetch();
     });
   };
   return (

@@ -1,9 +1,9 @@
 import { Navigate } from "react-router-dom";
 import { OrdersScreen } from "../../components/screen-templates";
-import { useScreenInfo } from "../../hooks/useScreenInfo";
+import { useScreenInfoContext } from "../../hooks/useScreenInfoContext";
 
 const ScreenContentPage = () => {
-  const { token, screenInfo } = useScreenInfo();
+  const { token, screenInfo } = useScreenInfoContext();
   // TODO: Fetch screenInfo
   if (!token) {
     return <Navigate to={"/screen/pair"} replace />;

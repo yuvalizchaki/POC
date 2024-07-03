@@ -50,14 +50,6 @@ export const ScreenInfoProvider: React.FC<ScreenInfoProviderProps> = ({
     }
   }, []);
 
-  // Sync token state with local storage
-  useEffect(() => {
-    const storedToken = localStorage.getItem(LOCALSTORAGE_KEY_SCREEN_TOKEN);
-    if (storedToken !== token) {
-      setTokenState(storedToken);
-    }
-  }, [token]);
-
   const client = useMemo(() => {
     const axiosInstance = axios.create({ baseURL: API_BASE_URL });
     if (token) {
@@ -65,7 +57,7 @@ export const ScreenInfoProvider: React.FC<ScreenInfoProviderProps> = ({
         "Authorization"
       ] = `Bearer ${token}`;
     } else {
-      client.defaults.headers.common["Authorization"] = "";
+      axiosInstance.defaults.headers.common["Authorization"] = "";
     }
     return axiosInstance;
   }, [token]);
@@ -87,6 +79,14 @@ export const ScreenInfoProvider: React.FC<ScreenInfoProviderProps> = ({
     setToken,
     fetchOrders,
   };
+
+  // Sync token state with local storage
+  useEffect(() => {
+    const storedToken = localStorage.getItem(LOCALSTORAGE_KEY_SCREEN_TOKEN);
+    if (storedToken !== token) {
+      setTokenState(storedToken);
+    }
+  }, [token]);
 
   return (
     <ScreenInfoContext.Provider value={contextValue}>

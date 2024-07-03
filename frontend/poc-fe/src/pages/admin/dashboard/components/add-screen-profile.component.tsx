@@ -1,30 +1,23 @@
-import {
-  Box,
-  Button,
-  Grid,
-  Modal,
-  SxProps,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Grid, Modal, TextField, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useState, ChangeEvent } from "react";
-import { ScreenProfileAddData } from "../../../../types/screenProfile.types";
-import moment from "moment";
-import { useAdminInfo } from "../../../../hooks/useAdminInfo";
+import { useAdminInfoContext } from "../../../../hooks/useAdminInfoContext";
+import { useScreenProfilesContext } from "../../../../hooks/useScreenProfilesContext";
+import {
+  CreateScreenProfileDto,
+  DisplayTemplateType,
+  TimeMode,
+  TimeUnit,
+} from "../../../../types/screenProfile.types";
 
-interface AddScreenProfileProps {
-  sx: SxProps;
-  fetchScreenProfiles: () => void;
-}
+// interface AddScreenProfileProps {}
 
-export const AddScreenProfileComponent = ({
-  sx,
-  fetchScreenProfiles,
-}: AddScreenProfileProps) => {
+export const AddScreenProfileComponent = () => {
   const [addScreenProfileOpen, setAddScreenProfileOpen] = useState(false);
   const [name, setName] = useState("");
-  const { createScreenProfile } = useAdminInfo();
+  const { createScreenProfile } = useAdminInfoContext();
+
+  const { refetch } = useScreenProfilesContext();
 
   const handleAddScreenProfileOpen = () => {
     setAddScreenProfileOpen(true);
@@ -36,22 +29,31 @@ export const AddScreenProfileComponent = ({
 
   const handleAddScreenProfile = () => {
     // TODO: Add other information and fields
-    const data: ScreenProfileAddData = {
+    const data: CreateScreenProfileDto = {
       name: name,
       companyId: 1, // <-- TODO: Remove This!
       screenProfileFiltering: {
-        orderTimeRange: {
-          startDate: moment().startOf("day").toISOString(),
-          endDate: moment().endOf("day").toISOString(),
+        orderFiltering: {
+          from: {
+            mode: TimeMode.Start,
+            unit: TimeUnit.Day,
+            amount: 0,
+          },
+          to: {
+            mode: TimeMode.End,
+            unit: TimeUnit.Day,
+            amount: 0,
+          },
         },
-        // orderStatusses: [];
-        // isPickup: false;
-        // isSale: false;
-        // entityIds: [];
+        displayConfig: {
+          displayTemplate: DisplayTemplateType.Table,
+          isPaging: false,
+        },
+        inventoryFiltering: {},
       },
     };
     createScreenProfile(data).then(() => {
-      fetchScreenProfiles();
+      refetch();
     });
     setAddScreenProfileOpen(false);
   };
@@ -73,13 +75,8 @@ export const AddScreenProfileComponent = ({
       >
         Add Profile
       </Button>
-      <Modal
-        open={addScreenProfileOpen}
-        onClose={handleAddScreenProfileClose}
-        aria-labelledby="parent-modal-title"
-        aria-describedby="parent-modal-description"
-      >
-        <Box sx={{ ...sx, width: 400 }}>
+      <Modal open={addScreenProfileOpen} onClose={handleAddScreenProfileClose}>
+        <Box sx={{ width: 400 }}>
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <TextField

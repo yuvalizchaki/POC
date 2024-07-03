@@ -12,8 +12,8 @@ import { useNavigate } from "react-router-dom";
 import { API_BASE_URL, LOCALSTORAGE_KEY_ADMIN_TOKEN } from "../config";
 import {
   ScreenProfile,
-  ScreenProfileAddData,
-  ScreeProfileUpdateData,
+  CreateScreenProfileDto,
+  UpdateScreenProfileDto,
 } from "../types/screenProfile.types";
 
 interface AdminInfoProviderProps {
@@ -29,11 +29,11 @@ export interface AdminInfoContextType {
   pairScreen: (code: string, screenProfileId: number) => Promise<AxiosResponse>;
   removeScreen: (id: number) => Promise<AxiosResponse>;
   createScreenProfile: (
-    screenProfileData: ScreenProfileAddData
+    screenProfileData: CreateScreenProfileDto
   ) => Promise<AxiosResponse>;
   updateScreenProfile: (
     screenProfileId: number,
-    screeProfileData: ScreeProfileUpdateData
+    screeProfileData: UpdateScreenProfileDto
   ) => Promise<AxiosResponse>;
   deleteScreenProfile: (screenProfileId: number) => Promise<AxiosResponse>;
   getAllScreenProfiles: () => Promise<ScreenProfile[]>;
@@ -150,7 +150,7 @@ export const AdminInfoProvider: React.FC<AdminInfoProviderProps> = ({
   );
 
   const createScreenProfile = useCallback(
-    (screeProfileData: ScreenProfileAddData) => {
+    (screeProfileData: CreateScreenProfileDto) => {
       return client({
         method: "post",
         url: "/screen-profiles",
@@ -161,7 +161,7 @@ export const AdminInfoProvider: React.FC<AdminInfoProviderProps> = ({
   );
 
   const updateScreenProfile = useCallback(
-    (id: number, screeProfileData: ScreeProfileUpdateData) => {
+    (id: number, screeProfileData: UpdateScreenProfileDto) => {
       return client({
         method: "put",
         url: "/screen-profiles/" + id,

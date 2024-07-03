@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { ScreenInfo } from "../types/screenInfo.types";
 import { OrderDto } from "../types/crmTypes.types";
-import { useScreenInfo } from "./useScreenInfo";
+import { useScreenInfoContext } from "./useScreenInfoContext";
 import { API_SCREEN_HUB_URL } from "../config";
 import { useSignalR } from "./useSignalR";
 
@@ -10,7 +10,7 @@ interface ScreenTemplateProps {
 }
 
 export const useScreenTemplate = ({ screenInfo }: ScreenTemplateProps) => {
-  const { setScreenInfo, fetchOrders } = useScreenInfo();
+  const { setScreenInfo, fetchOrders } = useScreenInfoContext();
 
   const [orders, setOrders] = useState<OrderDto[]>([]);
 
