@@ -8,7 +8,7 @@ using POC.Infrastructure.Models;
 using POC.Infrastructure.Models.CrmSearchQuery;
 
 namespace POC.Infrastructure.Extensions;
-public static class ScreenProfileFilterDtoExtensions
+public static class ScreenProfileFilterExtensions
 {
     public static ScreenProfileFilteringDto ToScreenProfileFilteringDto(this ScreenProfileFiltering screenProfileFilter)
     {
@@ -53,7 +53,7 @@ public static class ScreenProfileFilterDtoExtensions
     }
 }
 
-public static class ScreenProfileFilterExtensions
+public static class ScreenProfileFilterDtoExtensions
 {
     public static ScreenProfileFiltering ToScreenProfileFiltering(this ScreenProfileFilteringDto screenProfileFilterDto)
     {
@@ -183,10 +183,11 @@ public static class ScreenProfileFilteringExtensions
     public static bool IsMatch(this ScreenProfileFiltering screenProfileFiltering, OrderDto order)
     {
         var orderFiltering = screenProfileFiltering.OrderFiltering;
-        return  (IsBetween(order.StartDate, orderFiltering.From) || IsBetween(order.EndDate, orderFiltering.From)) &&
-                (orderFiltering.OrderStatuses == null || orderFiltering.OrderStatuses.Contains(order.Status)) &&
-                (orderFiltering.IsPickup == null || orderFiltering.IsPickup == order.IsPickup) &&
-                (orderFiltering.EntityIds == null || orderFiltering.EntityIds.Contains(order.DepartmentId));
+        return (IsBetween(order.StartDate, orderFiltering.From) || IsBetween(order.EndDate, orderFiltering.From)) &&
+               (orderFiltering.OrderStatuses == null || orderFiltering.OrderStatuses.Contains(order.Status)) &&
+               (orderFiltering.IsPickup == null || orderFiltering.IsPickup == order.IsPickup) &&
+               (orderFiltering.EntityIds == null || orderFiltering.EntityIds.Contains(order.DepartmentId));
+        //TODO check how to filter by tags
     }
     
     public static bool IsInventoryMatch(this ScreenProfileFiltering screenProfileFiltering, InventoryItemDto orderItem)
