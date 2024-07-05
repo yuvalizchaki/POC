@@ -37,7 +37,13 @@ public class InMemoryOrderRepository(
         //TODO WHAT HAPPENS WHEN EXPIRES BEFORE THE REFRESH DUE TO A POSSIBLE(?) SCHEDULING AND THEN THE SCREEN TRIES TO GET THE DATA IN BETWEEN?
         cache.Set(_cacheKey, orders, TimeSpan.FromMinutes(expirationMinutes));
     }
-    
+
+    public Task<OrderDto?> GetOrderAsync(int id)
+    {
+        var orders = GetAllOrdersFromCache().Result;
+        return Task.FromResult(orders.FirstOrDefault(o => o.Id == id));
+    }
+
     public async Task DeleteOrderAsync(int id)
     {
         var orders = await GetAllOrdersFromCache();
