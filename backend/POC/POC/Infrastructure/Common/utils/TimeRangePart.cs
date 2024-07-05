@@ -1,9 +1,19 @@
-﻿namespace POC.Infrastructure.Common.utils;
+﻿using System.ComponentModel.DataAnnotations;
+using POC.Infrastructure.Common.Attributes;
+
+namespace POC.Infrastructure.Common.utils;
 
 public class TimeRangePart
 {
+
+    [ValidateEnum(ErrorMessage = "Invalid time unit specified")]
     public TimeUnit Unit { get; set; } // Example: "day"
-    public Mode Mode { get; set; } // Example: 1 - start, 2 - end, 3 - fixed
+    
+    //[Range((int)Mode.Start, (int)Mode.End, ErrorMessage = "Invalid mode specified")]
+    [ValidateEnum(ErrorMessage = "Invalid mode specified")]
+    public Mode Mode { get; set; } // Example: 1 - start, 2 - fixed, 3 - end
+    
+    [Range(1, 200, ErrorMessage = "Amount must be greater than 0")]
     public int Amount { get; set; }
 }
 
@@ -75,16 +85,16 @@ public static class TimeRangePartExtensions
 
 public enum TimeUnit
 {
-    Hour,
-    Day,
-    Week,
-    Month,
-    Year
+    Hour = 1,
+    Day = 2,
+    Week = 3,
+    Month = 4,
+    Year = 5
 }
 
 public enum Mode
 {
     Start = 1,
-    End = 2,
-    Fixed = 3
+    Fixed = 2,
+    End = 3
 }
