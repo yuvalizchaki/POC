@@ -60,8 +60,8 @@ public class InventoryFilteringDto
 
 public class DisplayConfigDto
 {
-    [Required(ErrorMessage = "DisplayConfig is required.")]
+    [Required(ErrorMessage = "IsPaging is required.")]
     public bool IsPaging { get; set; }
-    [Required(ErrorMessage = "DisplayConfig is required.")]
+    [Required(ErrorMessage = "DisplayTemplate is required.")]
     public DisplayTemplateType DisplayTemplate { get; set; } // Enum: Table, Graph, Notes, whatever
 }
