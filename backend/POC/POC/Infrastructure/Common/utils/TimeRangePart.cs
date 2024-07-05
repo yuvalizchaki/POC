@@ -6,10 +6,10 @@ namespace POC.Infrastructure.Common.utils;
 public class TimeRangePart
 {
 
+    
     [ValidateEnum(ErrorMessage = "Invalid time unit specified")]
     public TimeUnit Unit { get; set; } // Example: "day"
     
-    //[Range((int)Mode.Start, (int)Mode.End, ErrorMessage = "Invalid mode specified")]
     [ValidateEnum(ErrorMessage = "Invalid mode specified")]
     public Mode Mode { get; set; } // Example: 1 - start, 2 - fixed, 3 - end
     

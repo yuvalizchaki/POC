@@ -4,11 +4,20 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace POC.Infrastructure.Common.Attributes;
 
+
+//Nullable enum
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = false)]
 public class ValidateEnumAttribute : ValidationAttribute
 {
-    protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+    protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
     {
+        
+        if (value == null)
+        {
+            return ValidationResult.Success;
+        }
+        
+        
         if (value is not Enum)
         {
             return new ValidationResult("Invalid enum type");
@@ -24,12 +33,17 @@ public class ValidateEnumAttribute : ValidationAttribute
     }
 }
 
-//list of enum
+//nullable list of enum 
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = false)]
 public class ValidateUnitEnumListAttribute : ValidationAttribute
 {
-    protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+    protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
     {
+        if (value == null)
+        {
+            return ValidationResult.Success;
+        }
+        
         if (value is not IEnumerable)
         {
             return new ValidationResult("Invalid type");
