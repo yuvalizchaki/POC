@@ -4,12 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using POC.App.Commands.CreateScreenProfile;
 using POC.App.Commands.DeleteScreenProfile;
 using POC.App.Commands.UpdateScreenProfile;
-using POC.App.Queries.GetScreenProfile;
 using POC.App.Queries.GetAllScreenProfiles;
-using POC.Contracts.Response;
+using POC.App.Queries.GetScreenProfile;
 using POC.Contracts.ScreenProfile;
+using POC.Infrastructure.Common.Attributes;
 using POC.Infrastructure.Common.Exceptions;
-using POC.Infrastructure.Common.Validators;
 
 namespace POC.Api.Controllers.ClientControllers;
 
@@ -28,19 +27,11 @@ public class ScreenProfilesController : ControllerBase
     }
     
     [HttpPost]
+    [ValidateCompanyId("createScreenProfile")]
     public async Task<IActionResult> CreateScreenProfile([FromBody] CreateScreenProfileDto createScreenProfile)
     {
-        var validator = new CreateScreenProfileDtoValidator();
-        var validationResult = await validator.ValidateAsync(createScreenProfile);
-        
-        if (!validationResult.IsValid)
-        {
-            var errorResponse = new ErrorResponse(validationResult.Errors);
-            return BadRequest(errorResponse);
-        }
-
-        if (createScreenProfile.CompanyId != int.Parse(User.FindFirst("CompanyId")?.Value))
-            return Unauthorized("Unauthorized to create screen profile for another company.");
+        // if (ModelState.IsValid == false)
+        //     return BadRequest(ModelState);
         
         var command = new CreateScreenProfileCommand(createScreenProfile);
 
@@ -80,14 +71,8 @@ public class ScreenProfilesController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateScreenProfile(int id, [FromBody] UpdateScreenProfileDto screenProfile)
     {
-        var validator = new UpdateScreenProfileDtoValidator();
-        var validationResult = await validator.ValidateAsync(screenProfile);
-        
-        if (!validationResult.IsValid)
-        {
-            var errorResponse = new ErrorResponse(validationResult.Errors);
-            return BadRequest(errorResponse);
-        }
+        // if (ModelState.IsValid == false)
+        //     return BadRequest(ModelState);
         
         var command = new UpdateScreenProfileCommand(id, screenProfile);
 

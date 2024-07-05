@@ -1,16 +1,12 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using POC.Api.Helpers;
 using POC.App.Commands.PairScreen;
 using POC.App.Commands.RemoveScreen;
 using POC.App.Queries.GetAllScreens;
 using POC.App.Queries.GetScreen;
-using POC.Contracts.Response;
 using POC.Contracts.Screen;
-using POC.Infrastructure;
 using POC.Infrastructure.Common.Exceptions;
-using POC.Infrastructure.Common.Validators;
 using POC.Infrastructure.Extensions;
 
 namespace POC.Api.Controllers.ClientControllers;
@@ -18,34 +14,19 @@ namespace POC.Api.Controllers.ClientControllers;
 [ApiController]
 [Route("[controller]")]
 [Authorize(Roles = "Admin")] 
-public class ScreensController : ControllerBase 
+public class ScreensController(IMediator mediator) : ControllerBase
 {
-    private readonly IMediator _mediator;
-
-    public ScreensController(IMediator mediator)
-    {
-        _mediator = mediator;
-    }
-
     // Example endpoints, adjust based on your actual commands/queries
 
     [HttpPost]
     public async Task<IActionResult> PairScreen([FromBody] PairScreenDto pairScreenDto)
     {
-        var validator = new PairScreenDtoValidator();
-        var validationResult = await validator.ValidateAsync(pairScreenDto);
-
-        if (!validationResult.IsValid)
-        {
-            var errorResponse = new ErrorResponse(validationResult.Errors);
-            return BadRequest(errorResponse);
-        }
         
         var command = new PairScreenCommand(pairScreenDto);
         
         try
         {
-            var result = await _mediator.Send(command);
+            var result = await mediator.Send(command);
             return Ok(result);
         }
         catch (Exception e)
@@ -62,7 +43,7 @@ public class ScreensController : ControllerBase
 
         try
         {
-            await _mediator.Send(command);
+            await mediator.Send(command);
             return NoContent();
         }
         catch (ScreenNotFoundException e)
@@ -78,7 +59,7 @@ public class ScreensController : ControllerBase
 
         try
         {
-            var result = await _mediator.Send(query);
+            var result = await mediator.Send(query);
             return Ok(result);
         }
         catch (ScreenNotFoundException e)
@@ -95,7 +76,7 @@ public class ScreensController : ControllerBase
 
         try
         {
-            var result = await _mediator.Send(query);
+            var result = await mediator.Send(query);
             return Ok(result);
         }
         catch (Exception e)
