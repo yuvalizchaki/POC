@@ -1,9 +1,12 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using System.Diagnostics;
+using Microsoft.IdentityModel.Tokens;
 using POC.Contracts.CrmDTOs;
 using POC.Contracts.ScreenProfile;
+using POC.Infrastructure.Common.Constants;
 using POC.Infrastructure.Common.utils;
 using POC.Infrastructure.Models;
 using POC.Infrastructure.Models.CrmSearchQuery;
+using StackExchange.Redis;
 
 namespace POC.Infrastructure.Extensions;
 public static class ScreenProfileFilterExtensions
@@ -37,7 +40,8 @@ public static class ScreenProfileFilterExtensions
         return new TimeEncapsulatedDto
         {
             From = timeEncapsulated.From,
-            To = timeEncapsulated.To
+            To = timeEncapsulated.To,
+            Include = timeEncapsulated.Include
         };
     }
 
@@ -90,7 +94,8 @@ public static class ScreenProfileFilterDtoExtensions
         return new TimeEncapsulated
         {
             From = timeEncapsulatedDto.From,
-            To = timeEncapsulatedDto.To
+            To = timeEncapsulatedDto.To,
+            Include = timeEncapsulatedDto.Include
         };
     }
 
@@ -121,8 +126,7 @@ public static class ScreenProfileFilteringExtensions
     public static bool IsMatch(this ScreenProfileFiltering screenProfileFiltering, OrderDto order)
     {
         var orderFiltering = screenProfileFiltering.OrderFiltering;
-        return ((orderFiltering.TimeRanges.From == null||IsBetween(order.StartDate, orderFiltering.TimeRanges.From)) || 
-                (orderFiltering.TimeRanges.To == null||IsBetween(order.EndDate, orderFiltering.TimeRanges.To))) &&
+        return IsBetween(order.StartDate, order.EndDate ,screenProfileFiltering.OrderFiltering.TimeRanges) &&
                (orderFiltering.OrderStatuses == null || orderFiltering.OrderStatuses.Contains(order.Status)) &&
                (orderFiltering.IsPickup == null || orderFiltering.IsPickup == order.IsPickup) &&
                (orderFiltering.EntityIds == null || orderFiltering.EntityIds.Contains(order.DepartmentId));
@@ -137,11 +141,27 @@ public static class ScreenProfileFilteringExtensions
                inventoryFiltering.EntityIds!.Contains(orderItem.DepartmentId);
     }
     
-    private static bool IsBetween(DateTime date, TimeRangePart timeRangePart)
+    public static bool IsBetween(DateTime orderStartDate, DateTime orderEndDate, TimeEncapsulated timeEncapsulated)
     {
-        var (start, end) = timeRangePart.ToFormattedDateTime(DateTime.Now, Format);
-        var startDate = DateTime.ParseExact(start, Format, null);
-        var endDate = DateTime.ParseExact(end, Format, null);
-        return date >= startDate && date <= endDate;
+        var to = timeEncapsulated.To;
+        var from = timeEncapsulated.From;
+        var fromDateString = from.ToFormattedDateTime(DateTime.Now, Format);
+        var toDateString = to.ToFormattedDateTime(DateTime.Now, Format);
+        
+        //according to include return the properly in between
+        var startDate = DateTime.ParseExact(fromDateString, Format, null);
+        var endDate = DateTime.ParseExact(toDateString, Format, null);
+        
+
+        return timeEncapsulated.Include switch
+        {
+            TimeInclude.Both => (orderStartDate >= startDate && orderStartDate <= endDate) || 
+                                (orderEndDate >= startDate && orderEndDate <= endDate),
+            TimeInclude.Incoming => orderStartDate >= startDate && orderStartDate <= endDate,
+            TimeInclude.Outgoing => orderEndDate >= startDate && orderEndDate <= endDate,
+            _ => false
+        };
+        
+
     }
 }

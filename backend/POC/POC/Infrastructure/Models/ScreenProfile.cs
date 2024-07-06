@@ -43,6 +43,8 @@ public class TimeEncapsulated
 {
     public TimeRangePart? From { get; set; } = null!;
     public TimeRangePart? To { get; set; } = null!;
+    
+    public TimeInclude Include { get; set; }
 }
 
 public class InventoryFiltering
