@@ -4,7 +4,7 @@ import {
   ScreenInfoContextType,
 } from "../context/screenInfo.context";
 
-export const useScreenInfo = (): ScreenInfoContextType => {
+export const useScreenInfoContext = (): ScreenInfoContextType => {
   const context = useContext(ScreenInfoContext);
 
   if (context === undefined) {

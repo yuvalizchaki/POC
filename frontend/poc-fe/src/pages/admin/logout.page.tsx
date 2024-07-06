@@ -1,8 +1,8 @@
 import { Navigate } from "react-router-dom";
-import { useAdminInfo } from "../../hooks/useAdminInfo";
+import { useAdminInfoContext } from "../../hooks/useAdminInfoContext";
 
 const AdminLogoutPage = () => {
-  const { logoutAdmin } = useAdminInfo();
+  const { logoutAdmin } = useAdminInfoContext();
   logoutAdmin();
   return <Navigate to="/admin" />;
 };

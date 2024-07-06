@@ -3,14 +3,14 @@ import { useCallback, useState } from "react";
 import { useSignalR } from "../../hooks/useSignalR";
 import { PairingCodeDto, ScreenAddedDto } from "../../types/signalR.types";
 import { API_GUEST_HUB_URL } from "../../config";
-import { useScreenInfo } from "../../hooks/useScreenInfo";
+import { useScreenInfoContext } from "../../hooks/useScreenInfoContext";
 import { useNavigate } from "react-router-dom";
 import { Box, Typography } from "@mui/material";
 import { AppLoader } from "../../components/common";
 
 // TODO: Use specific endpoint for setScreenInfo (instead of hard coded), with display name
 const ScreenPairingPage = () => {
-  const { setToken } = useScreenInfo();
+  const { setToken } = useScreenInfoContext();
   const [pairingCode, setPairingCode] = useState<string | null>(null);
   const navigate = useNavigate();
 

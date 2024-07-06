@@ -4,7 +4,7 @@ import {
   AdminInfoContextType,
 } from "../context/adminInfo.context";
 
-export const useAdminInfo = (): AdminInfoContextType => {
+export const useAdminInfoContext = (): AdminInfoContextType => {
   const context = useContext(AdminInfoContext);
 
   if (context === undefined) {
