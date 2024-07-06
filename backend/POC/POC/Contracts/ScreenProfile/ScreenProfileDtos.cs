@@ -37,7 +37,6 @@ public class ScreenProfileFilteringDto
 
 public class OrderFilteringDto
 {
-    [ValidateTimeEncapsulatedDto(ErrorMessage = "Invalid TimeEncapsulated.")]
     public TimeEncapsulatedDto TimeRanges { get; set; } = new TimeEncapsulatedDto();
     
     [ValidateUnitEnumList(ErrorMessage = "Invalid OrderStatus list.")]
@@ -52,8 +51,13 @@ public class OrderFilteringDto
 
 public class TimeEncapsulatedDto
 {
-    public TimeRangePart? From { get; set; } = null!;
-    public TimeRangePart? To { get; set; } = null!;
+    [Required(ErrorMessage = "From is required.")]
+    public TimeRangePart From { get; set; } = null!;
+    [Required(ErrorMessage = "To is required.")]
+    public TimeRangePart To { get; set; } = null!;
+    
+    [ValidateEnum(ErrorMessage = "Invalid include specified")]
+    public TimeInclude Include { get; set; }
 }
 
 public class InventoryFilteringDto
