@@ -5,7 +5,6 @@ namespace POC.Infrastructure.Common.utils;
 
 public class TimeRangePart
 {
-
     
     [ValidateEnum(ErrorMessage = "Invalid time unit specified")]
     public TimeUnit Unit { get; set; } // Example: "day"
@@ -13,7 +12,8 @@ public class TimeRangePart
     [ValidateEnum(ErrorMessage = "Invalid mode specified")]
     public Mode Mode { get; set; } // Example: 1 - start, 2 - fixed, 3 - end
     
-    [Range(1, 200, ErrorMessage = "Amount must be greater than 0")]
+    //negative and positive, not zero
+    [RegularExpression(@"^[-+]?[1-9]\d*$", ErrorMessage = "Amount should be a non-zero integer")]
     public int Amount { get; set; }
 }
 
@@ -25,6 +25,7 @@ public static class TimeRangePartExtensions
         var startDate = timeRangePart.Mode switch
         {
             Mode.Start => AdjustToStart(referenceDate, timeRangePart.Unit),
+            Mode.Fixed => referenceDate,
             Mode.End => AdjustToEnd(referenceDate, timeRangePart.Unit),
             _ => throw new ArgumentException("Invalid mode specified")
         };
@@ -37,6 +38,9 @@ public static class TimeRangePartExtensions
             TimeUnit.Year => startDate.AddYears(timeRangePart.Amount),
             _ => throw new ArgumentException("Invalid time unit specified")
         };
+        
+        if (timeRangePart.Amount < 0)
+            (startDate, endDate) = (endDate, startDate);
         
         return (startDate.ToString(format), endDate.ToString(format));
     }

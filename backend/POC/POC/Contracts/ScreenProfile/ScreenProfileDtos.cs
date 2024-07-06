@@ -37,11 +37,8 @@ public class ScreenProfileFilteringDto
 
 public class OrderFilteringDto
 {
-    [Required(ErrorMessage = "From is required.")]
-    public TimeRangePart From { get; set; }
-    
-    [Required(ErrorMessage = "To is required.")]
-    public TimeRangePart To { get; set; }
+    [ValidateTimeEncapsulatedDto(ErrorMessage = "Invalid TimeEncapsulated.")]
+    public TimeEncapsulatedDto TimeRanges { get; set; } = new TimeEncapsulatedDto();
     
     [ValidateUnitEnumList(ErrorMessage = "Invalid OrderStatus list.")]
     public List<OrderStatus>? OrderStatuses { get; set; }
@@ -51,6 +48,12 @@ public class OrderFilteringDto
     
     [ValidateUnitEnumList(ErrorMessage = "Invalid OrderType list.")]
     public List<OrderTags>? Tags { get; set; } 
+}
+
+public class TimeEncapsulatedDto
+{
+    public TimeRangePart? From { get; set; } = null!;
+    public TimeRangePart? To { get; set; } = null!;
 }
 
 public class InventoryFilteringDto

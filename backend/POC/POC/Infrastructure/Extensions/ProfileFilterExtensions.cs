@@ -1,8 +1,6 @@
-﻿using System.Diagnostics;
-using Microsoft.VisualBasic;
+﻿using Microsoft.IdentityModel.Tokens;
 using POC.Contracts.CrmDTOs;
 using POC.Contracts.ScreenProfile;
-using POC.Infrastructure.Common.Constants;
 using POC.Infrastructure.Common.utils;
 using POC.Infrastructure.Models;
 using POC.Infrastructure.Models.CrmSearchQuery;
@@ -25,13 +23,21 @@ public static class ScreenProfileFilterExtensions
     {
         return new OrderFilteringDto
         {
-            From = orderFiltering.From,
-            To = orderFiltering.To,
+            TimeRanges = orderFiltering.TimeRanges.ToTimeEncapsulatedDto(),
             OrderStatuses = orderFiltering.OrderStatuses,
             IsPickup = orderFiltering.IsPickup,
             IsSale = orderFiltering.IsSale,
             EntityIds = orderFiltering.EntityIds,
             Tags = orderFiltering.Tags
+        };
+    }
+    
+    private static TimeEncapsulatedDto ToTimeEncapsulatedDto(this TimeEncapsulated timeEncapsulated)
+    {
+        return new TimeEncapsulatedDto
+        {
+            From = timeEncapsulated.From,
+            To = timeEncapsulated.To
         };
     }
 
@@ -70,13 +76,21 @@ public static class ScreenProfileFilterDtoExtensions
     {
         return new OrderFiltering
         {
-            From = orderFilteringDto.From,
-            To = orderFilteringDto.To,
+            TimeRanges = orderFilteringDto.TimeRanges.ToTimeEncapsulated(),
             OrderStatuses = orderFilteringDto.OrderStatuses,
             IsPickup = orderFilteringDto.IsPickup,
             IsSale = orderFilteringDto.IsSale,
             EntityIds = orderFilteringDto.EntityIds,
             Tags = orderFilteringDto.Tags
+        };
+    }
+    
+    private static TimeEncapsulated ToTimeEncapsulated(this TimeEncapsulatedDto timeEncapsulatedDto)
+    {
+        return new TimeEncapsulated
+        {
+            From = timeEncapsulatedDto.From,
+            To = timeEncapsulatedDto.To
         };
     }
 
@@ -101,89 +115,14 @@ public static class ScreenProfileFilterDtoExtensions
 
 public static class ScreenProfileFilteringExtensions
 {
-    static string format = "yyyy-MM-ddTHH:mm";
-    static string status = "Status";
-    static string isPickup = "IsPickup";
-    static string isSale = "IsSale";
-    static string entityIds = "DepartmentId";
-    static string startDate = "StartDate";
-    static string endDate = "EndDate";
-    private static string tags = "OrderTagIds";
+    private const string Format = "yyyy-MM-ddTHH:mm";
 
-    public static SearchRequest ToSearchRequest(this ScreenProfileFiltering screenProfileFiltering)
-    {
-        var searchRequest = SearchRequestBuilder.Empty;
-        var from = screenProfileFiltering.OrderFiltering.From;
-        var to = screenProfileFiltering.OrderFiltering.To;
-        
-        var (fromStart, fromEnd) = from.ToFormattedDateTime(DateTime.Now, format);
-        var (toStart, toEnd) = to.ToFormattedDateTime(DateTime.Now, format);
-        
-        // searchRequest = searchRequest.AppendFiltering(
-        //     startDate,
-        //     FilterOperation.Gt,
-        //     fromStart);
-        // searchRequest = searchRequest.AppendFiltering(
-        //     startDate,
-        //     FilterOperation.Lt,
-        //     fromEnd);
-        //
-        // searchRequest = searchRequest.AppendFiltering(
-        //     endDate,
-        //     FilterOperation.Gt,
-        //     toStart);
-        // searchRequest = searchRequest.AppendFiltering(
-        //     endDate,
-        //     FilterOperation.Lt,
-        //     toEnd);
-
-        if (screenProfileFiltering.OrderFiltering.OrderStatuses != null)
-        {
-            var orderStatusesInts = screenProfileFiltering.OrderFiltering.OrderStatuses.Select(s => (int)s);
-            var arrStatuses = orderStatusesInts.Select(s => s.ToString()).ToArray();
-            searchRequest = searchRequest.AppendFiltering(status, FilterOperation.In, arrStatuses);
-        }
-
-        if (screenProfileFiltering.OrderFiltering.IsPickup!=null)
-        {
-            searchRequest = searchRequest.AppendFiltering(isPickup, screenProfileFiltering.OrderFiltering.IsPickup.Value? "true" : "false");
-        }
-
-        if (screenProfileFiltering.OrderFiltering.IsSale !=null)
-        {
-            //TODO: check if there is such a thing as sale filtering at all? i cant find it in the CRM filtering..
-            //searchRequest = searchRequest.AppendFiltering(isSale, screenProfileFiltering.OrderFiltering.IsSale.Value ?  "true" : "false");
-        }
-
-        if (screenProfileFiltering.OrderFiltering.EntityIds != null)
-        {
-            var entityIdsList = screenProfileFiltering.OrderFiltering.EntityIds.Select(s => s.ToString());
-            searchRequest = searchRequest.AppendFiltering(entityIds, FilterOperation.In, entityIdsList.ToArray());
-        }
-        
-        //TODO: see why tags makes problems when the request is sent into the crm server
-        // if (screenProfileFiltering.OrderFiltering.Tags != null)
-        // {
-        //     var tagsInts = screenProfileFiltering.OrderFiltering.Tags.Select(s => (int)s);
-        //     var tagsList = tagsInts.Select(s => s.ToString());
-        //     searchRequest = searchRequest.AppendFiltering(tags, FilterOperation.In, tagsList.ToArray());
-        // }
-        
-        if (screenProfileFiltering.InventoryFiltering is { EntityIds: not null })
-        {
-            var entityIdsList = screenProfileFiltering.InventoryFiltering.EntityIds.Select(s => s.ToString());
-            searchRequest = searchRequest.AppendFiltering(entityIds, FilterOperation.In, entityIdsList.ToArray());
-        }
-
-        return searchRequest.Build();
-    }
-    
-    
     //TODO notice that it already assumes here the company id of orders.
     public static bool IsMatch(this ScreenProfileFiltering screenProfileFiltering, OrderDto order)
     {
         var orderFiltering = screenProfileFiltering.OrderFiltering;
-        return (IsBetween(order.StartDate, orderFiltering.From) || IsBetween(order.EndDate, orderFiltering.From)) &&
+        return ((orderFiltering.TimeRanges.From == null||IsBetween(order.StartDate, orderFiltering.TimeRanges.From)) || 
+                (orderFiltering.TimeRanges.To == null||IsBetween(order.EndDate, orderFiltering.TimeRanges.To))) &&
                (orderFiltering.OrderStatuses == null || orderFiltering.OrderStatuses.Contains(order.Status)) &&
                (orderFiltering.IsPickup == null || orderFiltering.IsPickup == order.IsPickup) &&
                (orderFiltering.EntityIds == null || orderFiltering.EntityIds.Contains(order.DepartmentId));
@@ -193,14 +132,16 @@ public static class ScreenProfileFilteringExtensions
     public static bool IsInventoryMatch(this ScreenProfileFiltering screenProfileFiltering, InventoryItemDto orderItem)
     {
         var inventoryFiltering = screenProfileFiltering.InventoryFiltering;
-        return inventoryFiltering == null || inventoryFiltering.EntityIds.Contains(orderItem.DepartmentId);
+        return inventoryFiltering == null || 
+               inventoryFiltering.EntityIds.IsNullOrEmpty() ||
+               inventoryFiltering.EntityIds!.Contains(orderItem.DepartmentId);
     }
     
     private static bool IsBetween(DateTime date, TimeRangePart timeRangePart)
     {
-        var (start, end) = timeRangePart.ToFormattedDateTime(DateTime.Now, format);
-        var startDate = DateTime.ParseExact(start, format, null);
-        var endDate = DateTime.ParseExact(end, format, null);
+        var (start, end) = timeRangePart.ToFormattedDateTime(DateTime.Now, Format);
+        var startDate = DateTime.ParseExact(start, Format, null);
+        var endDate = DateTime.ParseExact(end, Format, null);
         return date >= startDate && date <= endDate;
     }
 }
