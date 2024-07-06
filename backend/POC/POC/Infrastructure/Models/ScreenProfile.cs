@@ -28,8 +28,7 @@ public class ScreenProfileFiltering
 
 public class OrderFiltering
 {
-    public TimeRangePart From { get; set; } = null!;
-    public TimeRangePart To { get; set; } = null!;
+    public TimeEncapsulated TimeRanges { get; set; } = new TimeEncapsulated();
     
     public List<OrderStatus>? OrderStatuses { get; set; }
     public bool? IsSale { get; set; } 
@@ -38,6 +37,12 @@ public class OrderFiltering
     public List<int>? EntityIds { get; set; }
     
     public List<OrderTags>? Tags { get; set; }
+}
+
+public class TimeEncapsulated
+{
+    public TimeRangePart? From { get; set; } = null!;
+    public TimeRangePart? To { get; set; } = null!;
 }
 
 public class InventoryFiltering

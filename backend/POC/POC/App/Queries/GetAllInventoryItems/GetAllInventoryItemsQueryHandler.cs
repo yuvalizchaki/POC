@@ -17,23 +17,6 @@ public class GetAllInventoryItemsQueryHandler(
     IOrderRepository orderRepository)
     : IRequestHandler<GetAllInventoryItemsQuery, List<InventoryItemDto>>
 {
-    // TODO: Implement CRM adapter and related classes
-
-    //THIS IS THE OLD WAY WHICH IS ALSO PROBABLY JUST WRONG BECAUSE IT TRIES TO READ FROM THE INVENTORY ENDPOINT
-    public async Task<List<InventoryItemDto>> Handle2(GetAllInventoryItemsQuery request,
-        CancellationToken cancellationToken)
-    {
-        int profileId = request.profileId;
-        int companyId = request.companyId;
-
-        var screenProfile = await screenProfileRepository.GetByIdAsync(profileId);
-        var temp = screenProfile.ScreenProfileFiltering;
-
-        var query = temp.ToSearchRequest(); //translating into a query request object
-
-        return await crmAdapter.GetAllInventoryItemsAsync(companyId, query);
-
-    }
 
     //NEW WAY BY AGGREGATING THE CACHE ORDERS INTO INVENTORY ITEMS
     public async Task<List<InventoryItemDto>> Handle(GetAllInventoryItemsQuery request,
