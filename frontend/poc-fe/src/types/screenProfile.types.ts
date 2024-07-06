@@ -21,9 +21,8 @@ export enum OrderTags {
 }
 
 export enum DisplayTemplateType {
-  Table = 0,
-  Graph = 1,
-  Notes = 2,
+  Orders = 1,
+  Inventory = 2
 }
 
 // Types

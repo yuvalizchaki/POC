@@ -1,10 +1,11 @@
-import { Box, Grid, TextField } from "@mui/material";
+import { Box, Grid, MenuItem, TextField } from "@mui/material";
 import { Controller, ControllerRenderProps, useFormContext } from "react-hook-form";
-import { ScreenProfileFormFields } from "../../../../types/screenProfile.types";
+import { DisplayTemplateType, ScreenProfileFormFields } from "../../../../types/screenProfile.types";
 import React from "react";
 
 // #region    ======================================== ScreenPorfileForm ========================================
 interface TimeRangePickerProps extends ControllerRenderProps {
+  label?: string
   error?: boolean
   helperText?: string
 }
@@ -50,10 +51,50 @@ export const ScreenPorfileForm = ({ }: ScreenPorfileFormProps) => {
         </Grid>
         <Grid item xs={12}>
           <Controller
-            name="name"
+            name="screenProfileFiltering.displayConfig.displayTemplate"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                select
+                label="Display Type"
+                fullWidth
+                {...field}
+                value={field.value}
+                onChange={(v) => field.onChange(v)}
+                error={!!errors.name}
+                helperText={errors.name?.message?.toString()}
+              >
+                <MenuItem value={DisplayTemplateType.Orders}>
+                  Orders
+                </MenuItem>
+                <MenuItem value={DisplayTemplateType.Inventory}>
+                  Inventory
+                </MenuItem>
+              </TextField>
+            )}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <Controller
+            name="screenProfileFiltering.orderFiltering.timeRanges.from"
             control={control}
             render={({ field }) => (
               <TimeRangePicker
+                label="From"
+                {...field}
+                error={!!errors.name}
+                helperText={errors.name?.message?.toString()}
+              />
+            )}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <Controller
+            name="screenProfileFiltering.orderFiltering.timeRanges.from"
+            control={control}
+            render={({ field }) => (
+              <TimeRangePicker
+                label="To"
                 {...field}
                 error={!!errors.name}
                 helperText={errors.name?.message?.toString()}

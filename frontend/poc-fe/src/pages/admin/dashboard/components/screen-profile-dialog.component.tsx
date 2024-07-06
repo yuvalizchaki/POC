@@ -48,7 +48,7 @@ export const ScreenProfileDialog = ({
             companyId: 1, // TODO: Change this from hard coded to infer from admin context
             screenProfileFiltering: {
                 displayConfig: {
-                    displayTemplate: DisplayTemplateType.Table,
+                    displayTemplate: DisplayTemplateType.Orders,
                     isPaging: true,
                 },
                 orderFiltering: {
@@ -76,6 +76,7 @@ export const ScreenProfileDialog = ({
 
     const handleCancel = () => {
         form.reset();
+        console.log('[DEBUG] CancelingScreen Profile!', form.getValues());
         onCancel();
     }
 
@@ -117,7 +118,6 @@ export const ScreenProfileDialog = ({
                         sx={{ mt: 1 }}
                     >
                         <ScreenPorfileForm />
-
                     </Box>
                 </FormProvider>
             </DialogContent>
