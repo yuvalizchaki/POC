@@ -1,10 +1,10 @@
 using System.Text;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using POC.Api.Controllers.ClientControllers;
 using POC.Api.Conventions;
 using POC.Api.Helpers;
 using POC.Api.Hubs;
@@ -116,7 +116,17 @@ builder.Services.AddSingleton<GuestHub>();
 builder.Services.AddSingleton<AdminHub>();
 
 // Add the custom route convention
-builder.Services.AddControllers(options => { options.Conventions.Add(new KebabCaseRouteConvention()); });
+builder.Services.AddControllers(options =>
+{
+    options.Conventions.Add(new KebabCaseRouteConvention());
+    options.ModelMetadataDetailsProviders.Add(new SystemTextJsonValidationMetadataProvider());
+});
+
+// Add Validators
+// builder.Services.AddValidatorsFromAssemblyContaining<UpdateScreenProfileDtoValidator>();
+// builder.Services.AddValidatorsFromAssemblyContaining<ScreenProfileDtoValidators>();
+// builder.Services.AddValidatorsFromAssemblyContaining<PairScreenDtoValidator>();
+
 
 builder.Services.AddHttpClient<CrmTokenAdapter>("CrmAuthClient");
 builder.Services.AddHttpClient<CrmAdapter>("CrmApiClient");

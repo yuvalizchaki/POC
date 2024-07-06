@@ -1,16 +1,10 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using POC.Api.Hubs;
 using POC.App.Commands.AdminLogin;
-using POC.App.Commands.CreateScreenProfile;
 using POC.App.Queries.GetAllConnectedScreens;
 using POC.Contracts.Auth;
-using POC.Contracts.Response;
-using POC.Contracts.ScreenProfile;
 using POC.Infrastructure.Common.Exceptions;
-using POC.Infrastructure.Common.Validators;
-using POC.Services;
 
 namespace POC.Api.Controllers.ClientControllers;
 [ApiController]

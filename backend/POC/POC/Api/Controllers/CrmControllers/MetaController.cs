@@ -1,16 +1,9 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using POC.App.Commands.CreateScreenProfile;
-using POC.App.Commands.DeleteScreenProfile;
-using POC.App.Commands.UpdateScreenProfile;
-using POC.App.Queries.GetAllScreenProfiles;
 using POC.App.Queries.GetMetadata;
-using POC.App.Queries.GetScreenProfile;
-using POC.Contracts.Response;
 using POC.Contracts.ScreenProfile;
 using POC.Infrastructure.Common.Exceptions;
-using POC.Infrastructure.Common.Validators;
 
 namespace POC.Api.Controllers.CrmControllers;
 

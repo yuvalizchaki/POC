@@ -30,8 +30,12 @@ public class OurDbContext(DbContextOptions<OurDbContext> options) : DbContext(op
             {
                 spf.OwnsOne(s => s.OrderFiltering, of =>
                 {
-                    of.OwnsOne(o => o.From);
-                    of.OwnsOne(o => o.To);
+                    of.OwnsOne(o => o.TimeRanges, tr =>
+                    {
+                        tr.OwnsOne(t => t.From);
+                        tr.OwnsOne(t => t.To);
+                        tr.Property(t => t.Include);
+                    });
                     of.Property(s => s.IsSale)
                         .HasColumnType("boolean")
                         .IsRequired(false);
