@@ -33,9 +33,13 @@ interface TimeRangePart {
   amount: number;
 }
 
-interface OrderFilteringDto {
+interface TimeEncapsulatedDto {
   from: TimeRangePart;
   to: TimeRangePart;
+}
+
+interface OrderFilteringDto {
+  timeRanges: TimeEncapsulatedDto,
   orderStatuses?: OrderStatus[];
   isPickup?: boolean;
   isSale?: boolean;
@@ -66,17 +70,13 @@ export interface ScreenProfile {
   screenProfileFiltering: ScreenProfileFilteringDto;
 }
 
-export interface CreateScreenProfileDto {
+export interface ScreenProfileFormFields {
   name?: string;
   companyId: number;
   screenProfileFiltering: ScreenProfileFilteringDto;
 }
-
-export interface UpdateScreenProfileDto {
-  name?: string;
-  companyId: number;
-  screenProfileFiltering: ScreenProfileFilteringDto;
-}
+export type CreateScreenProfileDto = ScreenProfileFormFields;
+export type UpdateScreenProfileDto = ScreenProfileFormFields;
 
 export interface ScreenDto {
   id: number;

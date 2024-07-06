@@ -30,7 +30,7 @@ import { AxiosError } from "axios";
 
 const CODE_LENGTH = 6;
 
-interface ProfileProps {
+interface ScreenProfileEntryProps {
   profile: ScreenProfile;
 }
 
@@ -40,7 +40,7 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
-export const ProfileComponent = ({ profile }: ProfileProps) => {
+export const ScreenProfileEntry = ({ profile }: ScreenProfileEntryProps) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [addScreenOpen, setAddScreenOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
