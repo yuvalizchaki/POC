@@ -123,7 +123,7 @@ public static class ScreenProfileFilteringExtensions
     public static bool IsOrderMatch(this ScreenProfileFiltering screenProfileFiltering, OrderDto order)
     {
         var orderFiltering = screenProfileFiltering.OrderFiltering;
-        return DateRangeUtility.IsBetween(order.StartDate, order.EndDate ,screenProfileFiltering.OrderFiltering.TimeRanges) &&
+        return DateRangeUtility.IsBetween(order.StartDate, order.EndDate ,screenProfileFiltering.OrderFiltering.TimeRanges, DateTime.Now) &&
                (orderFiltering.OrderStatuses == null || orderFiltering.OrderStatuses.Contains(order.Status)) &&
                (orderFiltering.IsPickup == null || orderFiltering.IsPickup == order.IsPickup) &&
                (orderFiltering.EntityIds == null || orderFiltering.EntityIds.Contains(order.DepartmentId));
