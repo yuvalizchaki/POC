@@ -2,17 +2,15 @@
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using Microsoft.Extensions.Logging;
 using POC.Contracts.CrmDTOs;
 using POC.Infrastructure.Common;
 using POC.Infrastructure.Common.Exceptions;
-using POC.Infrastructure.Models;
 using POC.Infrastructure.Models.CrmSearchQuery;
 
 namespace POC.Infrastructure.Adapters
 {
     // TODO: Implement CRM adapter and related classes
-    public class CrmAdapter : IOrderAdapter
+    public class CrmAdapter : IOrderAdapter, ITypesAdapter
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private HttpClient _httpClient;
@@ -37,11 +35,11 @@ namespace POC.Infrastructure.Adapters
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
 
-        public async Task<List<OrderDto>> GetAllOrdersAsync(int companyId, SearchRequest queryContent)
+        private async Task<List<OrderDto>> GetAllOrdersAsync(int companyId, SearchRequest queryContent)
         {
             await AddAuthenticationHeaderAsync();
 
-            string crmOrdersUrl = getCrmOrderUrlFromCompany(companyId);
+            string crmOrdersUrl = GetCrmOrderUrlFromCompany(companyId);
 
             var request = new HttpRequestMessage(HttpMethod.Post, _apiBaseUrl + crmOrdersUrl);
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -66,45 +64,12 @@ namespace POC.Infrastructure.Adapters
             var jsonResponseContent = JsonSerializer.Deserialize<OrderQueryResponse>(responseContent, _crmApiJsonSerializerOptions) ?? throw new CrmAdapterError("Failed to deserialize crm response.");
             return jsonResponseContent.Items;
         }
-
-        public async Task<List<InventoryItemDto>> GetAllInventoryItemsAsync(int companyId, SearchRequest queryContent)
-        {
-            await AddAuthenticationHeaderAsync();
-
-            string crmInventorysUrl = getCrmInventoryUrlFromCompany(companyId);
-
-            var request = new HttpRequestMessage(HttpMethod.Post, _apiBaseUrl + crmInventorysUrl);
-            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            request.Content = new StringContent(JsonSerializer.Serialize(queryContent, _crmApiJsonSerializerOptions), Encoding.UTF8, "application/json");
-            _logger.LogInformation("[DEBUG] Request: {Method} {Uri} - Headers: {Headers} - Content: {Content}", request.Method, request.RequestUri, string.Join(", ", request.Headers.Select(h => $"{h.Key}: {string.Join(", ", h.Value)}")), await request.Content.ReadAsStringAsync());
-            _httpClient.BaseAddress = new Uri(_apiBaseUrl);
-            var response = await _httpClient.SendAsync(request);
-            if (response.StatusCode == HttpStatusCode.NotFound)
-                throw new HttpRequestException($"Resource not found at {_apiBaseUrl}{crmInventorysUrl}");
-
-
-            response.EnsureSuccessStatusCode();
-            var responseContent = await response.Content.ReadAsStringAsync();
-
-            // _logger.LogInformation("[DEBUG] CRM response content: {ResponseContent}", responseContent);
-
-            var jsonResponseContent = JsonSerializer.Deserialize<OrderQueryResponse>(responseContent, _crmApiJsonSerializerOptions) ?? throw new CrmAdapterError("Failed to deserialize crm response.");
-           
-            //TODO: fix that to fetch inventory items
-            //return empty list for now
-            return new List<InventoryItemDto>();
-        }
         
-        private string getCrmOrderUrlFromCompany(int companyId)
+        private static string GetCrmOrderUrlFromCompany(int companyId)
         {
             return "orders/" + companyId + "/search";
         }
         
-        private string getCrmInventoryUrlFromCompany(int companyId)
-        {
-            return "inventories/" + companyId + "/search";
-        }
-
         public Task<List<OrderDto>> FetchOrdersAsync(int companyId = 1)
         {
             //TODO integrate companyID separation in cache memory and get it passed into this method
@@ -112,6 +77,77 @@ namespace POC.Infrastructure.Adapters
             return GetAllOrdersAsync(companyId, request);
             //return empty list for now to see if the flow works
             //return Task.FromResult(new List<OrderDto>());
+        }
+        
+        private async Task<String> GetAllTagsTypesAsync()
+        {
+            await AddAuthenticationHeaderAsync();
+
+            var crmOrdersUrl = GetCrmTagsTypesUrl();
+
+            var request = new HttpRequestMessage(HttpMethod.Post, _apiBaseUrl + crmOrdersUrl);
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            _logger.LogInformation("[DEBUG] Request: {Method} {Uri} - Headers: {Headers}", request.Method, request.RequestUri, string.Join(", ", request.Headers.Select(h => $"{h.Key}: {string.Join(", ", h.Value)}")));
+            if (_httpClient.BaseAddress == null)
+            {
+                _httpClient.BaseAddress = new Uri(_apiBaseUrl);
+            }
+            
+            var response = await _httpClient.SendAsync(request);
+            if (response.StatusCode == HttpStatusCode.NotFound)
+                throw new HttpRequestException($"Resource not found at {_apiBaseUrl}{crmOrdersUrl}");
+
+
+            response.EnsureSuccessStatusCode();
+            var responseContent = await response.Content.ReadAsStringAsync();
+            
+            return responseContent;
+        }
+        
+        private static string GetCrmTagsTypesUrl()
+        {
+            return "orders/tags";
+        }
+
+        public Task<string> FetchTagsTypesAsync()
+        {
+            return GetAllTagsTypesAsync();
+        }
+        
+        private async Task<String> GetAllCompanyTypesAsync()
+        {
+            await AddAuthenticationHeaderAsync();
+
+            var crmOrdersUrl = GetCrmCompanyTypesUrl();
+
+            var request = new HttpRequestMessage(HttpMethod.Post, _apiBaseUrl + crmOrdersUrl);
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            _logger.LogInformation("[DEBUG] Request: {Method} {Uri} - Headers: {Headers}", request.Method, request.RequestUri, string.Join(", ", request.Headers.Select(h => $"{h.Key}: {string.Join(", ", h.Value)}")));
+            if (_httpClient.BaseAddress == null)
+            {
+                _httpClient.BaseAddress = new Uri(_apiBaseUrl);
+            }
+            
+            var response = await _httpClient.SendAsync(request);
+            if (response.StatusCode == HttpStatusCode.NotFound)
+                throw new HttpRequestException($"Resource not found at {_apiBaseUrl}{crmOrdersUrl}");
+            
+            response.EnsureSuccessStatusCode();
+            var responseContent = await response.Content.ReadAsStringAsync();
+            
+            return responseContent;
+        }
+        
+        private static string GetCrmCompanyTypesUrl()
+        {
+            return "departments/company";
+        }
+        
+        public Task<string> FetchCompanyTypesAsync()
+        {
+            return GetAllCompanyTypesAsync();
         }
         
     }
