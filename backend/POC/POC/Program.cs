@@ -147,8 +147,12 @@ builder.Services.AddScoped<ScreenProfileRepository>();
 builder.Services.AddScoped<ScreenRepository>();
 builder.Services.AddScoped<AdminRepository>();
 
-builder.Services.AddScoped<IOrderRepository, InMemoryOrderRepository>();
+//register the adapter
+builder.Services.AddScoped<ITypesAdapter, CrmAdapter>();
 builder.Services.AddScoped<IOrderAdapter, CrmAdapter>();
+
+//Register the Order Service
+builder.Services.AddScoped<IOrderRepository, InMemoryOrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddHostedService<OrderReplicationHostedService>();
 

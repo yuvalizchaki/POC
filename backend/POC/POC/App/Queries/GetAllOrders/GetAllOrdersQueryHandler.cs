@@ -10,7 +10,7 @@ using POC.Infrastructure.Repositories;
 namespace POC.App.Queries.GetAllOrders;
 
 public class GetAllOrdersQueryHandler(
-    CrmAdapter crmAdapter,
+    IOrderAdapter crmAdapter,
     ScreenProfileRepository screenProfileRepository,
     IOrderRepository orderRepository)
     : IRequestHandler<GetAllOrdersQuery, List<OrderDto>>
