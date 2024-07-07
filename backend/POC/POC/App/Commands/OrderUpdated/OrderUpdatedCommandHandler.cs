@@ -22,7 +22,7 @@ public class OrderUpdatedCommandHandler(
         var screens = await screenRepository.GetScreensByIdsAsync(connectionIds);
         
         connectionIds = screens
-            .Where(screen => screen.ScreenProfile.ScreenProfileFiltering.IsMatch(request.OrderDto))
+            .Where(screen => screen.ScreenProfile.ScreenProfileFiltering.IsOrderMatch(request.OrderDto))
             .Select(screen => screen.Id)
             .ToList();
         
