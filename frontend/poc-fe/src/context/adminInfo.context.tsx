@@ -206,61 +206,12 @@ export const AdminInfoProvider: React.FC<AdminInfoProviderProps> = ({
   > => {
     try {
       // TODO: Implement Correctly
-      const response = await client.get("/entities");
+      const response = await client.get("/types/company");
       console.log("response:", response);
       return response.data;
     } catch (error) {
       console.error("Error fetching screen profiles:", error);
-      return {
-        Id: 1,
-        CompanyId: 1,
-        Name: "ראשי",
-        Description: "General company department",
-        IsOwnInventory: false,
-        Childs: [
-          {
-            Id: 4,
-            CompanyId: 1,
-            Name: "חיפה",
-            Description: "",
-            IsOwnInventory: true,
-            Childs: []
-          },
-          {
-            Id: 5,
-            CompanyId: 1,
-            Name: "קסריה",
-            Description: "",
-            IsOwnInventory: true,
-            Childs: [
-              {
-                Id: 8,
-                CompanyId: 1,
-                Name: "נוי וקישוט",
-                Description: "",
-                IsOwnInventory: true,
-                Childs: []
-              }
-            ]
-          },
-          {
-            Id: 14,
-            CompanyId: 1,
-            Name: "ירושלים",
-            Description: "",
-            IsOwnInventory: true,
-            Childs: []
-          },
-          {
-            Id: 15,
-            CompanyId: 1,
-            Name: "NEW YORK",
-            Description: "",
-            IsOwnInventory: true,
-            Childs: []
-          }
-        ]
-      } as AppEntity;
+      return {} as AppEntity;
     }
   }, [client]);
 
@@ -269,7 +220,7 @@ export const AdminInfoProvider: React.FC<AdminInfoProviderProps> = ({
   > => {
     try {
       // TODO: Implement Correctly
-      const response = await client.get("/order-tags");
+      const response = await client.get("/types/tags");
       console.log("response:", response);
       return response.data;
     } catch (error) {
