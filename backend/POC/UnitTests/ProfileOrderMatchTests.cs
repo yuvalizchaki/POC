@@ -39,7 +39,7 @@ public class ProfileOrderMatchTests
         };
 
         // Act
-        var result = screenProfileFiltering.IsMatch(order);
+        var result = screenProfileFiltering.IsOrderMatch(order);
 
         // Assert
         Assert.IsTrue(result);
@@ -74,7 +74,7 @@ public class ProfileOrderMatchTests
         };
 
         // Act
-        var result = screenProfileFiltering.IsMatch(order);
+        var result = screenProfileFiltering.IsOrderMatch(order);
 
         // Assert
         Assert.IsFalse(result);

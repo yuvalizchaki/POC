@@ -23,9 +23,9 @@ public static class TimeRangePartExtensions
     {
         var date = timeRangePart.Mode switch
         {
-            Mode.Start => AdjustToStart(referenceDate, timeRangePart.Unit),
+            Mode.Start => DateAdjusterUtility.AdjustToStart(referenceDate, timeRangePart.Unit),
             Mode.Fixed => referenceDate,
-            Mode.End => AdjustToEnd(referenceDate, timeRangePart.Unit),
+            Mode.End => DateAdjusterUtility.AdjustToEnd(referenceDate, timeRangePart.Unit),
             _ => throw new ArgumentException("Invalid mode specified")
         };
         date = timeRangePart.Unit switch
@@ -39,47 +39,6 @@ public static class TimeRangePartExtensions
         };
         
         return date.ToString(format);
-    }
-    
-    
-    private static DateTime AdjustToStart(DateTime referenceDate, TimeUnit unit)
-    {
-        switch (unit)
-        {
-            case TimeUnit.Hour:
-                return new DateTime(referenceDate.Year, referenceDate.Month, referenceDate.Day, referenceDate.Hour, 0, 0);
-            case TimeUnit.Day:
-                return new DateTime(referenceDate.Year, referenceDate.Month, referenceDate.Day, 0, 0, 0);
-            case TimeUnit.Week:
-                var delta = referenceDate.DayOfWeek - DayOfWeek.Sunday;
-                return new DateTime(referenceDate.Year, referenceDate.Month, referenceDate.Day , 0, 0, 0).AddDays(-delta);
-            case TimeUnit.Month:
-                return new DateTime(referenceDate.Year, referenceDate.Month, 1);
-            case TimeUnit.Year:
-                return new DateTime(referenceDate.Year, 1, 1);
-            default:
-                throw new ArgumentException("Invalid time unit specified");
-        }
-    }
-
-    private static DateTime AdjustToEnd(DateTime referenceDate, TimeUnit unit)
-    {
-        switch (unit)
-        {
-            case TimeUnit.Hour:
-                return new DateTime(referenceDate.Year, referenceDate.Month, referenceDate.Day, referenceDate.Hour, 0, 0).AddHours(1).AddTicks(-1);
-            case TimeUnit.Day:
-                return new DateTime(referenceDate.Year, referenceDate.Month, referenceDate.Day, 0, 0, 0).AddDays(1).AddTicks(-1);
-            case TimeUnit.Week:
-                var delta = referenceDate.DayOfWeek - DayOfWeek.Sunday;
-                return new DateTime(referenceDate.Year, referenceDate.Month, referenceDate.Day , 0, 0, 0).AddDays(- delta + 7).AddTicks(-1);
-            case TimeUnit.Month:
-                return new DateTime(referenceDate.Year, referenceDate.Month, 1).AddMonths(1).AddTicks(-1);
-            case TimeUnit.Year:
-                return new DateTime(referenceDate.Year, 1, 1).AddYears(+1).AddTicks(-1);
-            default:
-                throw new ArgumentException("Invalid time unit specified");
-        }
     }
 }
 

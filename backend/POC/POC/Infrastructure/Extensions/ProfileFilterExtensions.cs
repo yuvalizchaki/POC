@@ -120,13 +120,10 @@ public static class ScreenProfileFilterDtoExtensions
 
 public static class ScreenProfileFilteringExtensions
 {
-    private const string Format = "yyyy-MM-ddTHH:mm";
-
-    //TODO notice that it already assumes here the company id of orders.
-    public static bool IsMatch(this ScreenProfileFiltering screenProfileFiltering, OrderDto order)
+    public static bool IsOrderMatch(this ScreenProfileFiltering screenProfileFiltering, OrderDto order)
     {
         var orderFiltering = screenProfileFiltering.OrderFiltering;
-        return IsBetween(order.StartDate, order.EndDate ,screenProfileFiltering.OrderFiltering.TimeRanges) &&
+        return DateRangeUtility.IsBetween(order.StartDate, order.EndDate ,screenProfileFiltering.OrderFiltering.TimeRanges) &&
                (orderFiltering.OrderStatuses == null || orderFiltering.OrderStatuses.Contains(order.Status)) &&
                (orderFiltering.IsPickup == null || orderFiltering.IsPickup == order.IsPickup) &&
                (orderFiltering.EntityIds == null || orderFiltering.EntityIds.Contains(order.DepartmentId));
@@ -141,27 +138,4 @@ public static class ScreenProfileFilteringExtensions
                inventoryFiltering.EntityIds!.Contains(orderItem.DepartmentId);
     }
     
-    public static bool IsBetween(DateTime orderStartDate, DateTime orderEndDate, TimeEncapsulated timeEncapsulated)
-    {
-        var to = timeEncapsulated.To;
-        var from = timeEncapsulated.From;
-        var fromDateString = from.ToFormattedDateTime(DateTime.Now, Format);
-        var toDateString = to.ToFormattedDateTime(DateTime.Now, Format);
-        
-        //according to include return the properly in between
-        var startDate = DateTime.ParseExact(fromDateString, Format, null);
-        var endDate = DateTime.ParseExact(toDateString, Format, null);
-        
-
-        return timeEncapsulated.Include switch
-        {
-            TimeInclude.Both => (orderStartDate >= startDate && orderStartDate <= endDate) || 
-                                (orderEndDate >= startDate && orderEndDate <= endDate),
-            TimeInclude.Incoming => orderStartDate >= startDate && orderStartDate <= endDate,
-            TimeInclude.Outgoing => orderEndDate >= startDate && orderEndDate <= endDate,
-            _ => false
-        };
-        
-
-    }
 }

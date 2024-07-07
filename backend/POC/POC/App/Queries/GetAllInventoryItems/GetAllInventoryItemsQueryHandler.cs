@@ -30,7 +30,7 @@ public class GetAllInventoryItemsQueryHandler(
 
         var orders = await orderRepository.GetAllOrdersAsync(companyId);
 
-        var filteredOrders = orders.Where(o => filtering.IsMatch(o)).ToList();
+        var filteredOrders = orders.Where(o => filtering.IsOrderMatch(o)).ToList();
 
         //orders have orderItems that should be aggregated according to inventory filters
         var inventoryItems = filteredOrders

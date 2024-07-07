@@ -26,7 +26,7 @@ public class OrderDeletedCommandHandler(
         var order = await orderRepository.GetOrderAsync(request.Id);
         
         connectionIds = screens
-            .Where(screen => screen.ScreenProfile.ScreenProfileFiltering.IsMatch(order))
+            .Where(screen => screen.ScreenProfile.ScreenProfileFiltering.IsOrderMatch(order))
             .Select(screen => screen.Id)
             .ToList();
         

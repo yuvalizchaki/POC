@@ -27,7 +27,7 @@ public class GetAllOrdersQueryHandler(
         
         var orders = await orderRepository.GetAllOrdersAsync(companyId);
         
-        var filteredOrders = orders.Where(o => filtering.IsMatch(o)).ToList();
+        var filteredOrders = orders.Where(o => filtering.IsOrderMatch(o)).ToList();
         
         return filteredOrders;
     }
