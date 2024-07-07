@@ -9,16 +9,35 @@ export enum TimeUnit {
   Year = 4,
 }
 
+export const timeUnitMap = {
+  [TimeUnit.Hour]: 'hour',
+  [TimeUnit.Day]: 'day',
+  [TimeUnit.Week]: 'week',
+  [TimeUnit.Month]: 'month',
+  [TimeUnit.Year]: 'year',
+};
+export const timeUnitPluralMap = {
+  [TimeUnit.Hour]: 'hours',
+  [TimeUnit.Day]: 'days',
+  [TimeUnit.Week]: 'weeks',
+  [TimeUnit.Month]: 'months',
+  [TimeUnit.Year]: 'years',
+};
+export const timeUnitPluralList = Object.entries(timeUnitPluralMap).map(([value, label]) => ({ value: Number(value), label }));
+export const timeUnitList = Object.entries(timeUnitMap).map(([value, label]) => ({ value: Number(value), label }));
+
 export enum TimeMode {
   Start = 1,
   End = 2,
   Fixed = 3,
 }
 
-export enum OrderTags {
-  NeedWashing = 36,
-  VIP = 3,
-}
+export const timeModeMap = {
+  [TimeMode.Start]: 'start of',
+  [TimeMode.End]: 'end of',
+  [TimeMode.Fixed]: 'now',
+};
+export const timeModeList = Object.entries(timeModeMap).map(([value, label]) => ({ value: Number(value), label }));
 
 export enum DisplayTemplateType {
   Orders = 1,
@@ -43,7 +62,7 @@ interface OrderFilteringDto {
   isPickup?: boolean;
   isSale?: boolean;
   entityIds?: number[];
-  tags?: OrderTags[];
+  tags?: number[];
 }
 
 interface InventoryFilteringDto {
@@ -57,7 +76,7 @@ interface DisplayConfigDto {
 
 interface ScreenProfileFilteringDto {
   orderFiltering: OrderFilteringDto;
-  inventoryFiltering: InventoryFilteringDto;
+  inventoryFiltering?: InventoryFilteringDto;
   inventorySorting?: string[];
   displayConfig: DisplayConfigDto;
 }

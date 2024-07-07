@@ -15,6 +15,7 @@ import {
   CreateScreenProfileDto,
   UpdateScreenProfileDto,
 } from "../types/screenProfile.types";
+import { AppEntity, OrderTag } from "../types/crmTypes.types";
 
 interface AdminInfoProviderProps {
   children: ReactNode;
@@ -37,13 +38,15 @@ export interface AdminInfoContextType {
   ) => Promise<AxiosResponse>;
   deleteScreenProfile: (screenProfileId: number) => Promise<AxiosResponse>;
   getAllScreenProfiles: () => Promise<ScreenProfile[]>;
+  fetchEntities: () => Promise<AppEntity>;
+  fetchOrderTags: () => Promise<OrderTag[]>;
 }
 
 export const AdminInfoContext = createContext<AdminInfoContextType>({
   token: null,
-  setToken: () => {},
-  loginAdmin: async () => {},
-  logoutAdmin: () => {},
+  setToken: () => { },
+  loginAdmin: async () => { },
+  logoutAdmin: () => { },
   isLoggedIn: () => false,
   pairScreen: async () => {
     return {} as AxiosResponse;
@@ -61,6 +64,10 @@ export const AdminInfoContext = createContext<AdminInfoContextType>({
     return {} as AxiosResponse;
   },
   getAllScreenProfiles: async () => [],
+  fetchEntities: async () => {
+    return {} as AppEntity
+  },
+  fetchOrderTags: async () => []
 });
 
 export const AdminInfoProvider: React.FC<AdminInfoProviderProps> = ({
@@ -194,6 +201,83 @@ export const AdminInfoProvider: React.FC<AdminInfoProviderProps> = ({
     }
   }, [client]);
 
+  const fetchEntities = useCallback(async (): Promise<
+    AppEntity
+  > => {
+    try {
+      // TODO: Implement Correctly
+      const response = await client.get("/entities");
+      console.log("response:", response);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching screen profiles:", error);
+      return {
+        Id: 1,
+        CompanyId: 1,
+        Name: "ראשי",
+        Description: "General company department",
+        IsOwnInventory: false,
+        Childs: [
+          {
+            Id: 4,
+            CompanyId: 1,
+            Name: "חיפה",
+            Description: "",
+            IsOwnInventory: true,
+            Childs: []
+          },
+          {
+            Id: 5,
+            CompanyId: 1,
+            Name: "קסריה",
+            Description: "",
+            IsOwnInventory: true,
+            Childs: [
+              {
+                Id: 8,
+                CompanyId: 1,
+                Name: "נוי וקישוט",
+                Description: "",
+                IsOwnInventory: true,
+                Childs: []
+              }
+            ]
+          },
+          {
+            Id: 14,
+            CompanyId: 1,
+            Name: "ירושלים",
+            Description: "",
+            IsOwnInventory: true,
+            Childs: []
+          },
+          {
+            Id: 15,
+            CompanyId: 1,
+            Name: "NEW YORK",
+            Description: "",
+            IsOwnInventory: true,
+            Childs: []
+          }
+        ]
+      } as AppEntity;
+    }
+  }, [client]);
+
+  const fetchOrderTags = useCallback(async (): Promise<
+    OrderTag[]
+  > => {
+    try {
+      // TODO: Implement Correctly
+      const response = await client.get("/order-tags");
+      console.log("response:", response);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching screen profiles:", error);
+      return [];
+    }
+  }, [client]);
+
   const contextValue: AdminInfoContextType = {
     token,
     setToken,
@@ -206,6 +290,8 @@ export const AdminInfoProvider: React.FC<AdminInfoProviderProps> = ({
     updateScreenProfile,
     deleteScreenProfile,
     getAllScreenProfiles,
+    fetchEntities,
+    fetchOrderTags
   };
 
   // Sync token state with local storage

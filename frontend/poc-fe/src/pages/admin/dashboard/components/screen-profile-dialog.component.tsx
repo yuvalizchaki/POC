@@ -1,4 +1,4 @@
-import { useForm, SubmitHandler, FormProvider, useWatch } from "react-hook-form";
+import { useForm, SubmitHandler, FormProvider } from "react-hook-form";
 import {
     DisplayTemplateType,
     ScreenProfile,
