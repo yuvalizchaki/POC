@@ -79,13 +79,13 @@ namespace POC.Infrastructure.Adapters
             //return Task.FromResult(new List<OrderDto>());
         }
         
-        private async Task<String> GetAllTagsTypesAsync()
+        private async Task<String> GetAllTagsTypesAsync(int companyId)
         {
             await AddAuthenticationHeaderAsync();
 
-            var crmOrdersUrl = GetCrmTagsTypesUrl();
+            var crmOrdersUrl = GetCrmTagsTypesUrl(companyId);
 
-            var request = new HttpRequestMessage(HttpMethod.Post, _apiBaseUrl + crmOrdersUrl);
+            var request = new HttpRequestMessage(HttpMethod.Get, _apiBaseUrl + crmOrdersUrl);
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             _logger.LogInformation("[DEBUG] Request: {Method} {Uri} - Headers: {Headers}", request.Method, request.RequestUri, string.Join(", ", request.Headers.Select(h => $"{h.Key}: {string.Join(", ", h.Value)}")));
@@ -105,23 +105,23 @@ namespace POC.Infrastructure.Adapters
             return responseContent;
         }
         
-        private static string GetCrmTagsTypesUrl()
+        private static string GetCrmTagsTypesUrl(int companyId)
         {
-            return "orders/tags";
+            return $"orders/{companyId}/tags";
         }
 
-        public Task<string> FetchTagsTypesAsync()
+        public Task<string> FetchTagsTypesAsync(int companyId = 1)
         {
-            return GetAllTagsTypesAsync();
+            return GetAllTagsTypesAsync(companyId);
         }
         
-        private async Task<String> GetAllCompanyTypesAsync()
+        private async Task<String> GetAllCompanyTypesAsync(int companyId)
         {
             await AddAuthenticationHeaderAsync();
 
-            var crmOrdersUrl = GetCrmCompanyTypesUrl();
+            var crmOrdersUrl = GetCrmCompanyTypesUrl(companyId);
 
-            var request = new HttpRequestMessage(HttpMethod.Post, _apiBaseUrl + crmOrdersUrl);
+            var request = new HttpRequestMessage(HttpMethod.Get, _apiBaseUrl + crmOrdersUrl);
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             _logger.LogInformation("[DEBUG] Request: {Method} {Uri} - Headers: {Headers}", request.Method, request.RequestUri, string.Join(", ", request.Headers.Select(h => $"{h.Key}: {string.Join(", ", h.Value)}")));
@@ -140,14 +140,14 @@ namespace POC.Infrastructure.Adapters
             return responseContent;
         }
         
-        private static string GetCrmCompanyTypesUrl()
+        private static string GetCrmCompanyTypesUrl(int companyId)
         {
-            return "departments/company";
+            return $"units/{companyId}/departments";
         }
         
-        public Task<string> FetchCompanyTypesAsync()
+        public Task<string> FetchCompanyTypesAsync(int companyId = 1)
         {
-            return GetAllCompanyTypesAsync();
+            return GetAllCompanyTypesAsync(companyId);
         }
         
     }
