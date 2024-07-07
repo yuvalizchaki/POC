@@ -2,11 +2,11 @@ import { OrderStatus } from "./crmTypes.types";
 
 // Enums
 export enum TimeUnit {
-  Hour = 0,
-  Day = 1,
-  Week = 2,
-  Month = 3,
-  Year = 4,
+  Hour = 1,
+  Day = 2,
+  Week = 3,
+  Month = 4,
+  Year = 5,
 }
 
 export const timeUnitMap = {
@@ -39,6 +39,20 @@ export const timeModeMap = {
 };
 export const timeModeList = Object.entries(timeModeMap).map(([value, label]) => ({ value: Number(value), label }));
 
+export enum TimeInclude {
+  Incoming = 1,
+  Outgoing = 2,
+  Both = 3
+}
+
+export const timeIncludeMap = {
+  [TimeInclude.Incoming]: 'incoming',
+  [TimeInclude.Outgoing]: 'outgoing',
+  [TimeInclude.Both]: 'all',
+};
+
+export const timeIncludeList = Object.entries(timeIncludeMap).map(([value, label]) => ({ value: Number(value), label }));
+
 export enum DisplayTemplateType {
   Orders = 1,
   Inventory = 2
@@ -54,6 +68,7 @@ interface TimeRangePart {
 interface TimeEncapsulatedDto {
   from: TimeRangePart;
   to: TimeRangePart;
+  include: TimeInclude;
 }
 
 interface OrderFilteringDto {

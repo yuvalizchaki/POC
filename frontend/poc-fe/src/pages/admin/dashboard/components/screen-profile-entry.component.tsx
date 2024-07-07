@@ -3,57 +3,34 @@ import {
   AccordionDetails,
   AccordionSummary,
   Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Divider,
   IconButton,
   Stack,
   Typography,
-  Box,
-  FormHelperText,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from "@mui/icons-material/Delete";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import React, { useState } from "react";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { ScreenProfile } from "../../../../types/screenProfile.types";
 import { ScreenComponent } from "./screen.component";
 import { useAdminInfoContext } from "../../../../hooks/useAdminInfoContext";
 import { useScreenProfilesContext } from "../../../../hooks/useScreenProfilesContext";
-import { MuiOtpInput } from "mui-one-time-password-input";
-import { AxiosError } from "axios";
-
-const CODE_LENGTH = 6;
+import { PairScreenDialog } from "./pair-screen-dialog.component";
+import { ScreenProfileDialog } from "./screen-profile-dialog.component";
 
 interface ScreenProfileEntryProps {
   profile: ScreenProfile;
 }
 
-const schema = z.object({
-  code: z.string().length(CODE_LENGTH, "OTP must be exactly 6 characters"),
-});
-
-type FormValues = z.infer<typeof schema>;
-
 export const ScreenProfileEntry = ({ profile }: ScreenProfileEntryProps) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [addScreenOpen, setAddScreenOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const { pairScreen, deleteScreenProfile } = useAdminInfoContext();
+  const { deleteScreenProfile } = useAdminInfoContext();
   const { refetch } = useScreenProfilesContext();
-  const { control, handleSubmit, reset } = useForm<FormValues>({
-    resolver: zodResolver(schema),
-    defaultValues: {
-      code: "",
-    },
-  });
 
+  // #region    ======================================== Add Screen ========================================
   const handleAddScreenOpen = () => {
     setAddScreenOpen(true);
     setIsExpanded(true);
@@ -61,26 +38,11 @@ export const ScreenProfileEntry = ({ profile }: ScreenProfileEntryProps) => {
 
   const handleAddScreenClose = () => {
     setAddScreenOpen(false);
-    reset();
-    setError(null);
   };
 
-  const handleAddScreen = async ({ code }: FormValues) => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      await pairScreen(code, profile.id);
-      refetch();
-      handleAddScreenClose();
-    } catch (err) {
-      if (err instanceof AxiosError && err.response?.data?.errors?.error) {
-        setError(err.response.data.errors.error);
-      } else {
-        setError("Unknown Error");
-      }
-    } finally {
-      setIsLoading(false);
-    }
+  const handleAddScreenSubmitted = () => {
+    setAddScreenOpen(false);
+    refetch();
   };
 
   const handleDeleteScreenProfile = (id: number) => {
@@ -88,6 +50,27 @@ export const ScreenProfileEntry = ({ profile }: ScreenProfileEntryProps) => {
       refetch();
     });
   };
+  // #endregion ======================================== Add Screen ========================================
+  // #region    ======================================== Edit Screen Profile ========================================
+
+  const [editScreenProfileOpen, setEditScreenProfileOpen] = useState(false);
+
+  const handleEditScreenProfile = () => {
+    if (profile) {
+      setEditScreenProfileOpen(true);
+    }
+  };
+
+  const handleEditScreenProfileClose = () => {
+    setEditScreenProfileOpen(false);
+  };
+
+  const handleEditScreenProfileSubmitted = () => {
+    setEditScreenProfileOpen(false);
+    refetch();
+  };
+
+  // #endregion ======================================== Edit Screen Profile ========================================
 
   return (
     <React.Fragment key={profile.id}>
@@ -114,10 +97,17 @@ export const ScreenProfileEntry = ({ profile }: ScreenProfileEntryProps) => {
           }}
         >
           <Stack direction="row" alignItems="center" width="100%">
-            <Typography>{profile.name}</Typography>
+            <IconButton
+              onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                e.stopPropagation();
+                handleEditScreenProfile();
+              }}
+            >
+              <EditIcon />
+            </IconButton>
+            <Typography pl={1}>{profile.name}</Typography>
             <div style={{ flex: "1 0 0" }} />
             <Button
-              size="small"
               variant="text"
               startIcon={<AddIcon />}
               onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
@@ -129,7 +119,6 @@ export const ScreenProfileEntry = ({ profile }: ScreenProfileEntryProps) => {
             </Button>
             <IconButton
               color="error"
-              size="small"
               onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.stopPropagation();
                 handleDeleteScreenProfile(profile.id);
@@ -150,67 +139,19 @@ export const ScreenProfileEntry = ({ profile }: ScreenProfileEntryProps) => {
           </Stack>
         </AccordionDetails>
       </Accordion>
-      <Dialog
-        open={addScreenOpen}
-        onClose={() => {
-          if (!isLoading) {
-            handleAddScreenClose();
-          }
-        }}
-      >
-        <DialogTitle id="responsive-dialog-title">Enter Pair Code</DialogTitle>
-        <DialogContent>
-          <form onSubmit={handleSubmit(handleAddScreen)}>
-            <Controller
-              name="code"
-              control={control}
-              render={({ field, fieldState }) => (
-                <Box>
-                  <MuiOtpInput
-                    sx={{ gap: 1 }}
-                    {...field}
-                    length={CODE_LENGTH}
-                    TextFieldsProps={{
-                      disabled: isLoading,
-                    }}
-                  />
-                  {fieldState.error && (
-                    <FormHelperText error>
-                      {fieldState.error.message}
-                    </FormHelperText>
-                  )}
-                </Box>
-              )}
-            />
-            {(error || isLoading) && (
-              <FormHelperText error={!!error}>
-                {error ? error : isLoading ? "Loading..." : null}
-              </FormHelperText>
-            )}
-            <DialogActions sx={{ display: "flex" }}>
-              <div style={{ flex: "1 0 0" }} />
-              <Button
-                disableElevation
-                color="error"
-                variant="text"
-                onClick={handleAddScreenClose}
-                disabled={isLoading}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disableElevation
-                variant="contained"
-                sx={{ ml: 2 }}
-                disabled={isLoading}
-              >
-                Save
-              </Button>
-            </DialogActions>
-          </form>
-        </DialogContent>
-      </Dialog>
+      <ScreenProfileDialog
+        isOpen={editScreenProfileOpen}
+        mode="update"
+        screenProfileData={profile}
+        onSubmitted={handleEditScreenProfileSubmitted}
+        onCancel={handleEditScreenProfileClose}
+      />
+      <PairScreenDialog
+        isOpen={addScreenOpen}
+        onSubmitted={handleAddScreenSubmitted}
+        onCancel={handleAddScreenClose}
+        profileId={profile.id}
+      />
     </React.Fragment>
   );
 };

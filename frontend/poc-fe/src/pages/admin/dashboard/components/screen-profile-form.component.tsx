@@ -1,6 +1,6 @@
 import { Box, Chip, Divider, FormHelperText, Grid, MenuItem, Paper, Select, TextField, Typography, inputBaseClasses, inputClasses, selectClasses } from "@mui/material";
 import { Controller, ControllerRenderProps, useFormContext } from "react-hook-form";
-import { DisplayTemplateType, ScreenProfileFormFields, TimeMode, TimeUnit, timeModeList, timeUnitList, timeUnitPluralList, timeUnitPluralMap } from "../../../../types/screenProfile.types";
+import { DisplayTemplateType, ScreenProfileFormFields, TimeMode, TimeUnit, timeIncludeList, timeModeList, timeUnitList, timeUnitPluralList, timeUnitPluralMap } from "../../../../types/screenProfile.types";
 import React, { useEffect, useMemo } from "react";
 import { useScreenProfilesContext } from "../../../../hooks/useScreenProfilesContext";
 import { AppEntity, OrderTag, orderStatusList, orderStatusMap } from "../../../../types/crmTypes.types";
@@ -125,7 +125,7 @@ export const ScreenPorfileForm = ({ }: ScreenPorfileFormProps) => {
   const orderTagsMap = useMemo(() => orderTags.reduce((acc, e) => ({ ...acc, [e.Id]: e }), {} as { [id: number]: OrderTag }), [orderTags]);
 
   const { control, getValues, setValue, watch, formState: { errors } } = useFormContext<ScreenProfileFormFields>();
-  console.log('[DEBUG] entitites: ', entities);
+  console.log('[DEBUG] errors: ', errors);
   /** Inventory Panel Conditional Rendering*/
   const displayTemplateValue = watch('screenProfileFiltering.displayConfig.displayTemplate');
   useEffect(() => {
@@ -145,8 +145,11 @@ export const ScreenPorfileForm = ({ }: ScreenPorfileFormProps) => {
             name="name"
             control={control}
             rules={{
-              required: true,
-              maxLength: 20
+              required: {
+                value: true,
+                message: "Name is required"
+              },
+              maxLength: 20,
             }}
             render={({ field }) => (
               <TextField
@@ -197,7 +200,27 @@ export const ScreenPorfileForm = ({ }: ScreenPorfileFormProps) => {
             flexWrap: 'wrap',
             overflow: 'auto',
           }}>
-            <Typography variant="body1">Show orders</Typography>
+            <Typography variant="body1">Show</Typography>
+            <Controller
+              name="screenProfileFiltering.orderFiltering.timeRanges.include"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  slotProps={{ input: { sx: { pr: 0 } } }}
+                  IconComponent={() => null}
+                  sx={{ height: 30 }}
+                >
+                  {timeIncludeList.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+
+              )}
+            />
+            <Typography variant="body1">orders</Typography>
             <Controller
               name="screenProfileFiltering.orderFiltering.timeRanges.from"
               control={control}
