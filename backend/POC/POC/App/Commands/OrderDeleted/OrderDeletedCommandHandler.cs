@@ -9,15 +9,14 @@ namespace POC.App.Commands.OrderDeleted;
 
 public class OrderDeletedCommandHandler(
     ScreenHub hub,
-    IOrderRepository repository,
+    IOrderRepository orderRepository,
     ScreenConnectionRepository screenConnectionRepository,
-    ScreenRepository screenRepository,
-    IOrderRepository orderRepository
+    ScreenRepository screenRepository
     ) : IRequestHandler<OrderDeletedCommand>
 {
     public async Task Handle(OrderDeletedCommand request, CancellationToken cancellationToken)
     {
-        await repository.DeleteOrderAsync(request.Id);
+        await orderRepository.DeleteOrderAsync(request.Id);
         
         var connectionIds = await screenConnectionRepository.GetConnectedScreensAsync();
         
@@ -25,14 +24,25 @@ public class OrderDeletedCommandHandler(
         
         var order = await orderRepository.GetOrderAsync(request.Id);
         
-        connectionIds = screens
-            .Where(screen => screen.ScreenProfile.ScreenProfileFiltering.IsOrderMatch(order))
+        var interestedScreens = screens
+            .Where(screen => screen.ScreenProfile.ScreenProfileFiltering.IsOrderMatch(order)
+            
+            )
+            .ToList();
+        
+        var wantOrderConnectionIds = interestedScreens
+            .Where(screen => screen.ScreenProfile.ScreenProfileFiltering.IsProfileInterestedInOrders())
             .Select(screen => screen.Id)
             .ToList();
         
-        await hub.DeleteOrder(connectionIds.ToArray(), request.Id);
-        //TODO change this to tell the screen to get the data again
-        //to make sure its always consistent with what we have in the backend
-        //same in add,update
+        await hub.DeleteOrder(wantOrderConnectionIds.ToArray(), request.Id);
+        
+        var wantInventoryConnectionIds = interestedScreens
+            .Where(screen => screen.ScreenProfile.ScreenProfileFiltering.IsProfileInterestedInInventoryItems())
+            .Select(screen => screen.Id)
+            .ToList();
+        
+        //todo function that gets the list of screen connected ids and sends them a message to fetch all inventory items again
+        //await hub.AddInventoryItems(wantInventoryConnectionIds.ToArray()); 
     }
 }

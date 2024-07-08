@@ -18,14 +18,27 @@ public class OrderUpdatedCommandHandler(
         await repository.AddOrUpdateOrderAsync(request.OrderDto);
         
         var connectionIds = await screenConnectionRepository.GetConnectedScreensAsync();
-        
         var screens = await screenRepository.GetScreensByIdsAsync(connectionIds);
         
-        connectionIds = screens
-            .Where(screen => screen.ScreenProfile.ScreenProfileFiltering.IsOrderMatch(request.OrderDto))
+        var interestedScreens = screens
+            .Where(screen => screen.ScreenProfile.ScreenProfileFiltering.IsOrderMatch(request.OrderDto)
+            
+            )
+            .ToList();
+        
+        var wantOrderConnectionIds = interestedScreens
+            .Where(screen => screen.ScreenProfile.ScreenProfileFiltering.IsProfileInterestedInOrders())
             .Select(screen => screen.Id)
             .ToList();
         
-        await hub.UpdateOrder(connectionIds.ToArray(), request.OrderDto);
+        await hub.UpdateOrder(wantOrderConnectionIds.ToArray(), request.OrderDto);
+        
+        var wantInventoryConnectionIds = interestedScreens
+            .Where(screen => screen.ScreenProfile.ScreenProfileFiltering.IsProfileInterestedInInventoryItems())
+            .Select(screen => screen.Id)
+            .ToList();
+        
+        //todo function that gets the list of screen connected ids and sends them a message to fetch all inventory items again
+        //await hub.AddInventoryItems(wantInventoryConnectionIds.ToArray()); 
     }
 }

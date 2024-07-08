@@ -120,22 +120,30 @@ public static class ScreenProfileFilterDtoExtensions
 
 public static class ScreenProfileFilteringExtensions
 {
-    public static bool IsOrderMatch(this ScreenProfileFiltering screenProfileFiltering, OrderDto order)
+    public static bool IsProfileInterestedInOrders(this ScreenProfileFiltering screenProfileFiltering)
     {
-        var orderFiltering = screenProfileFiltering.OrderFiltering;
-        return DateRangeUtility.IsBetween(order.StartDate, order.EndDate ,screenProfileFiltering.OrderFiltering.TimeRanges, DateTime.Now) &&
-               (orderFiltering.OrderStatuses == null || orderFiltering.OrderStatuses.Contains(order.Status)) &&
-               (orderFiltering.IsPickup == null || orderFiltering.IsPickup == order.IsPickup) &&
-               (orderFiltering.EntityIds == null || orderFiltering.EntityIds.Contains(order.DepartmentId));
-        //TODO check how to filter by tags
+        return screenProfileFiltering.DisplayConfig.DisplayTemplate == DisplayTemplateType.Orders;
+    }
+    
+    public static bool IsProfileInterestedInInventoryItems(this ScreenProfileFiltering screenProfileFiltering)
+    {
+        return screenProfileFiltering.DisplayConfig.DisplayTemplate == DisplayTemplateType.Inventory;
     }
     
     public static bool IsInventoryMatch(this ScreenProfileFiltering screenProfileFiltering, InventoryItemDto orderItem)
     {
         var inventoryFiltering = screenProfileFiltering.InventoryFiltering;
-        return inventoryFiltering == null || 
+        return inventoryFiltering == null ||
                inventoryFiltering.EntityIds.IsNullOrEmpty() ||
                inventoryFiltering.EntityIds!.Contains(orderItem.DepartmentId);
+    }
+    
+    public static bool IsOrderMatch(this ScreenProfileFiltering screenProfileFiltering, OrderDto order){
+        var orderFiltering = screenProfileFiltering.OrderFiltering;
+        return DateRangeUtility.IsBetween(order.StartDate, order.EndDate ,screenProfileFiltering.OrderFiltering.TimeRanges, DateTime.Now) &&
+               (orderFiltering.OrderStatuses == null || orderFiltering.OrderStatuses.Contains(order.Status)) &&
+               (orderFiltering.IsPickup == null || orderFiltering.IsPickup == order.IsPickup) &&
+               (orderFiltering.EntityIds == null || orderFiltering.EntityIds.Contains(order.DepartmentId));
     }
     
 }

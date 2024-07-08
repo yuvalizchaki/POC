@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using POC.App.Queries.GetAllInventoryItems;
+using POC.Contracts.CrmDTOs;
 using POC.Infrastructure.Models;
 
 namespace POC.Api.Controllers.CrmControllers;
@@ -12,7 +13,7 @@ namespace POC.Api.Controllers.CrmControllers;
 public class InventoryItemsController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<List<InventoryItemDto>>> GetAllInventoryItems()
+    public async Task<ActionResult<List<InventoryItemsResponse>>> GetAllInventoryItems()
     {
         var cid = User.FindFirst("CompanyId");
         var sid = User.FindFirst("ScreenProfileId");

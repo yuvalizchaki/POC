@@ -4,7 +4,7 @@ using POC.Infrastructure.Models;
 
 namespace POC.App.Queries.GetAllInventoryItems;
 
-public class GetAllInventoryItemsQuery : IRequest<List<InventoryItemDto>>
+public class GetAllInventoryItemsQuery : IRequest<List<InventoryItemsResponse>>
 {
     public int profileId { get; set; }
     public int companyId { get; set; }
