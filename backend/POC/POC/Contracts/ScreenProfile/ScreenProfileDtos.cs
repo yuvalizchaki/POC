@@ -69,6 +69,7 @@ public class DisplayConfigDto
 {
     [Required(ErrorMessage = "IsPaging is required.")]
     public bool IsPaging { get; set; }
-    [Required(ErrorMessage = "DisplayTemplate is required.")]
+    
+    [ValidateEnum(ErrorMessage = "Invalid DisplayType specified")]
     public DisplayTemplateType DisplayTemplate { get; set; } // Enum: Table, Graph, Notes, whatever
 }

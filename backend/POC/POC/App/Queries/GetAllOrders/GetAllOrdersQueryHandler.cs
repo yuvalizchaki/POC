@@ -15,15 +15,20 @@ public class GetAllOrdersQueryHandler(
     IOrderRepository orderRepository)
     : IRequestHandler<GetAllOrdersQuery, List<OrderDto>>
 {
-    
+
     //THIS IS THE NEW WAY BY CACHING THE ORDERS ON OUR SIDE AND FILTERING ON OUR SIDE
     public async Task<List<OrderDto>> Handle(GetAllOrdersQuery request, CancellationToken cancellationToken)
     {
-        int profileId = request.profileId;
-        int companyId = request.companyId;
-        
+        var profileId = request.profileId;
+        var companyId = request.companyId;
+
         var screenProfile = await screenProfileRepository.GetByIdAsync(profileId);
-        var filtering = screenProfile.ScreenProfileFiltering;
+        var filtering = screenProfile?.ScreenProfileFiltering;
+
+        if (filtering == null || !filtering.IsProfileInterestedInOrders())
+        {
+            throw new Exception("This Screen Profile is not interested in orders");
+        }
         
         var orders = await orderRepository.GetAllOrdersAsync(companyId);
         

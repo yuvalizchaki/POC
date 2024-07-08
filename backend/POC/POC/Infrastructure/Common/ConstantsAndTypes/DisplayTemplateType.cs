@@ -2,7 +2,6 @@
 
 public enum DisplayTemplateType
 {
-    Table = 1,
-    Graph = 2,
-    Notes = 3
+    Orders = 1,
+    Inventory = 2,
 }

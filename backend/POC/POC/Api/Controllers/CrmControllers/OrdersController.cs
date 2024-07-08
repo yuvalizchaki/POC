@@ -1,12 +1,8 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using POC.App.Queries.GetAllInventoryItems;
 using POC.App.Queries.GetAllOrders;
-using POC.App.Queries.GetOrder;
 using POC.Contracts.CrmDTOs;
-using POC.Infrastructure.Models;
 
 namespace POC.Api.Controllers.CrmControllers;
 [ApiController]
