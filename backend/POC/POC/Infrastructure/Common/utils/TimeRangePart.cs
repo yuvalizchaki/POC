@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using POC.Infrastructure.Common.Attributes;
 using POC.Infrastructure.Common.Constants;
+using StackExchange.Redis;
 
 namespace POC.Infrastructure.Common.utils;
 
@@ -28,17 +29,18 @@ public static class TimeRangePartExtensions
             Mode.End => DateAdjusterUtility.AdjustToEnd(referenceDate, timeRangePart.Unit),
             _ => throw new ArgumentException("Invalid mode specified")
         };
-        date = timeRangePart.Unit switch
+        
+        if (timeRangePart.Mode != Mode.Fixed) return date.ToString(format);
+        
+        return timeRangePart.Unit switch
         {
-            TimeUnit.Hour => date.AddHours(timeRangePart.Amount),
-            TimeUnit.Day => date.AddDays(timeRangePart.Amount),
-            TimeUnit.Week => date.AddDays(7 * timeRangePart.Amount),
-            TimeUnit.Month => date.AddMonths(timeRangePart.Amount),
-            TimeUnit.Year => date.AddYears(timeRangePart.Amount),
+            TimeUnit.Hour => date.AddHours(timeRangePart.Amount).ToString(format),
+            TimeUnit.Day => date.AddDays(timeRangePart.Amount).ToString(format),
+            TimeUnit.Week => date.AddDays(7 * timeRangePart.Amount).ToString(format),
+            TimeUnit.Month => date.AddMonths(timeRangePart.Amount).ToString(format),
+            TimeUnit.Year => date.AddYears(timeRangePart.Amount).ToString(format),
             _ => throw new ArgumentException("Invalid time unit specified")
         };
-        
-        return date.ToString(format);
     }
 }
 

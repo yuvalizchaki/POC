@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Text.RegularExpressions;
 using MediatR;
 using POC.App.Queries.GetAllOrders;
 using POC.Contracts.CrmDTOs;
@@ -15,11 +16,11 @@ public class GetAllInventoryItemsQueryHandler(
     CrmAdapter crmAdapter,
     ScreenProfileRepository screenProfileRepository,
     IOrderRepository orderRepository)
-    : IRequestHandler<GetAllInventoryItemsQuery, List<InventoryItemsResponse>>
+    : IRequestHandler<GetAllInventoryItemsQuery, List<InventoryItemDto>>
 {
 
     //NEW WAY BY AGGREGATING THE CACHE ORDERS INTO INVENTORY ITEMS
-    public async Task<List<InventoryItemsResponse>> Handle(GetAllInventoryItemsQuery request,
+    public async Task<List<InventoryItemDto>> Handle(GetAllInventoryItemsQuery request,
         CancellationToken cancellationToken)
     {
         var profileId = request.profileId;
@@ -49,12 +50,13 @@ public class GetAllInventoryItemsQueryHandler(
         
         return inventoryItems
             .GroupBy(item => item.Id)
-            .Select(group => new InventoryItemsResponse
+            .Select(group =>
             {
-                InventoryItem = group.First(),
-                Quantity = group.Count()
+                var firstItem = group.First();
+                firstItem.Amount = group.Sum(item => item.Amount);
+                return firstItem;
             })
-            .OrderBy(item => inventoryItems.IndexOf(item.InventoryItem))
+            .OrderBy(item => inventoryItems.IndexOf(item))
             .ToList();
     }
 }

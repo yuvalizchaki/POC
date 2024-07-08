@@ -13,7 +13,7 @@ namespace POC.Api.Controllers.CrmControllers;
 public class InventoryItemsController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<List<InventoryItemsResponse>>> GetAllInventoryItems()
+    public async Task<ActionResult<List<InventoryItemDto>>> GetAllInventoryItems()
     {
         var cid = User.FindFirst("CompanyId");
         var sid = User.FindFirst("ScreenProfileId");
