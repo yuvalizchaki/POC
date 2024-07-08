@@ -9,8 +9,8 @@ public static class DateAdjusterUtility
         return unit switch
         {
             TimeUnit.Hour => new DateTime(referenceDate.Year, referenceDate.Month, referenceDate.Day, referenceDate.Hour, 0, 0),
-            TimeUnit.Day => new DateTime(referenceDate.Year, referenceDate.Month, referenceDate.Day, 0, 0, 0),
-            TimeUnit.Week => referenceDate.AddDays(-(int)referenceDate.DayOfWeek).Date,
+            TimeUnit.Day => new DateTime(referenceDate.Year, referenceDate.Month, referenceDate.Day),
+            TimeUnit.Week => new DateTime(referenceDate.Year, referenceDate.Month, referenceDate.Day).AddDays(-(int)referenceDate.DayOfWeek),
             TimeUnit.Month => new DateTime(referenceDate.Year, referenceDate.Month, 1),
             TimeUnit.Year => new DateTime(referenceDate.Year, 1, 1),
             _ => throw new ArgumentException("Invalid time unit specified")
@@ -23,7 +23,7 @@ public static class DateAdjusterUtility
         {
             TimeUnit.Hour => new DateTime(referenceDate.Year, referenceDate.Month, referenceDate.Day, referenceDate.Hour, 0, 0).AddHours(1).AddTicks(-1),
             TimeUnit.Day => new DateTime(referenceDate.Year, referenceDate.Month, referenceDate.Day, 0, 0, 0).AddDays(1).AddTicks(-1),
-            TimeUnit.Week => referenceDate.AddDays(-(int)referenceDate.DayOfWeek + 7).Date.AddTicks(-1),
+            TimeUnit.Week => new DateTime(referenceDate.Year, referenceDate.Month, referenceDate.Day).AddDays(7 - (int)referenceDate.DayOfWeek).AddTicks(-1),
             TimeUnit.Month => new DateTime(referenceDate.Year, referenceDate.Month, 1).AddMonths(1).AddTicks(-1),
             TimeUnit.Year => new DateTime(referenceDate.Year, 1, 1).AddYears(1).AddTicks(-1),
             _ => throw new ArgumentException("Invalid time unit specified")
