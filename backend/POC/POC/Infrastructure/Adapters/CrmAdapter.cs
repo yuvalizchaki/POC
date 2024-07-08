@@ -70,7 +70,8 @@ namespace POC.Infrastructure.Adapters
         {
             var url = $"orders/{companyId}/search";
             var request = SearchRequestBuilder.Empty.Build();
-            return SendRequestAsync<List<OrderDto>>(HttpMethod.Post, url, request);
+            var response = SendRequestAsync<OrderQueryResponse>(HttpMethod.Post, url, request).Result.Items;
+            return Task.FromResult(response);
         }
 
         public Task<string> FetchTagsTypesAsync(int companyId = 1)

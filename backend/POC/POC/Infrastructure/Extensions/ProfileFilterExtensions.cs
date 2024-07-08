@@ -133,17 +133,16 @@ public static class ScreenProfileFilteringExtensions
     public static bool IsInventoryMatch(this ScreenProfileFiltering screenProfileFiltering, InventoryItemDto orderItem)
     {
         var inventoryFiltering = screenProfileFiltering.InventoryFiltering;
-        return inventoryFiltering == null ||
-               inventoryFiltering.EntityIds.IsNullOrEmpty() ||
+        return inventoryFiltering?.EntityIds == null || inventoryFiltering.EntityIds.Count == 0 ||
                inventoryFiltering.EntityIds!.Contains(orderItem.DepartmentId);
     }
     
     public static bool IsOrderMatch(this ScreenProfileFiltering screenProfileFiltering, OrderDto order){
         var orderFiltering = screenProfileFiltering.OrderFiltering;
         return DateRangeUtility.IsBetween(order.StartDate, order.EndDate ,screenProfileFiltering.OrderFiltering.TimeRanges, DateTime.Now) &&
-               (orderFiltering.OrderStatuses == null || orderFiltering.OrderStatuses.Contains(order.Status)) &&
+               (orderFiltering.OrderStatuses == null || orderFiltering.OrderStatuses.Count == 0 || orderFiltering.OrderStatuses.Contains(order.Status)) &&
                (orderFiltering.IsPickup == null || orderFiltering.IsPickup == order.IsPickup) &&
-               (orderFiltering.EntityIds == null || orderFiltering.EntityIds.Contains(order.DepartmentId));
+               (orderFiltering.EntityIds == null || orderFiltering.EntityIds.Count == 0 || orderFiltering.EntityIds.Contains(order.DepartmentId));
     }
     
 }
