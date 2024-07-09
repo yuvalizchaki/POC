@@ -1,4 +1,5 @@
-﻿using POC.Contracts.CrmDTOs;
+﻿using Microsoft.AspNetCore.Authorization;
+using POC.Contracts.CrmDTOs;
 using POC.Contracts.Screen;
 using POC.Infrastructure.Repositories;
 using Microsoft.AspNetCore.SignalR;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace POC.Api.Hubs;
 
+[Authorize(Roles = "Screen")]
 public class ScreenHub : Hub
 {
     private readonly ScreenConnectionRepository _screenConnectionRepository;
@@ -15,11 +17,11 @@ public class ScreenHub : Hub
     private static readonly string MsgOrderAdded = "orderAdded";
     private static readonly string MsgOrderUpdated = "orderUpdated";
     private static readonly string MsgOrderDeleted = "orderDeleted";
-    private static readonly string MsgScreenRemoved = "screenRemoved";
     private static readonly string ScreenConnected = "screenConnected";
     private static readonly string ScreenDisconnected = "screenDisconnected";
     private static readonly string ProfileUpdated = "profileUpdated";
-
+    private static readonly string MsgInventoryUpdated = "inventoryUpdated";
+    
     public ScreenHub(ScreenConnectionRepository screenConnectionRepository, ILogger<ScreenHub> logger, IHubContext<AdminHub> adminHubContext)
     {
         _screenConnectionRepository = screenConnectionRepository;
@@ -27,6 +29,7 @@ public class ScreenHub : Hub
         _adminHubContext = adminHubContext;
     }
 
+    
     public override async Task OnConnectedAsync()
     {
         var screenId = Context.User.FindFirst("ScreenId");
@@ -38,6 +41,7 @@ public class ScreenHub : Hub
         }
         await base.OnConnectedAsync();
     }
+    
     
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
@@ -51,24 +55,7 @@ public class ScreenHub : Hub
         await base.OnDisconnectedAsync(exception);
     }
     
-    public async Task RemoveScreen(ScreenDto screen)
-    {
-        var connectionId = await _screenConnectionRepository.RemoveConnectionAsync(screen.Id);
-        _logger.LogInformation($"[DEBUG] connectionId: {connectionId} has been removed");
-        if (!string.IsNullOrEmpty(connectionId))
-        {
-            await Clients.Client(connectionId).SendAsync(MsgScreenRemoved, screen);
-        }
-    }
-
-    public async Task RemoveScreens(ScreenDto[] screens)
-    {
-        foreach (var screen in screens)
-        {
-            await RemoveScreen(screen);
-        }
-    }
-
+    
     public async Task NotifyUpdateProfile(int[] screenIds)
     {
         foreach (var id in screenIds)
@@ -78,10 +65,10 @@ public class ScreenHub : Hub
             {
                 await Clients.Client(connectionId.Result).SendAsync(ProfileUpdated);
             }
-
         }
     }
 
+    
     public async Task UpdateOrder(int[] screenIds, OrderDto orderDto)
     {
         foreach (var id in screenIds)
@@ -91,9 +78,9 @@ public class ScreenHub : Hub
             {
                 await Clients.Client(connectionId.Result).SendAsync(MsgOrderUpdated, orderDto);
             }
-
         }
     }
+    
     
     public async Task AddOrder(int[] screenIds, OrderDto orderDto)
     {
@@ -104,9 +91,9 @@ public class ScreenHub : Hub
             {
                 await Clients.Client(connectionId.Result).SendAsync(MsgOrderAdded, orderDto);
             }
-
         }
     }
+    
     
     public async Task DeleteOrder(int[] screenIds, int orderId)
     {
@@ -117,7 +104,19 @@ public class ScreenHub : Hub
             {
                 await Clients.Client(connectionId.Result).SendAsync(MsgOrderDeleted, orderId);
             }
+        } 
+    }
 
+    
+    public async Task FetchInventoryItems(int[] screenIds)
+    {
+        foreach (var id in screenIds)
+        {
+            var connectionId = _screenConnectionRepository.GetConnectionIdByScreenIdAsync(id);
+            if (!string.IsNullOrEmpty(connectionId.Result))
+            {
+                await Clients.Client(connectionId.Result).SendAsync(MsgInventoryUpdated);
+            }
         } 
     }
 }
