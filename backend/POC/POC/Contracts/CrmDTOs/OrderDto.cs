@@ -3,16 +3,16 @@ using POC.Infrastructure.Models;
 
 namespace POC.Contracts.CrmDTOs;
 
-public class OrderDto
+
+public class OrderDto : BaseOrderDto
 {
     // TODO: Implement CRM adapter and related classes
 
-    public int Id { get; set; }
     public int DepartmentId { get; set; }
     public int CustomerId { get; set; }
     public string ClientName { get; set; }
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public DateTime? DepartDate { get; set; }
