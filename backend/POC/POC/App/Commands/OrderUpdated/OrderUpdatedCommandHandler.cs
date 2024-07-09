@@ -26,19 +26,18 @@ public class OrderUpdatedCommandHandler(
             )
             .ToList();
         
-        var wantOrderConnectionIds = interestedScreens
+        var wantOrderScreenIds = interestedScreens
             .Where(screen => screen.ScreenProfile.ScreenProfileFiltering.IsProfileInterestedInOrders())
             .Select(screen => screen.Id)
             .ToList();
         
-        await hub.UpdateOrder(wantOrderConnectionIds.ToArray(), request.OrderDto);
+        await hub.UpdateOrder(wantOrderScreenIds.ToArray(), request.OrderDto);
         
-        var wantInventoryConnectionIds = interestedScreens
+        var wantInventoryScreenIds = interestedScreens
             .Where(screen => screen.ScreenProfile.ScreenProfileFiltering.IsProfileInterestedInInventoryItems())
             .Select(screen => screen.Id)
             .ToList();
         
-        //todo function that gets the list of screen connected ids and sends them a message to fetch all inventory items again
-        //await hub.AddInventoryItems(wantInventoryConnectionIds.ToArray()); 
+        await hub.FetchInventoryItems(wantInventoryScreenIds.ToArray()); 
     }
 }
