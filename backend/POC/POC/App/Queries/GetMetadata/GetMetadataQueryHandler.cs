@@ -20,7 +20,9 @@ public class GetMetadataQueryHandler(
         var metaData = new MetadataDto
         {
             DisplayConfig = screenProfile.ScreenProfileFiltering.DisplayConfig,
-            IsInventory = screenProfile.ScreenProfileFiltering.InventoryFiltering != null
+            IsInventory = screenProfile.ScreenProfileFiltering.InventoryFiltering != null,
+            Name = screen.Name,
+            ScreenId = screen.Id
         };
         return metaData;
     }
