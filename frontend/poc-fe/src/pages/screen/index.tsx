@@ -3,13 +3,17 @@ import { ScreenInfoProvider } from "../../context/screenInfo.context";
 import { Outlet } from "react-router-dom";
 import { ThemeProvider } from "@mui/material";
 import { screenTheme } from "./theme";
+import { SignalRProvider } from "../../context/signalR.context";
+import { API_BASE_URL } from "../../config";
 
 const ScreenPage: React.FC = () => (
-  <ThemeProvider theme={screenTheme}>
-    <ScreenInfoProvider>
-      <Outlet />
-    </ScreenInfoProvider>
-  </ThemeProvider>
+  <SignalRProvider baseUrl={API_BASE_URL}>
+    <ThemeProvider theme={screenTheme}>
+      <ScreenInfoProvider>
+        <Outlet />
+      </ScreenInfoProvider>
+    </ThemeProvider>
+  </SignalRProvider>
 );
 
 export default ScreenPage;

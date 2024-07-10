@@ -1,6 +1,9 @@
+// signalR.context.tsx
 import React, { createContext, useMemo, FC, useContext, useRef } from "react";
 import * as signalR from "@microsoft/signalr";
 import { SignalRHandlers } from "../types/signalR.types";
+
+interface ConnectParams { hubUrl: string, token?: string, onConnect?: () => void, onDisconnect?: () => void }
 
 interface SignalRProviderProps {
   baseUrl: string;
@@ -8,7 +11,7 @@ interface SignalRProviderProps {
 }
 
 interface SignalRContextValue {
-  connect: (hubUrl: string, onConnect?: () => void, onDisconnect?: () => void) => void;
+  connect: (props: ConnectParams) => void;
   bindHandlers: (
     hubUrl: string,
     commandHandlers: Partial<SignalRHandlers>
@@ -28,20 +31,21 @@ export const SignalRProvider: FC<SignalRProviderProps> = ({
 }) => {
   const connectionsRef = useRef<{ [key: string]: signalR.HubConnection }>({});
 
-  const connect = (
-    hubUrl: string,
-    onConnect?: () => void,
-  ) => {
+  const connect = ({
+    hubUrl,
+    token,
+    onConnect,
+    onDisconnect
+  }: ConnectParams) => {
     const connections = connectionsRef.current;
-    console.log('[DEBUG] connections:' ,connections);
+    console.log('[DEBUG] connections:', connections);
     if (connections[hubUrl]) {
       console.log("Already connected to this hub.");
-      // onConnect?.();
       return;
     }
 
     const con = new signalR.HubConnectionBuilder()
-      .withUrl(baseUrl + hubUrl)
+      .withUrl(baseUrl + hubUrl, token ? { accessTokenFactory: () => token } : {})
       .configureLogging(signalR.LogLevel.Information)
       .withAutomaticReconnect()
       .build();
@@ -55,6 +59,8 @@ export const SignalRProvider: FC<SignalRProviderProps> = ({
       .catch((err) =>
         console.error("SignalR Connection Error on " + hubUrl + ": ", err)
       );
+
+    con.onclose(() => { onDisconnect?.() });
 
     connections[hubUrl] = con;
   };

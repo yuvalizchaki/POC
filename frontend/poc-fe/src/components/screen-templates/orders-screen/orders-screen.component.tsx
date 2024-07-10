@@ -1,17 +1,18 @@
 import { Box, Divider, Paper, Typography } from "@mui/material";
 import { OrderDto } from "../../../types/crmTypes.types";
 import { ScreenInfo } from "../../../types/screenInfo.types";
-import { useScreenTemplate } from "../../../hooks/useScreenTemplate";
+import { OrdersDataProvider } from "../../../context/ordersData.context";
+import { useOrdersData } from "../../../hooks/useOrdersData";
 
 interface OrdersScreenProps {
   screenInfo: ScreenInfo;
 }
 
 export const OrdersScreen = ({ screenInfo }: OrdersScreenProps) => {
-  const { orders } = useScreenTemplate({ screenInfo });
+  const { orders } = useOrdersData();
 
   return (
-    <>
+    <OrdersDataProvider>
       <Paper variant="outlined" sx={{ p: 2, overflow: "auto" }}>
         <Typography variant="h4" gutterBottom>
           Screen Information
@@ -61,6 +62,6 @@ export const OrdersScreen = ({ screenInfo }: OrdersScreenProps) => {
           <Typography>No Orders</Typography>
         )}
       </Paper>
-    </>
+    </OrdersDataProvider>
   );
 };
