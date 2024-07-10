@@ -59,6 +59,7 @@ public class OurDbContext(DbContextOptions<OurDbContext> options) : DbContext(op
         {
             entity.HasKey(a => a.Username);
         });
+        
         base.OnModelCreating(modelBuilder);
     }
 }

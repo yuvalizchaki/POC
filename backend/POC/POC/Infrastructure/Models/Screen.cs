@@ -2,12 +2,12 @@
 
 namespace POC.Infrastructure.Models;
 
-public class Screen
+public class  Screen
 {
     [Key]
     public int Id { get; set; }
     
-    // public string IpAddress { get; set; }
+    public string Name { get; set; }
     
     //foreign key
     public int ScreenProfileId { get; set; }

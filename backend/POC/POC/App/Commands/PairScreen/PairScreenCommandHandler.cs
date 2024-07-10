@@ -45,10 +45,11 @@ public class PairScreenCommandHandler : IRequestHandler<PairScreenCommand, Scree
         var screen = new Screen
         {
             ScreenProfileId = request.PairScreenDto.ScreenProfileId,
-            ScreenProfile = screenProfile
+            ScreenProfile = screenProfile,
+            Name = request.PairScreenDto.Name
         };
         await _screenRepository.AddAsync(screen);
-
+        
         // Generate a token for the screen
         String token = AuthService.GenerateScreenToken(screen, screenProfile.CompanyId);
 
