@@ -61,7 +61,7 @@ public class PairScreenCommandHandler : IRequestHandler<PairScreenCommand, Scree
         await _hub.SendMessageAddScreen(request.PairScreenDto.PairingCode, token);
 
         // Associate the screen with the screen profile
-        
+        screenProfile.Screens.Add(screen);
         await _screenProfileRepository.UpdateAsync(screenProfile);
         
         // Return the screen DTO with the not hashed token
