@@ -1,16 +1,16 @@
 import { Box, Divider, Paper, Typography } from "@mui/material";
 import { OrderDto } from "../../../types/crmTypes.types";
-import { ScreenInfo } from "../../../types/screenInfo.types";
 import { OrdersDataProvider } from "../../../context/ordersData.context";
 import { useOrdersData } from "../../../hooks/useOrdersData";
+import { useScreenInfoContext } from "../../../hooks/useScreenInfoContext";
 
 interface OrdersScreenProps {
-  screenInfo: ScreenInfo;
 }
 
-export const OrdersScreen = ({ screenInfo }: OrdersScreenProps) => {
+export const OrdersScreen = ({ }: OrdersScreenProps) => {
+  const { screenInfo } = useScreenInfoContext();
   const { orders } = useOrdersData();
-
+  console.log('[DEBUG] screenInfo: ', screenInfo);
   return (
     <OrdersDataProvider>
       <Paper variant="outlined" sx={{ p: 2, overflow: "auto" }}>
@@ -23,9 +23,9 @@ export const OrdersScreen = ({ screenInfo }: OrdersScreenProps) => {
           alignItems="center"
           mb={2}
         >
-          <Typography variant="h6">Screen ID: {screenInfo.id}</Typography>
+          <Typography variant="h6">Screen ID: {screenInfo?.id}</Typography>
           <Typography variant="h6">
-            Screen Profile ID: {screenInfo.screenProfileId}
+            Screen Profile ID: {screenInfo?.screenProfileId}
           </Typography>
         </Box>
         <Divider sx={{ my: 2 }} />

@@ -39,7 +39,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            
         };
     });
 // Register IHttpContextAccessor
@@ -85,7 +84,8 @@ builder.Services.AddSwaggerGen(swagger =>
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 12345abcdef\"",
+        Description =
+            "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 12345abcdef\"",
     });
     swagger.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
@@ -98,8 +98,7 @@ builder.Services.AddSwaggerGen(swagger =>
                     Id = "Bearer"
                 }
             },
-            new string[] {}
-
+            new string[] { }
         }
     });
 });
@@ -124,11 +123,9 @@ builder.Services.AddControllers(options =>
 });
 
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
-    {
-        options.SerializerSettings.Converters.Add(new OrderCommandJsonConverter());
-    });
-
-
+{
+    options.SerializerSettings.Converters.Add(new OrderCommandJsonConverter());
+});
 
 
 // Add Validators
@@ -172,7 +169,8 @@ builder.Services.AddDbContext<OurDbContext>(options =>
 });
 builder.Services.AddStackExchangeRedisCache(redisOptions =>
 {
-    redisOptions.Configuration = builder.Configuration.GetConnectionString("Redis"); ;
+    redisOptions.Configuration = builder.Configuration.GetConnectionString("Redis");
+    ;
 });
 
 var app = builder.Build();

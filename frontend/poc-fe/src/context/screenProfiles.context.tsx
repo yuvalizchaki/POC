@@ -26,56 +26,7 @@ export const ScreenProfilesProvider = ({
   children: ReactNode;
 }) => {
   const [profiles, setProfiles] = useState<ScreenProfile[]>([]);
-  const [entities, setEntities] = useState<AppEntity>({
-    Id: 1,
-    CompanyId: 1,
-    Name: "ראשי",
-    Description: "General company department",
-    IsOwnInventory: false,
-    Childs: [
-      {
-        Id: 4,
-        CompanyId: 1,
-        Name: "חיפה",
-        Description: "",
-        IsOwnInventory: true,
-        Childs: []
-      },
-      {
-        Id: 5,
-        CompanyId: 1,
-        Name: "קסריה",
-        Description: "",
-        IsOwnInventory: true,
-        Childs: [
-          {
-            Id: 8,
-            CompanyId: 1,
-            Name: "נוי וקישוט",
-            Description: "",
-            IsOwnInventory: true,
-            Childs: []
-          }
-        ]
-      },
-      {
-        Id: 14,
-        CompanyId: 1,
-        Name: "ירושלים",
-        Description: "",
-        IsOwnInventory: true,
-        Childs: []
-      },
-      {
-        Id: 15,
-        CompanyId: 1,
-        Name: "NEW YORK",
-        Description: "",
-        IsOwnInventory: true,
-        Childs: []
-      }
-    ]
-  }); // TODO: Set this to empty array once is implemented
+  const [entities, setEntities] = useState<AppEntity>({} as AppEntity); // TODO: Set this to empty array once is implemented
   const [orderTags, setOrderTags] = useState<OrderTag[]>([]); // TODO: Set this to empty array once is implemented
   const [isLoadingProfiles, setIsLoadingProfiles] = useState<boolean>(true);
   const [isLoadingEntities, setIsLoadingEntities] = useState<boolean>(true);

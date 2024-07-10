@@ -6,7 +6,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosInstance, AxiosResponse } from "axios";
 import { ScreenInfo } from "../types/screenInfo.types";
 import { LOCALSTORAGE_KEY_SCREEN_TOKEN, API_BASE_URL } from "../config";
 
@@ -19,17 +19,15 @@ export interface ScreenInfoContextType {
   setScreenInfo: (info: ScreenInfo | null) => void;
   token: string | null;
   setToken: (token: string) => void;
-  fetchOrders: () => Promise<AxiosResponse>;
+  client: AxiosInstance
 }
 
 export const ScreenInfoContext = createContext<ScreenInfoContextType>({
   screenInfo: null,
-  setScreenInfo: () => {},
+  setScreenInfo: () => { },
   token: null,
-  setToken: () => {},
-  fetchOrders: async () => {
-    return {} as AxiosResponse;
-  },
+  setToken: () => { },
+  client: {} as AxiosInstance
 });
 
 export const ScreenInfoProvider: React.FC<ScreenInfoProviderProps> = ({
@@ -62,22 +60,12 @@ export const ScreenInfoProvider: React.FC<ScreenInfoProviderProps> = ({
     return axiosInstance;
   }, [token]);
 
-  const fetchOrders = useCallback(async () => {
-    try {
-      const response = await client.get("/orders");
-      return response;
-    } catch (error) {
-      console.error("Failed to fetch orders:", error);
-      throw error;
-    }
-  }, [client]);
-
   const contextValue = {
     screenInfo,
     setScreenInfo,
     token,
     setToken,
-    fetchOrders,
+    client,
   };
 
   // Sync token state with local storage
