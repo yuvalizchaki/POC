@@ -1,5 +1,7 @@
-﻿using MediatR;
+﻿using System.Windows.Input;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using POC.App.Commands.OrderAdded;
 using POC.App.Commands.OrderDeleted;
@@ -10,7 +12,7 @@ namespace POC.Api.Controllers.CrmControllers;
 
 [ApiController]
 [Route("[controller]")]
-[Authorize(Roles = "CRM")]
+// [Authorize(Roles = "CRM")] //TODO : add authorization
 public class WebhookController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -19,28 +21,26 @@ public class WebhookController : ControllerBase
     {
         _mediator = mediator;
     }
-
-    [HttpPost("orders")]
-    public async Task<ActionResult<OrderDto>> WebhookOrderAdded([FromBody] OrderDto orderDto)
+    
+    
+    [HttpPost("order")]
+    public async Task<ActionResult<BaseOrderDto>> WebhookOrderCommand([FromBody] OrderCommand orderCommand)
     {
-        var command = new OrderAddedCommand(orderDto);
-        await _mediator.Send(command);
-        return Ok(orderDto);
-    }
+        object command;
+        string cmd = orderCommand.cmd;
+        var order = orderCommand.order;
 
-    [HttpPut("orders/{id}")]
-    public async Task<ActionResult<OrderDto>> WebhookOrderUpdated(int id, [FromBody] OrderDto orderDto)
-    {
-        var command = new OrderUpdatedCommand(orderDto);
-        await _mediator.Send(command);
-        return Ok(orderDto);
-    }
+        if (cmd == "create")
+            command = new OrderAddedCommand((OrderDto)order);
+        else if (cmd == "delete")
+            command = new OrderDeletedCommand(order.Id);
+        else if (cmd == "update")
+            command = new OrderUpdatedCommand((OrderDto)order);
+        else
+            return BadRequest("Invalid status");
 
-    [HttpDelete("orders/{id}")]
-    public async Task<ActionResult> WebhookOrderDeleted(int id)
-    {
-        var command = new OrderDeletedCommand(id);
         await _mediator.Send(command);
-        return Ok();
+        return Ok(order);
     }
+    
 }

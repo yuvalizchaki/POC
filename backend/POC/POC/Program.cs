@@ -9,6 +9,7 @@ using POC.Api.Conventions;
 using POC.Api.Helpers;
 using POC.Api.Hubs;
 using POC.App.Behaviors;
+using POC.Contracts.CrmDTOs;
 using POC.Infrastructure;
 using POC.Infrastructure.Adapters;
 using POC.Infrastructure.Common;
@@ -121,6 +122,14 @@ builder.Services.AddControllers(options =>
     options.Conventions.Add(new KebabCaseRouteConvention());
     options.ModelMetadataDetailsProviders.Add(new SystemTextJsonValidationMetadataProvider());
 });
+
+builder.Services.AddControllers().AddNewtonsoftJson(options =>
+    {
+        options.SerializerSettings.Converters.Add(new OrderCommandJsonConverter());
+    });
+
+
+
 
 // Add Validators
 // builder.Services.AddValidatorsFromAssemblyContaining<UpdateScreenProfileDtoValidator>();
