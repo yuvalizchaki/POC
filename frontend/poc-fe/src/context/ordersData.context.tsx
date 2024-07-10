@@ -3,6 +3,7 @@ import { OrderDto } from "../types/crmTypes.types";
 import { API_SCREEN_HUB_URL } from "../config";
 import { useScreenInfoContext } from "../hooks/useScreenInfoContext";
 import { useSignalR } from "../hooks/useSignalR";
+import { useNavigate } from "react-router-dom";
 
 interface OrdersDataProviderProps {
     children: ReactNode;
@@ -19,24 +20,34 @@ export const OrdersDataContext = createContext<OrdersDataContextType>({
 });
 
 export const OrdersDataProvider: React.FC<OrdersDataProviderProps> = ({ children }) => {
-    const { setScreenInfo, fetchOrders, token } = useScreenInfoContext();
+    const { setScreenInfo, client, token } = useScreenInfoContext();
     const [orders, setOrders] = useState<OrderDto[]>([]);
+    const navigate = useNavigate();
 
     const fetchAndSetOrders = useCallback(async () => {
         try {
-            const response = await fetchOrders();
+            const response = await client.get("/orders");
             setOrders(response.data);
         } catch (error) {
             console.error("Failed to fetch orders:", error);
         }
-    }, [fetchOrders]);
+    }, [client]);
+
+    const redirectToGuest = useCallback(() => {
+        navigate("/screen/pair", { replace: true })
+    }, [navigate])
 
     useSignalR({
-        hubUrl: API_SCREEN_HUB_URL,
-        token: `Bearer ${token}`,
-        onConnect: () => {
-            console.log("[DEBUG] connected to screen hub");
-            fetchAndSetOrders();
+        connectParams: {
+            hubUrl: API_SCREEN_HUB_URL,
+            token: `${token}`,
+            onConnect: () => {
+                console.log("[DEBUG] connected to screen hub");
+                fetchAndSetOrders();
+            },
+            onConnectError: () => {
+                redirectToGuest();
+            },
         },
         commandHandlers: {
             orderAdded: (orderAddedDto) => {

@@ -32,7 +32,9 @@ const ScreenPairingPage = () => {
   );
 
   useSignalR({
-    hubUrl: API_GUEST_HUB_URL,
+    connectParams: {
+      hubUrl: API_GUEST_HUB_URL,
+    },
     commandHandlers: {
       screenAdded: handleScreenAdded,
       pairCode: handlePairingCode,

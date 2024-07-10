@@ -3,7 +3,7 @@ import React, { createContext, useMemo, FC, useContext, useRef } from "react";
 import * as signalR from "@microsoft/signalr";
 import { SignalRHandlers } from "../types/signalR.types";
 
-interface ConnectParams { hubUrl: string, token?: string, onConnect?: () => void, onDisconnect?: () => void }
+export interface ConnectParams { hubUrl: string, token?: string, onConnect?: () => void, onConnectError?: (msg: string) => void, onDisconnect?: () => void }
 
 interface SignalRProviderProps {
   baseUrl: string;
@@ -35,6 +35,7 @@ export const SignalRProvider: FC<SignalRProviderProps> = ({
     hubUrl,
     token,
     onConnect,
+    onConnectError,
     onDisconnect
   }: ConnectParams) => {
     const connections = connectionsRef.current;
@@ -49,16 +50,17 @@ export const SignalRProvider: FC<SignalRProviderProps> = ({
       .configureLogging(signalR.LogLevel.Information)
       .withAutomaticReconnect()
       .build();
-
+      
     con
       .start()
       .then(() => {
         console.log("SignalR Connected to " + hubUrl);
         onConnect?.();
       })
-      .catch((err) =>
+      .catch((err) => {
         console.error("SignalR Connection Error on " + hubUrl + ": ", err)
-      );
+        onConnectError?.(err);
+      });
 
     con.onclose(() => { onDisconnect?.() });
 

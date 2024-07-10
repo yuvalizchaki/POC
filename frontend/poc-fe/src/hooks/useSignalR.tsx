@@ -1,38 +1,34 @@
 import { useEffect } from "react";
 import { SignalRHandlers } from "../types/signalR.types";
-import { useSignalRContext } from "../context/signalR.context";
+import { ConnectParams, useSignalRContext } from "../context/signalR.context";
 
 interface UseSignalRProps {
-  hubUrl: string;
   commandHandlers: Partial<SignalRHandlers>;
-  onConnect?: () => void;
-  onDisconnect?: () => void;
-  token?: string; // Added token prop
+  connectParams: ConnectParams
 }
 
 export const useSignalR = ({
-  hubUrl,
   commandHandlers,
-  onConnect,
-  onDisconnect,
-  token, // Added token prop
+  connectParams
 }: UseSignalRProps) => {
   const { connect, bindHandlers, unbindHandlers, getConnection } = useSignalRContext();
 
   useEffect(() => {
-    connect({ hubUrl, token, onConnect, onDisconnect });
-  }, [hubUrl, token, onConnect, onDisconnect, connect]); // Include token in dependencies
-
+    connect(connectParams);
+    return () => {
+      
+    }
+  }, [connectParams, connect]);
   useEffect(() => {
-    const connection = getConnection(hubUrl);
+    const connection = getConnection(connectParams.hubUrl);
     if (commandHandlers && connection) {
-      bindHandlers(hubUrl, commandHandlers);
+      bindHandlers(connectParams.hubUrl, commandHandlers);
     }
 
     return () => {
       if (commandHandlers && connection) {
-        unbindHandlers(hubUrl, commandHandlers);
+        unbindHandlers(connectParams.hubUrl, commandHandlers);
       }
     }
-  }, [hubUrl, commandHandlers, bindHandlers, getConnection, unbindHandlers]);
+  }, [connectParams.hubUrl, commandHandlers, bindHandlers, getConnection, unbindHandlers]);
 };
