@@ -7,13 +7,16 @@ using POC.Infrastructure.Repositories;
 
 namespace POC.App.Queries.GetMetadata;
 
-public class GetMetadataQueryHandler(ScreenProfileRepository screenProfileRepository)
+public class GetMetadataQueryHandler(
+    ScreenRepository screenRepository
+    )
     : IRequestHandler<GetMetadataQuery, MetadataDto>
 {
 
     public async Task<MetadataDto> Handle(GetMetadataQuery request, CancellationToken cancellationToken)
     {
-        var screenProfile = await screenProfileRepository.GetByIdAsync(request.Id);
+        var screen = await screenRepository.GetByIdAsync(request.ScreenId);
+        var screenProfile = screen.ScreenProfile;
         var metaData = new MetadataDto
         {
             DisplayConfig = screenProfile.ScreenProfileFiltering.DisplayConfig,

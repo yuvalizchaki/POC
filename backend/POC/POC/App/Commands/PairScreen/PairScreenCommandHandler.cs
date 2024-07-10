@@ -43,9 +43,10 @@ public class PairScreenCommandHandler : IRequestHandler<PairScreenCommand, Scree
         var screen = new Screen
         {
             ScreenProfileId = request.PairScreenDto.ScreenProfileId,
-            ScreenProfile = screenProfile
+            ScreenProfile = screenProfile,
+            Name = request.PairScreenDto.Name
         };
-        
+        await _screenRepository.AddAsync(screen);
         // Generate a token for the screen
         String token = AuthService.GenerateScreenToken(screen, screenProfile.CompanyId);
         
@@ -54,13 +55,13 @@ public class PairScreenCommandHandler : IRequestHandler<PairScreenCommand, Scree
         screen.HashToken = Encoding.Default.GetString(result);
         
         // Add the screen to the repository
-        await _screenRepository.AddAsync(screen);
+        await _screenRepository.UpdateAsync(screen);
         
         // Send the screen profile to the smart TV screen
         await _hub.SendMessageAddScreen(request.PairScreenDto.PairingCode, token);
 
         // Associate the screen with the screen profile
-        screenProfile.Screens.Add(screen);
+        
         await _screenProfileRepository.UpdateAsync(screenProfile);
         
         // Return the screen DTO with the not hashed token

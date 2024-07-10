@@ -24,7 +24,9 @@ public class ScreenRepository(OurDbContext dbContext, IHttpContextAccessor httpC
     public Task<Screen?> GetByIdAsync(int id)
     {
         var companyId = int.Parse(GetCompanyId());
-        var screen = dbContext.Screens.FirstOrDefault(s => s.Id == id && s.ScreenProfile.CompanyId == companyId);
+        var screen = dbContext.Screens
+            .Include(s => s.ScreenProfile)
+            .FirstOrDefault(s => s.Id == id && s.ScreenProfile.CompanyId == companyId);
         return Task.FromResult(screen);
     }
     

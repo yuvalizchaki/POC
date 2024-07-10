@@ -9,4 +9,6 @@ public class PairScreenDto
     public string PairingCode { get; set; }
     
     public int ScreenProfileId { get; set; }
+    
+    public string Name { get; set; }
 }
