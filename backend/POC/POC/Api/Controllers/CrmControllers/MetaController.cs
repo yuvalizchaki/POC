@@ -10,7 +10,7 @@ namespace POC.Api.Controllers.CrmControllers;
 
 [ApiController]
 [Route("[controller]")]
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = "Screen")]
 public class MetaController : ControllerBase 
 {
     private readonly IMediator _mediator;
@@ -22,10 +22,13 @@ public class MetaController : ControllerBase
         _mediator = mediator;
     }
     
-    [HttpGet("{id}")]
-    public async Task<ActionResult<ScreenProfileDto>> GetMetaData(int id)
+    [HttpGet]
+    public async Task<ActionResult<ScreenProfileDto>> GetMetaData()
     {
-        var query = new GetMetadataQuery(id);
+        var cid = User.FindFirst("CompanyId");
+        var sid = User.FindFirst("ScreenId");
+        
+        var query = new GetMetadataQuery(int.Parse(cid.Value), int.Parse(sid.Value));
 
         try
         {

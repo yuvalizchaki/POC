@@ -11,17 +11,8 @@ public static class ScreenExtensions
         return new ScreenDto()
         {
             Id = screen.Id,
-            // Ip = screen.IpAddress,
+            Name = screen.Name,
             ScreenProfileId = screen.ScreenProfileId,
-        };
-    }
-    public static ScreenResponsePairScreenDto ToScreenResponsePairScreenDto(this Screen screen, String token)
-    {
-        return new ScreenResponsePairScreenDto()
-        {
-            Id = screen.Id,
-            ScreenProfileId = screen.ScreenProfileId,
-            Token = token
         };
     }
 }

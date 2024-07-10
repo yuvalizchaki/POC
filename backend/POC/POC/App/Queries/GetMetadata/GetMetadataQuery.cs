@@ -4,7 +4,8 @@ using POC.Contracts.Screen;
 
 namespace POC.App.Queries.GetMetadata;
 
-public class GetMetadataQuery(int id) : IRequest<MetadataDto>
+public class GetMetadataQuery(int companyId, int screenId) : IRequest<MetadataDto>
 {
-    public int Id { get; } = id;
+    public int CompanyId { get; set; } = companyId;
+    public int ScreenId { get; set; } = screenId;
 }
