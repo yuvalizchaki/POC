@@ -7,6 +7,7 @@ interface UseSignalRProps {
   commandHandlers: Partial<SignalRHandlers>;
   onConnect?: () => void;
   onDisconnect?: () => void;
+  token?: string; // Added token prop
 }
 
 export const useSignalR = ({
@@ -14,12 +15,13 @@ export const useSignalR = ({
   commandHandlers,
   onConnect,
   onDisconnect,
+  token, // Added token prop
 }: UseSignalRProps) => {
   const { connect, bindHandlers, unbindHandlers, getConnection } = useSignalRContext();
 
   useEffect(() => {
-    connect(hubUrl, onConnect, onDisconnect);
-  }, [hubUrl, onConnect, onDisconnect, connect]);
+    connect({ hubUrl, token, onConnect, onDisconnect });
+  }, [hubUrl, token, onConnect, onDisconnect, connect]); // Include token in dependencies
 
   useEffect(() => {
     const connection = getConnection(hubUrl);
@@ -30,7 +32,7 @@ export const useSignalR = ({
     return () => {
       if (commandHandlers && connection) {
         unbindHandlers(hubUrl, commandHandlers);
-      } 
+      }
     }
   }, [hubUrl, commandHandlers, bindHandlers, getConnection, unbindHandlers]);
 };
