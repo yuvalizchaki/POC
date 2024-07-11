@@ -20,7 +20,7 @@ export const OrdersDataContext = createContext<OrdersDataContextType>({
 });
 
 export const OrdersDataProvider: React.FC<OrdersDataProviderProps> = ({ children }) => {
-    const { setScreenInfo, client, token } = useScreenInfoContext();
+    const { setScreenInfo, client, token, setToken } = useScreenInfoContext();
     const [orders, setOrders] = useState<OrderDto[]>([]);
     const navigate = useNavigate();
 
@@ -85,18 +85,16 @@ export const OrdersDataProvider: React.FC<OrdersDataProviderProps> = ({ children
             },
             screenRemoved: () => {
                 console.log("[DEBUG] Disconnected");
+                setToken(null);
                 setScreenInfo(null);
             },
         },
     });
 
-    const contextValue = useMemo(
-        () => ({ orders, fetchAndSetOrders }),
-        [orders, fetchAndSetOrders]
-    );
+    
 
     return (
-        <OrdersDataContext.Provider value={contextValue}>
+        <OrdersDataContext.Provider value={{orders, fetchAndSetOrders}}>
             {children}
         </OrdersDataContext.Provider>
     );

@@ -14,6 +14,7 @@ import {
   ScreenProfile,
   CreateScreenProfileDto,
   UpdateScreenProfileDto,
+  PairScreenDto,
 } from "../types/screenProfile.types";
 import { AppEntity, OrderTag } from "../types/crmTypes.types";
 
@@ -27,7 +28,7 @@ export interface AdminInfoContextType {
   loginAdmin: (username: string, password: string) => Promise<void>;
   logoutAdmin: () => void;
   isLoggedIn: () => boolean;
-  pairScreen: (code: string, screenProfileId: number) => Promise<AxiosResponse>;
+  pairScreen: (data: PairScreenDto) => Promise<AxiosResponse>;
   removeScreen: (id: number) => Promise<AxiosResponse>;
   createScreenProfile: (
     screenProfileData: CreateScreenProfileDto
@@ -133,14 +134,11 @@ export const AdminInfoProvider: React.FC<AdminInfoProviderProps> = ({
   }, [client]);
 
   const pairScreen = useCallback(
-    (code: string, screenProfileId: number) => {
+    (data: PairScreenDto) => {
       return client({
         method: "post",
         url: "/screens",
-        data: {
-          pairingCode: code,
-          screenProfileId: screenProfileId,
-        },
+        data
       });
     },
     [client]

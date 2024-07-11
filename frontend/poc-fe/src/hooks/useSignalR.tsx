@@ -15,9 +15,6 @@ export const useSignalR = ({
 
   useEffect(() => {
     connect(connectParams);
-    return () => {
-      
-    }
   }, [connectParams, connect]);
   useEffect(() => {
     const connection = getConnection(connectParams.hubUrl);

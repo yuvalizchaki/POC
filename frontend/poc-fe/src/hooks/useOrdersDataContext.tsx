@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { OrdersDataContext, OrdersDataContextType } from "../context/ordersData.context";
 
-export const useOrdersData = (): OrdersDataContextType => {
+export const useOrdersDataContext = (): OrdersDataContextType => {
     const context = useContext(OrdersDataContext);
 
     if (context === undefined) {

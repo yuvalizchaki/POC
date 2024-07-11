@@ -14,6 +14,7 @@ using POC.Infrastructure;
 using POC.Infrastructure.Adapters;
 using POC.Infrastructure.Common;
 using POC.Infrastructure.IRepositories;
+using POC.Infrastructure.Middlewares;
 using POC.Infrastructure.Repositories;
 using POC.Services;
 
@@ -185,6 +186,8 @@ if (app.Environment.IsDevelopment())
 app.UseCors("CorsPolicy");
 app.UseHttpsRedirection();
 app.UseRouting();
+
+app.UseMiddleware<WebSocketsMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

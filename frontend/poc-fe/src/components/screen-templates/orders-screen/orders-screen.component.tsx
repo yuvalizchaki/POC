@@ -1,7 +1,7 @@
 import { Box, Divider, Paper, Typography } from "@mui/material";
 import { OrderDto } from "../../../types/crmTypes.types";
 import { OrdersDataProvider } from "../../../context/ordersData.context";
-import { useOrdersData } from "../../../hooks/useOrdersData";
+import { useOrdersDataContext } from "../../../hooks/useOrdersDataContext";
 import { useScreenInfoContext } from "../../../hooks/useScreenInfoContext";
 
 interface OrdersScreenProps {
@@ -9,7 +9,7 @@ interface OrdersScreenProps {
 
 export const OrdersScreen = ({ }: OrdersScreenProps) => {
   const { screenInfo } = useScreenInfoContext();
-  const { orders } = useOrdersData();
+  const { orders } = useOrdersDataContext();
   console.log('[DEBUG] screenInfo: ', screenInfo);
   return (
     <OrdersDataProvider>
