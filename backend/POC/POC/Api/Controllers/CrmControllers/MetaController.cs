@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using POC.App.Queries.GetMetadata;
+using POC.Contracts.CrmDTOs;
 using POC.Contracts.ScreenProfile;
 using POC.Infrastructure.Common.Exceptions;
 
@@ -23,7 +24,7 @@ public class MetaController : ControllerBase
     }
     
     [HttpGet]
-    public async Task<ActionResult<ScreenProfileDto>> GetMetaData()
+    public async Task<ActionResult<MetadataDto>> GetMetaData()
     {
         var cid = User.FindFirst("CompanyId");
         var sid = User.FindFirst("ScreenId");
