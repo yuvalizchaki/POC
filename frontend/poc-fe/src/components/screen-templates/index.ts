@@ -1,1 +1,1 @@
-export { OrdersScreen } from "./orders-screen/orders-screen.component";
+export { DataDisplay as OrdersScreen } from "./data-display/data-display.component";

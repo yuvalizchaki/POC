@@ -84,7 +84,7 @@ interface InventoryFilteringDto {
   entityIds?: number[];
 }
 
-interface DisplayConfigDto {
+export interface DisplayConfigDto {
   isPaging: boolean;
   displayTemplate: DisplayTemplateType;
 }

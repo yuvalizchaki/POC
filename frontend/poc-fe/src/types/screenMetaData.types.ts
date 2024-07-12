@@ -1,5 +1,8 @@
+import { DisplayConfigDto } from "./screenProfile.types"
+
 export interface ScreenMetaData {
-    id: number;
-    screenProfileId: number;
-  }
-  
+  displayConfig: DisplayConfigDto;
+  isInventory: boolean;
+  name: string;
+  screenId: number;
+}
