@@ -8,7 +8,7 @@ using POC.Infrastructure.Repositories;
 namespace POC.App.Commands.DeleteScreenProfile;
 
 public class DeleteScreenProfileCommandHandler(ScreenProfileRepository repository,
-    AdminHub adminHub
+    ScreenHub screenHub
 ) : IRequestHandler<DeleteScreenProfileCommand>
 {
     public async Task Handle(DeleteScreenProfileCommand request, CancellationToken cancellationToken)
@@ -18,6 +18,6 @@ public class DeleteScreenProfileCommandHandler(ScreenProfileRepository repositor
         var result = await repository.DeleteAsync(request.Id);
         if (!result) throw new ScreenProfileNotFoundException();
         
-        await adminHub.RemoveScreens(screenProfile.Screens.Select(s => s.ToScreenDto()).ToArray());
+        await screenHub.RemoveScreens(screenProfile.Screens.Select(s => s.ToScreenDto()).ToArray());
     }
 }
