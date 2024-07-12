@@ -84,7 +84,7 @@ interface InventoryFilteringDto {
   entityIds?: number[];
 }
 
-interface DisplayConfigDto {
+export interface DisplayConfigDto {
   isPaging: boolean;
   displayTemplate: DisplayTemplateType;
 }
@@ -113,6 +113,12 @@ export type UpdateScreenProfileDto = ScreenProfileFormFields;
 
 export interface ScreenDto {
   id: number;
+  name: string;
   screenProfileId: number;
-  // Add other fields if necessary
+}
+
+export interface PairScreenDto {
+  pairingCode: string;
+  name: string;
+  screenProfileId: number;
 }

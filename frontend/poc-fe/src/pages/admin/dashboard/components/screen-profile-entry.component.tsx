@@ -14,7 +14,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import React, { useState } from "react";
 import { ScreenProfile } from "../../../../types/screenProfile.types";
-import { ScreenComponent } from "./screen.component";
+import { ScreenEntry } from "./screen-entry.component";
 import { useAdminInfoContext } from "../../../../hooks/useAdminInfoContext";
 import { useScreenProfilesContext } from "../../../../hooks/useScreenProfilesContext";
 import { PairScreenDialog } from "./pair-screen-dialog.component";
@@ -133,7 +133,7 @@ export const ScreenProfileEntry = ({ profile }: ScreenProfileEntryProps) => {
             {profile.screens.map((s, i) => (
               <React.Fragment key={s.id}>
                 {i > 0 && <Divider />}
-                <ScreenComponent screen={s} />
+                <ScreenEntry screen={s} />
               </React.Fragment>
             ))}
           </Stack>

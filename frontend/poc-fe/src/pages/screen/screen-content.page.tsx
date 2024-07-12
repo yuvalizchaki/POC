@@ -11,11 +11,7 @@ const ScreenContentPage = () => {
 
   return (
     <>
-      <OrdersScreen
-        screenInfo={
-          screenInfo ?? { id: 1, screenProfileId: 1 }
-        } /* TODO: Remove this ?? */
-      />
+      <OrdersScreen />
     </>
   );
 };

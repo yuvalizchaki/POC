@@ -1,35 +1,50 @@
-import React, { createContext, ReactNode, useCallback, useMemo, useState } from "react";
-import { OrderDto } from "../types/crmTypes.types";
+import React, { createContext, ReactNode, useCallback, useEffect, useState } from "react";
+import { InventoryItemDto, OrderDto } from "../types/crmTypes.types";
 import { API_SCREEN_HUB_URL } from "../config";
 import { useScreenInfoContext } from "../hooks/useScreenInfoContext";
 import { useSignalR } from "../hooks/useSignalR";
 import { useNavigate } from "react-router-dom";
 
-interface OrdersDataProviderProps {
+interface DisplayDataProviderProps {
     children: ReactNode;
 }
 
-export interface OrdersDataContextType {
+export interface DisplayDataContextType {
     orders: OrderDto[];
     fetchAndSetOrders: () => Promise<void>;
+    inventoryItems: InventoryItemDto[];
+    fetchAndSetInventoryItems: () => Promise<void>;
 }
 
-export const OrdersDataContext = createContext<OrdersDataContextType>({
+export const OrdersDataContext = createContext<DisplayDataContextType>({
     orders: [],
+    inventoryItems: [],
     fetchAndSetOrders: async () => { },
+    fetchAndSetInventoryItems: async () => { }
 });
 
-export const OrdersDataProvider: React.FC<OrdersDataProviderProps> = ({ children }) => {
-    const { setScreenInfo, client, token } = useScreenInfoContext();
+export const DisplayDataProvider: React.FC<DisplayDataProviderProps> = ({ children }) => {
+    const { setScreenInfo, client, token, setToken } = useScreenInfoContext();
     const [orders, setOrders] = useState<OrderDto[]>([]);
+    const [inventoryItems, setInventoryItems] = useState<InventoryItemDto[]>([]);
     const navigate = useNavigate();
-
+    
     const fetchAndSetOrders = useCallback(async () => {
         try {
             const response = await client.get("/orders");
             setOrders(response.data);
         } catch (error) {
             console.error("Failed to fetch orders:", error);
+        }
+    }, [client]);
+
+
+    const fetchAndSetInventoryItems = useCallback(async () => {
+        try {
+            const response = await client.get("/inventory-items");
+            setInventoryItems(response.data);
+        } catch (error) {
+            console.error("Failed to fetch inventory items:", error);
         }
     }, [client]);
 
@@ -85,18 +100,16 @@ export const OrdersDataProvider: React.FC<OrdersDataProviderProps> = ({ children
             },
             screenRemoved: () => {
                 console.log("[DEBUG] Disconnected");
+                setToken(null);
                 setScreenInfo(null);
             },
         },
     });
 
-    const contextValue = useMemo(
-        () => ({ orders, fetchAndSetOrders }),
-        [orders, fetchAndSetOrders]
-    );
+
 
     return (
-        <OrdersDataContext.Provider value={contextValue}>
+        <OrdersDataContext.Provider value={{ orders, fetchAndSetOrders, inventoryItems, fetchAndSetInventoryItems }}>
             {children}
         </OrdersDataContext.Provider>
     );

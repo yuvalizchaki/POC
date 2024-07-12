@@ -7,7 +7,7 @@ import React, {
   useState,
 } from "react";
 import axios, { AxiosInstance, AxiosResponse } from "axios";
-import { ScreenInfo } from "../types/screenInfo.types";
+import { ScreenMetaData } from "../types/screenMetaData.types";
 import { LOCALSTORAGE_KEY_SCREEN_TOKEN, API_BASE_URL } from "../config";
 
 interface ScreenInfoProviderProps {
@@ -15,10 +15,10 @@ interface ScreenInfoProviderProps {
 }
 
 export interface ScreenInfoContextType {
-  screenInfo: ScreenInfo | null;
-  setScreenInfo: (info: ScreenInfo | null) => void;
+  screenInfo: ScreenMetaData | null;
+  setScreenInfo: (info: ScreenMetaData | null) => void;
   token: string | null;
-  setToken: (token: string) => void;
+  setToken: (token: string | null) => void;
   client: AxiosInstance
 }
 
@@ -33,7 +33,7 @@ export const ScreenInfoContext = createContext<ScreenInfoContextType>({
 export const ScreenInfoProvider: React.FC<ScreenInfoProviderProps> = ({
   children,
 }) => {
-  const [screenInfo, setScreenInfo] = useState<ScreenInfo | null>(null);
+  const [screenInfo, setScreenInfo] = useState<ScreenMetaData | null>(null);
   const [token, setTokenState] = useState<string | null>(() => {
     // Initialize state from local storage
     return localStorage.getItem(LOCALSTORAGE_KEY_SCREEN_TOKEN);
@@ -60,6 +60,15 @@ export const ScreenInfoProvider: React.FC<ScreenInfoProviderProps> = ({
     return axiosInstance;
   }, [token]);
 
+  const fetchAndSetScreenMetaData = useCallback(async () => {
+    try {
+      const response = await client.get("/meta");
+      setScreenInfo(response.data);
+    } catch (error) {
+      console.error("Failed to fetch screen meta data:", error);
+    }
+  }, [client]);
+
   const contextValue = {
     screenInfo,
     setScreenInfo,
@@ -74,6 +83,9 @@ export const ScreenInfoProvider: React.FC<ScreenInfoProviderProps> = ({
     if (storedToken !== token) {
       setTokenState(storedToken);
     }
+
+    // Fetch screen meta data
+    fetchAndSetScreenMetaData()
   }, [token]);
 
   return (

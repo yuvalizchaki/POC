@@ -50,21 +50,20 @@ export const SignalRProvider: FC<SignalRProviderProps> = ({
       .configureLogging(signalR.LogLevel.Information)
       .withAutomaticReconnect()
       .build();
-      
+
     con
       .start()
       .then(() => {
         console.log("SignalR Connected to " + hubUrl);
         onConnect?.();
+        con.onclose(() => { onDisconnect?.() });
+
+        connections[hubUrl] = con;
       })
       .catch((err) => {
         console.error("SignalR Connection Error on " + hubUrl + ": ", err)
         onConnectError?.(err);
       });
-
-    con.onclose(() => { onDisconnect?.() });
-
-    connections[hubUrl] = con;
   };
 
   const bindHandlers = (

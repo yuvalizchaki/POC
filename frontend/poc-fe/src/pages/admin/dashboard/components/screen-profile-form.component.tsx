@@ -3,7 +3,7 @@ import { Controller, ControllerRenderProps, useFormContext } from "react-hook-fo
 import { DisplayTemplateType, ScreenProfileFormFields, TimeMode, TimeUnit, timeIncludeList, timeModeList, timeUnitList, timeUnitPluralList, timeUnitPluralMap } from "../../../../types/screenProfile.types";
 import React, { useEffect, useMemo } from "react";
 import { useScreenProfilesContext } from "../../../../hooks/useScreenProfilesContext";
-import { AppEntity, OrderTag, orderStatusList, orderStatusMap } from "../../../../types/crmTypes.types";
+import { AppEntity, OrderTag, orderStatusList, orderStatusDisplayMap } from "../../../../types/crmTypes.types";
 
 /** Helper */
 function flattenAppEntities(rootEntity: AppEntity): AppEntity[] {
@@ -260,7 +260,7 @@ export const ScreenPorfileForm = ({ }: ScreenPorfileFormProps) => {
                   renderValue: (selectedStatuses: unknown) => (
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                       {(selectedStatuses as number[]).map((status) => (
-                        <Chip key={status} label={orderStatusMap[status as keyof typeof orderStatusMap] ?? '???'} />
+                        <Chip key={status} label={orderStatusDisplayMap[status as keyof typeof orderStatusDisplayMap] ?? '???'} />
                       ))}
                     </Box>
                   )

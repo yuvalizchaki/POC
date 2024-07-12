@@ -6,11 +6,11 @@ import { ScreenDto } from "../../../../types/screenProfile.types";
 import { useAdminInfoContext } from "../../../../hooks/useAdminInfoContext";
 import { useScreenProfilesContext } from "../../../../hooks/useScreenProfilesContext";
 
-interface ScreenProps {
+interface ScreenEntryProps {
   screen: ScreenDto;
 }
 
-export const ScreenComponent = ({ screen }: ScreenProps) => {
+export const ScreenEntry = ({ screen }: ScreenEntryProps) => {
   const { removeScreen } = useAdminInfoContext();
   const { refetch } = useScreenProfilesContext();
   const handleRemoveScreen = () => {
@@ -25,7 +25,7 @@ export const ScreenComponent = ({ screen }: ScreenProps) => {
       alignItems="center"
       spacing={2}
     >
-      <Typography>Screen #{screen.id}</Typography>
+      <Typography>{screen.name}</Typography>
       <div style={{ flex: "1 0 0" }} />
 
       <ConnectedTvIcon color="success" />

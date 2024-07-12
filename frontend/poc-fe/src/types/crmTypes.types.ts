@@ -7,7 +7,7 @@ export enum OrderStatus {
   Returned = 6,
   Ready = 7,
 }
-export const orderStatusMap = {
+export const orderStatusDisplayMap = {
   [OrderStatus.Draft]: 'Draft',
   [OrderStatus.Hidden]: 'Hidden',
   [OrderStatus.Approved]: 'Approved',
@@ -16,13 +16,81 @@ export const orderStatusMap = {
   [OrderStatus.Returned]: 'Returned',
   [OrderStatus.Ready]: 'Ready',
 };
-export const orderStatusList = Object.entries(orderStatusMap).map(([value, label]) => ({ value: Number(value), label }));
+export const orderStatusList = Object.entries(orderStatusDisplayMap).map(([value, label]) => ({ value: Number(value), label }));
 
-
-export interface OrderDto {
+interface BaseOrderDto {
   id: number;
+  companyId: number;
+}
+
+export interface OrderDto extends BaseOrderDto {
+  departmentId: number;
   customerId: number;
-  clientName?: string;
+  clientName: string;
+  firstName?: string;
+  lastName?: string;
+  startDate: string;
+  endDate: string;
+  departDate?: string;
+  returnDate?: string;
+  status: OrderStatus;
+  isPickup: boolean;
+  createdOn: string;
+  updatedOn?: string;
+
+  // Navigation properties
+  orderItems: InventoryItemDto[];
+  serviceOrderItems: ServiceItemDto[];
+  peopleOrderItems: PeopleOrderItemDto[];
+  oneTimeOrderItems: OneTimeOrderItemDto[];
+}
+
+export interface InventoryItemDto {
+  id: number;
+  departmentId: number;
+  amount: number;
+  price: number;
+  productId: number;
+  productName: string;
+  productDescription: string;
+  isBundle: boolean;
+  productImages: string[];
+}
+
+interface ServiceItemDto {
+  id: number;
+  departmentId: number;
+  quantity: number;
+  serviceProfileId: number;
+  serviceId: number;
+  serviceProfileName: string;
+  serviceProfileDescription: string;
+  isBundle: boolean;
+  serviceProfileImages: string[];
+  icon?: number;
+  amount: number;
+  price: number;
+}
+
+interface PeopleOrderItemDto {
+  id: number;
+  peopleProfileId: number;
+  departmentId: number;
+  peopleId: number;
+  peopleProfileName: string;
+  peopleProfileDescription: string;
+  isBundle: boolean;
+  peopleProfileImages: string[];
+  amount: number;
+  price: number;
+}
+
+interface OneTimeOrderItemDto {
+  id: number;
+  departmentId: number;
+  amount: number;
+  price: number;
+  name: string;
 }
 
 export interface AppEntity {
