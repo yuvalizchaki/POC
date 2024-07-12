@@ -33,12 +33,9 @@ public class InMemoryOrderRepository(
         {
             AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(expirationMinutes)
         };
-        cacheEntryOptions.RegisterPostEvictionCallback((key, value, reason, state) =>
-        {
-            notifyOnOrdersChanged?.NotifyAsync();
-        });
-        
         cache.Set(_cacheKey, orders, cacheEntryOptions);
+        
+        notifyOnOrdersChanged?.NotifyAsync();
 
         return Task.CompletedTask;
     }
