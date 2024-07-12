@@ -6,39 +6,42 @@ using POC.Infrastructure.Extensions;
 using POC.Infrastructure.IRepositories;
 using POC.Infrastructure.Models;
 using POC.Infrastructure.Repositories;
+using POC.Services;
 
 namespace POC.App.Commands.OrderAdded;
 
 public class OrderAddedCommandHandler(
     ScreenHub hub,
-    IOrderRepository orderRepository,
+    IOrderService orderService,
     ScreenConnectionRepository screenConnectionRepository,
     ScreenRepository screenRepository
     ) : IRequestHandler<OrderAddedCommand>
 {
     public async Task Handle(OrderAddedCommand request, CancellationToken cancellationToken)
     {
-        await orderRepository.AddOrUpdateOrderAsync(request.OrderDto);
+        await orderService.ProcessWebhookOrderAsync(request.CrmOrder);
         
         var connectionIds = await screenConnectionRepository.GetConnectedScreensAsync();
         var screens = await screenRepository.GetScreensByIdsAsync(connectionIds);
         
-        var interestedScreens = screens
-            .Where(screen => screen.ScreenProfile.ScreenProfileFiltering.IsOrderMatch(request.OrderDto)
-            
+        var ordersDup = new[] {request.CrmOrder.ToIncomingOrderDto(), request.CrmOrder.ToOutgoingOrderDto()};
+
+        var interestedScreenToOrdersDict = screens
+            .ToDictionary(screen => screen, screen =>
+                ordersDup.Where(order => screen.ScreenProfile.ScreenProfileFiltering.IsOrderMatch(order)).ToList()
             )
+            .Where(pair => pair.Value.Count != 0);
+        
+        var wantOrderScreesDict = interestedScreenToOrdersDict
+            .Where(pair => pair.Key.ScreenProfile.ScreenProfileFiltering.IsProfileInterestedInOrders())
+            .Select(pair => KeyValuePair.Create(pair.Key.Id, pair.Value))
             .ToList();
         
-        var wantOrderScreenIds = interestedScreens
-            .Where(screen => screen.ScreenProfile.ScreenProfileFiltering.IsProfileInterestedInOrders())
-            .Select(screen => screen.Id)
-            .ToList();
+        await hub.AddOrder(wantOrderScreesDict);
         
-        await hub.AddOrder(wantOrderScreenIds.ToArray(), request.OrderDto);
-        
-        var wantInventoryScreenIds = interestedScreens
-            .Where(screen => screen.ScreenProfile.ScreenProfileFiltering.IsProfileInterestedInInventoryItems())
-            .Select(screen => screen.Id)
+        var wantInventoryScreenIds = interestedScreenToOrdersDict
+            .Where(pair => pair.Key.ScreenProfile.ScreenProfileFiltering.IsProfileInterestedInInventoryItems())
+            .Select(pair => pair.Key.Id)
             .ToList();
         
         await hub.FetchInventoryItems(wantInventoryScreenIds.ToArray()); 

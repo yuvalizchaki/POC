@@ -30,12 +30,13 @@ public class GetAllOrdersQueryHandler(
             throw new Exception("This Screen Profile is not interested in orders");
         }
         
-        var orders = await orderRepository.GetAllOrdersAsync(companyId);
+        var crmOrders = await orderRepository.GetAllOrdersAsync(companyId);
+
+        var orders = crmOrders.ToOrderDtoList();
         
         var filteredOrders = orders.Where(o => filtering.IsOrderMatch(o)).ToList();
         
         return filteredOrders;
     }
-
 
 }

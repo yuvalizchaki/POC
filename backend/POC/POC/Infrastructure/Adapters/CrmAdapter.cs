@@ -66,7 +66,7 @@ namespace POC.Infrastructure.Adapters
             return JsonSerializer.Deserialize<T>(responseContent, _crmApiJsonSerializerOptions) ?? throw new CrmAdapterError("Failed to deserialize CRM response.");
         }
 
-        public Task<List<OrderDto>> FetchOrdersAsync(int companyId = 1)
+        public Task<List<CrmOrder>> FetchOrdersAsync(int companyId = 1)
         {
             var url = $"orders/{companyId}/search";
             var request = SearchRequestBuilder.Empty.Build();

@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
+using POC.Api.Hubs;
 using POC.Contracts.CrmDTOs;
+using POC.Infrastructure.Common.Notifiers;
 using POC.Infrastructure.IRepositories;
 
 
@@ -13,19 +15,35 @@ public class InMemoryOrderRepository(
 
     private readonly string _cacheKey = "Orders";
     private int expirationMinutes = 15; //TODO PUT IT IN A PLACE MORE FITTING
+    private NotifyOnOrdersChanged? notifyOnOrdersChanged;
     
-    public async Task<IEnumerable<OrderDto>> GetAllOrdersAsync(int companyId)
+    public void SetNotifyOnOrdersChanged(NotifyOnOrdersChanged notifyOnOrdersChanged)
+    {
+        this.notifyOnOrdersChanged = notifyOnOrdersChanged;
+    }
+    
+    public async Task<IEnumerable<CrmOrder>> GetAllOrdersAsync(int companyId)
     {
         return await GetAllOrdersFromCache(companyId);
     }
 
-    public Task SetAllOrdersAsync(IEnumerable<OrderDto> orders)
+    public Task SetAllOrdersAsync(IEnumerable<CrmOrder> orders)
     {
-        cache.Set(_cacheKey, orders, TimeSpan.FromMinutes(expirationMinutes));
+        var cacheEntryOptions = new MemoryCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(expirationMinutes)
+        };
+        cacheEntryOptions.RegisterPostEvictionCallback((key, value, reason, state) =>
+        {
+            notifyOnOrdersChanged?.NotifyAsync();
+        });
+        
+        cache.Set(_cacheKey, orders, cacheEntryOptions);
+
         return Task.CompletedTask;
     }
     
-    public async Task AddOrUpdateOrderAsync(OrderDto order)
+    public async Task AddOrUpdateOrderAsync(CrmOrder order)
     {
         var orders = await GetAllOrdersFromCache();
         var existingOrder = orders.FirstOrDefault(o => o.Id == order.Id);
@@ -38,7 +56,7 @@ public class InMemoryOrderRepository(
         cache.Set(_cacheKey, orders, TimeSpan.FromMinutes(expirationMinutes));
     }
 
-    public Task<OrderDto?> GetOrderAsync(int id)
+    public Task<CrmOrder?> GetOrderAsync(int id)
     {
         var orders = GetAllOrdersFromCache().Result;
         return Task.FromResult(orders.FirstOrDefault(o => o.Id == id));
@@ -55,12 +73,15 @@ public class InMemoryOrderRepository(
         }
     }
     
-    private async Task<List<OrderDto>> GetAllOrdersFromCache(int companyId = 1)
+    private async Task<List<CrmOrder>> GetAllOrdersFromCache(int companyId = 1)
     {
-        if (cache.TryGetValue(_cacheKey, out List<OrderDto> orders)) return orders;
-        orders = new List<OrderDto>();
+        if (cache.TryGetValue(_cacheKey, out List<CrmOrder> orders)) return orders;
+        orders = new List<CrmOrder>();
         cache.Set(_cacheKey, orders, TimeSpan.FromMinutes(expirationMinutes));
 
         return orders;
     }
+
+    
 }
+

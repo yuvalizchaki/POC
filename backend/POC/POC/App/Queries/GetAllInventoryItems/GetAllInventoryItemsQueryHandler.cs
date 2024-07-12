@@ -13,7 +13,6 @@ using POC.Infrastructure.Repositories;
 namespace POC.App.Queries.GetAllInventoryItems;
 
 public class GetAllInventoryItemsQueryHandler(
-    CrmAdapter crmAdapter,
     ScreenProfileRepository screenProfileRepository,
     IOrderRepository orderRepository)
     : IRequestHandler<GetAllInventoryItemsQuery, List<InventoryItemDto>>
@@ -34,13 +33,27 @@ public class GetAllInventoryItemsQueryHandler(
             throw new Exception("This Screen Profile is not interested in inventory items");
         }
 
-        var orders = await orderRepository.GetAllOrdersAsync(companyId);
+        var crmOrders = await orderRepository.GetAllOrdersAsync(companyId);
+
+        var orders = crmOrders.ToOrderDtoList();
 
         var filteredOrders = orders.Where(o => filtering.IsOrderMatch(o)).ToList();
 
         //orders have orderItems that should be aggregated according to inventory filters
         var inventoryItems = filteredOrders
-            .SelectMany(order => order.OrderItems.Where(orderItem => filtering.IsInventoryMatch(orderItem)))
+            .SelectMany(order =>
+            {
+                var relevantInventoryItems = order.CrmOrder.OrderItems.Where(orderItem => filtering.IsInventoryMatch(orderItem));
+                var inventoryItems = relevantInventoryItems.Select(orderItem =>
+                    new InventoryItemDto
+                    {
+                        CrmInventoryItem = orderItem,
+                        TransportType = order.TransportType
+                    }
+                );
+                return inventoryItems;
+            }
+            )
             .ToList();
 
         if (screenProfile?.ScreenProfileFiltering.InventorySorting != null)
@@ -49,11 +62,11 @@ public class GetAllInventoryItemsQueryHandler(
         }
         
         return inventoryItems
-            .GroupBy(item => item.Id)
+            .GroupBy(item => new { item.CrmInventoryItem.Id, item.TransportType })
             .Select(group =>
             {
                 var firstItem = group.First();
-                firstItem.Amount = group.Sum(item => item.Amount);
+                firstItem.CrmInventoryItem.Amount = group.Sum(item => item.CrmInventoryItem.Amount);
                 return firstItem;
             })
             .OrderBy(item => inventoryItems.IndexOf(item))

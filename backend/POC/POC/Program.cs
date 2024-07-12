@@ -109,6 +109,23 @@ builder.Services.AddSignalR()
 // Register in-memory repositories
 // builder.Services.AddSingleton<ScreenProfileRepository>();
 // builder.Services.AddSingleton<ScreenRepository>();
+
+builder.Services.AddHttpClient<CrmTokenAdapter>("CrmAuthClient");
+builder.Services.AddHttpClient<CrmAdapter>("CrmApiClient");
+
+//register the adapter
+builder.Services.AddSingleton<CrmTokenAdapter>();
+builder.Services.AddSingleton<ITypesAdapter, CrmAdapter>();
+builder.Services.AddSingleton<IOrderAdapter, CrmAdapter>();
+
+//Cache
+builder.Services.AddMemoryCache();
+
+//Register the Order Service
+builder.Services.AddSingleton<IOrderRepository, InMemoryOrderRepository>();
+builder.Services.AddSingleton<IOrderService, OrderService>();
+
+
 builder.Services.AddSingleton<IGuestConnectionRepository, CachedGuestConnectionRepository>();
 builder.Services.AddSingleton<ScreenConnectionRepository>();
 builder.Services.AddSingleton<ScreenHub>();
@@ -128,38 +145,16 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
 });
 
 
-// Add Validators
-// builder.Services.AddValidatorsFromAssemblyContaining<UpdateScreenProfileDtoValidator>();
-// builder.Services.AddValidatorsFromAssemblyContaining<ScreenProfileDtoValidators>();
-// builder.Services.AddValidatorsFromAssemblyContaining<PairScreenDtoValidator>();
-
-
-builder.Services.AddHttpClient<CrmTokenAdapter>("CrmAuthClient");
-builder.Services.AddHttpClient<CrmAdapter>("CrmApiClient");
-
-// Register adapters
-builder.Services.AddSingleton<CrmTokenAdapter>();
-builder.Services.AddSingleton<CrmAdapter>();
-
 // Register MediatR and handlers
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
-
-//Cache
-builder.Services.AddMemoryCache();
 
 //register the repository
 builder.Services.AddScoped<ScreenProfileRepository>();
 builder.Services.AddScoped<ScreenRepository>();
 builder.Services.AddScoped<AdminRepository>();
 
-//register the adapter
-builder.Services.AddScoped<ITypesAdapter, CrmAdapter>();
-builder.Services.AddScoped<IOrderAdapter, CrmAdapter>();
 
-//Register the Order Service
-builder.Services.AddScoped<IOrderRepository, InMemoryOrderRepository>();
-builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddHostedService<OrderReplicationHostedService>();
 
 //Register the DbContext

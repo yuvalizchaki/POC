@@ -4,7 +4,7 @@ namespace POC.Contracts.CrmDTOs
 
     public class OrderQueryResponse
     {
-        public required List<OrderDto> Items { get; set; }
+        public required List<CrmOrder> Items { get; set; }
         public int Count { get; set; }
     }
 }

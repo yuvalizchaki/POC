@@ -13,33 +13,31 @@ namespace POC.Api.Controllers.CrmControllers;
 [ApiController]
 [Route("[controller]")]
 // [Authorize(Roles = "CRM")] //TODO : add authorization
-public class WebhookController : ControllerBase
+public class WebhookController(IMediator mediator) : ControllerBase
 {
-    private readonly IMediator _mediator;
-
-    public WebhookController(IMediator mediator)
-    {
-        _mediator = mediator;
-    }
-    
-    
     [HttpPost("order")]
     public async Task<ActionResult<BaseOrderDto>> WebhookOrderCommand([FromBody] OrderCommand orderCommand)
     {
         object command;
-        string cmd = orderCommand.cmd;
+        var cmd = orderCommand.cmd;
         var order = orderCommand.order;
 
-        if (cmd == "create")
-            command = new OrderAddedCommand((OrderDto)order);
-        else if (cmd == "delete")
-            command = new OrderDeletedCommand(order.Id);
-        else if (cmd == "update")
-            command = new OrderUpdatedCommand((OrderDto)order);
-        else
-            return BadRequest("Invalid status");
+        switch (cmd)
+        {
+            case "create":
+                command = new OrderAddedCommand((CrmOrder)order);
+                break;
+            case "delete":
+                command = new OrderDeletedCommand(order.Id);
+                break;
+            case "update":
+                command = new OrderUpdatedCommand((CrmOrder)order);
+                break;
+            default:
+                return BadRequest("Invalid status");
+        }
 
-        await _mediator.Send(command);
+        await mediator.Send(command);
         return Ok(order);
     }
     

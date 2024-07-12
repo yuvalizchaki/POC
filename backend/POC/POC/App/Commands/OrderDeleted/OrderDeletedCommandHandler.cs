@@ -22,24 +22,27 @@ public class OrderDeletedCommandHandler(
         
         var screens = await screenRepository.GetScreensByIdsAsync(connectionIds);
         
-        var order = await orderRepository.GetOrderAsync(request.Id);
+        var crmOrder = await orderRepository.GetOrderAsync(request.Id);
         
-        var interestedScreens = screens
-            .Where(screen => screen.ScreenProfile.ScreenProfileFiltering.IsOrderMatch(order)
-            
+        var ordersDup = new[] {crmOrder.ToIncomingOrderDto(),crmOrder.ToOutgoingOrderDto()};
+
+        var interestedScreenToOrdersDict = screens
+            .ToDictionary(screen => screen, screen =>
+                ordersDup.Where(order => screen.ScreenProfile.ScreenProfileFiltering.IsOrderMatch(order)).ToList()
             )
+            .Where(pair => pair.Value.Count != 0);
+        
+        
+        var wantOrderScreesDict = interestedScreenToOrdersDict
+            .Where(pair => pair.Key.ScreenProfile.ScreenProfileFiltering.IsProfileInterestedInOrders())
+            .Select(pair => KeyValuePair.Create(pair.Key.Id, pair.Value.Select(order=>order.CrmOrder.Id).ToArray()))
             .ToList();
         
-        var wantOrderScreenIds = interestedScreens
-            .Where(screen => screen.ScreenProfile.ScreenProfileFiltering.IsProfileInterestedInOrders())
-            .Select(screen => screen.Id)
-            .ToList();
+        await hub.DeleteOrder(wantOrderScreesDict);
         
-        await hub.DeleteOrder(wantOrderScreenIds.ToArray(), request.Id);
-        
-        var wantInventoryScreenIds = interestedScreens
-            .Where(screen => screen.ScreenProfile.ScreenProfileFiltering.IsProfileInterestedInInventoryItems())
-            .Select(screen => screen.Id)
+        var wantInventoryScreenIds = interestedScreenToOrdersDict
+            .Where(pair => pair.Key.ScreenProfile.ScreenProfileFiltering.IsProfileInterestedInInventoryItems())
+            .Select(pair => pair.Key.Id)
             .ToList();
         
         await hub.FetchInventoryItems(wantInventoryScreenIds.ToArray()); 

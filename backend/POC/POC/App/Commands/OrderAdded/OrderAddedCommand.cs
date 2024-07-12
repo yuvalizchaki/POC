@@ -3,7 +3,7 @@ using POC.Contracts.CrmDTOs;
 
 namespace POC.App.Commands.OrderAdded;
 
-public class OrderAddedCommand(OrderDto orderDto) : IRequest
+public class OrderAddedCommand(CrmOrder crmOrder) : IRequest
 {
-    public OrderDto OrderDto { get; set; } = orderDto;
+    public CrmOrder CrmOrder { get; set; } = crmOrder;
 }

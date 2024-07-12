@@ -4,5 +4,5 @@ namespace POC.Infrastructure.Adapters;
 
 public interface IOrderAdapter
 {
-    public Task<List<OrderDto>> FetchOrdersAsync(int companyId = 1);
+    public Task<List<CrmOrder>> FetchOrdersAsync(int companyId = 1);
 }
