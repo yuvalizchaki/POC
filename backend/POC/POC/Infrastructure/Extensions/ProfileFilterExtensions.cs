@@ -130,16 +130,17 @@ public static class ScreenProfileFilteringExtensions
         return screenProfileFiltering.DisplayConfig.DisplayTemplate == DisplayTemplateType.Inventory;
     }
     
-    public static bool IsInventoryMatch(this ScreenProfileFiltering screenProfileFiltering, InventoryItemDto orderItem)
+    public static bool IsInventoryMatch(this ScreenProfileFiltering screenProfileFiltering, CrmInventoryItem orderItem)
     {
         var inventoryFiltering = screenProfileFiltering.InventoryFiltering;
         return inventoryFiltering?.EntityIds == null || inventoryFiltering.EntityIds.Count == 0 ||
                inventoryFiltering.EntityIds!.Contains(orderItem.DepartmentId);
     }
     
-    public static bool IsOrderMatch(this ScreenProfileFiltering screenProfileFiltering, OrderDto order){
+    public static bool IsOrderMatch(this ScreenProfileFiltering screenProfileFiltering, OrderDto orderDto){
+        var order = orderDto.CrmOrder;
         var orderFiltering = screenProfileFiltering.OrderFiltering;
-        return DateRangeUtility.IsBetween(order.StartDate, order.EndDate ,screenProfileFiltering.OrderFiltering.TimeRanges, DateTime.Now) &&
+        return DateRangeUtility.IsBetween(orderDto ,screenProfileFiltering.OrderFiltering.TimeRanges, DateTime.Now) &&
                (orderFiltering.OrderStatuses == null || orderFiltering.OrderStatuses.Count == 0 || orderFiltering.OrderStatuses.Contains(order.Status)) &&
                (orderFiltering.IsPickup == null || orderFiltering.IsPickup == order.IsPickup) &&
                (orderFiltering.EntityIds == null || orderFiltering.EntityIds.Count == 0 || orderFiltering.EntityIds.Contains(order.DepartmentId));

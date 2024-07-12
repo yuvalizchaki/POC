@@ -3,13 +3,8 @@ using POC.Infrastructure.Models;
 
 namespace POC.Contracts.CrmDTOs;
 
-
-public class OrderDto
+public class InventoryItemDto
 {
-    // TODO: Implement CRM adapter and related classes
-    
-    public CrmOrder CrmOrder { get; set; }
-    
+    public CrmInventoryItem CrmInventoryItem { get; set; }
     public OrderTransportType TransportType { get; set; }
-    
 }

@@ -8,7 +8,8 @@ namespace POC.Infrastructure.Models.CrmSearchQuery
         private readonly List<Filtering> filters = new List<Filtering>();
         private readonly List<Sorting> sorts = new List<Sorting>();
         private readonly List<string> fields = new List<string>();
-        private Framing framing = new Framing { Skip = 0, Take = 100 }; //TODO change to take everything some how idk
+        //TODO work on fetching in good practice
+        private Framing framing = new Framing { Skip = 0, Take = 999999 }; 
         private bool skipCount = false;
 
         private SearchRequestBuilder() { }

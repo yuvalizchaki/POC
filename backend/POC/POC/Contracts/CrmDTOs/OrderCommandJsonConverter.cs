@@ -21,7 +21,7 @@ public class OrderCommandJsonConverter : JsonConverter
 
         if (cmd == "create" || cmd == "update")
         {
-            order = jsonObject["order"].ToObject<OrderDto>(serializer);
+            order = jsonObject["order"].ToObject<CrmOrder>(serializer);
         }
         else if (cmd == "delete")
         {

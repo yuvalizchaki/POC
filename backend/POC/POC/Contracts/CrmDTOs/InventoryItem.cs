@@ -2,7 +2,7 @@
 
 namespace POC.Infrastructure.Models;
 
-public class InventoryItemDto
+public class CrmInventoryItem
 {
 
     public int Id { get; set; }
