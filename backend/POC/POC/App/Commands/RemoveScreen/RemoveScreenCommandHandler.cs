@@ -8,7 +8,7 @@ namespace POC.App.Commands.RemoveScreen;
 
 public class RemoveScreenCommandHandler(ScreenRepository repository,
     ILogger<RemoveScreenCommandHandler> logger,
-    AdminHub adminHub,
+    ScreenHub screenHub,
     ScreenProfileRepository screenProfileRepository //TODO DELETE THIS WHEN WE HAVE A PROPER DB THAT DOES THIS FOR US
     ) : IRequestHandler<RemoveScreenCommand>
 {
@@ -32,7 +32,7 @@ public class RemoveScreenCommandHandler(ScreenRepository repository,
 
             var screenDto = screen.ToScreenDto();
 
-            await adminHub.RemoveScreen(screenDto); //<-- Re-add when we implement the tokens
+            await screenHub.RemoveScreen(screenDto); //<-- Re-add when we implement the tokens
         }
         catch (Exception ex)
         {

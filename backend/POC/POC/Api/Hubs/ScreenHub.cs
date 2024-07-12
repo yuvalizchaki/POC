@@ -1,7 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using POC.Contracts.CrmDTOs;
 using POC.Infrastructure.Repositories;
 using Microsoft.AspNetCore.SignalR;
+using POC.App.Commands.NotifyScreenConnected;
+using POC.App.Commands.NotifyScreenDisonnected;
+using POC.App.Commands.OrderAdded;
+using POC.Contracts.Screen;
 using POC.Infrastructure.Common.Notifiers;
 using POC.Infrastructure.IRepositories;
 
@@ -14,26 +19,27 @@ public class ScreenHub : Hub, NotifyOnOrdersChanged
     private readonly ScreenConnectionRepository _screenConnectionRepository;
     private readonly ILogger<ScreenHub> _logger;
     private readonly IHubContext<AdminHub> _adminHubContext;
+    private readonly IMediator _mediator;
 
     private static readonly string MsgRefreshData = "refreshData";
     private static readonly string MsgOrderAdded = "orderAdded";
     private static readonly string MsgOrderUpdated = "orderUpdated";
     private static readonly string MsgOrderDeleted = "orderDeleted";
-    private static readonly string ScreenConnected = "screenConnected";
-    private static readonly string ScreenDisconnected = "screenDisconnected";
     private static readonly string ProfileUpdated = "profileUpdated";
     private static readonly string MsgInventoryUpdated = "inventoryUpdated";
+    private static readonly string MsgScreenRemoved = "screenRemoved";
     
     public ScreenHub(
         ScreenConnectionRepository screenConnectionRepository, 
         ILogger<ScreenHub> logger, 
-        IHubContext<AdminHub> adminHubContext,
-        IOrderRepository orderRepository)
+        IOrderRepository orderRepository,
+        IMediator mediator
+       )
     {
         _screenConnectionRepository = screenConnectionRepository;
         _logger = logger;
-        _adminHubContext = adminHubContext;
         orderRepository.SetNotifyOnOrdersChanged(this);
+        _mediator = mediator;
     }
 
     
@@ -44,7 +50,8 @@ public class ScreenHub : Hub, NotifyOnOrdersChanged
         {
             await _screenConnectionRepository.AddConnectionAsync(int.Parse(screenId.Value), Context.ConnectionId);
             _logger.LogInformation($"Screen connected: {screenId}, ConnectionId: {Context.ConnectionId}");
-            await _adminHubContext.Clients.All.SendAsync(ScreenConnected, screenId.Value);
+            var command = new NotifyScreenConnectedCommand(int.Parse(screenId.Value));
+            await _mediator.Send(command);
         }
         await base.OnConnectedAsync();
     }
@@ -57,7 +64,8 @@ public class ScreenHub : Hub, NotifyOnOrdersChanged
         {
             await _screenConnectionRepository.RemoveConnectionAsync(int.Parse(screenId.Value));
             _logger.LogInformation($"Screen disconnected: {screenId}, ConnectionId: {Context.ConnectionId}");
-            await _adminHubContext.Clients.All.SendAsync(ScreenDisconnected, screenId.Value);
+            var command = new NotifyScreenDisconnectedCommand(int.Parse(screenId.Value));
+            await _mediator.Send(command);
         }
         await base.OnDisconnectedAsync(exception);
     }
@@ -133,5 +141,23 @@ public class ScreenHub : Hub, NotifyOnOrdersChanged
     public Task NotifyAsync()
     {
         return NotifyDataRefreshed();
+    }
+    
+    public async Task RemoveScreen(ScreenDto screen)
+    {
+        var connectionId = await _screenConnectionRepository.RemoveConnectionAsync(screen.Id);
+        _logger.LogInformation($"[DEBUG] connectionId: {connectionId} has been removed");
+        if (!string.IsNullOrEmpty(connectionId))
+        {
+            await Clients.Client(connectionId).SendAsync(MsgScreenRemoved, screen);
+        }
+    }
+
+    public async Task RemoveScreens(ScreenDto[] screens)
+    {
+        foreach (var screen in screens)
+        {
+            await RemoveScreen(screen);
+        }
     }
 }
