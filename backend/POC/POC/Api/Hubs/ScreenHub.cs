@@ -1,19 +1,21 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using POC.Contracts.CrmDTOs;
-using POC.Contracts.Screen;
 using POC.Infrastructure.Repositories;
 using Microsoft.AspNetCore.SignalR;
+using POC.Infrastructure.Common.Notifiers;
+using POC.Infrastructure.IRepositories;
 
 
 namespace POC.Api.Hubs;
 
 [Authorize(Roles = "Screen")]
-public class ScreenHub : Hub
+public class ScreenHub : Hub, NotifyOnOrdersChanged
 {
     private readonly ScreenConnectionRepository _screenConnectionRepository;
     private readonly ILogger<ScreenHub> _logger;
     private readonly IHubContext<AdminHub> _adminHubContext;
 
+    private static readonly string MsgRefreshData = "refreshData";
     private static readonly string MsgOrderAdded = "orderAdded";
     private static readonly string MsgOrderUpdated = "orderUpdated";
     private static readonly string MsgOrderDeleted = "orderDeleted";
@@ -22,11 +24,16 @@ public class ScreenHub : Hub
     private static readonly string ProfileUpdated = "profileUpdated";
     private static readonly string MsgInventoryUpdated = "inventoryUpdated";
     
-    public ScreenHub(ScreenConnectionRepository screenConnectionRepository, ILogger<ScreenHub> logger, IHubContext<AdminHub> adminHubContext)
+    public ScreenHub(
+        ScreenConnectionRepository screenConnectionRepository, 
+        ILogger<ScreenHub> logger, 
+        IHubContext<AdminHub> adminHubContext,
+        IOrderRepository orderRepository)
     {
         _screenConnectionRepository = screenConnectionRepository;
         _logger = logger;
         _adminHubContext = adminHubContext;
+        orderRepository.SetNotifyOnOrdersChanged(this);
     }
 
     
@@ -55,6 +62,11 @@ public class ScreenHub : Hub
         await base.OnDisconnectedAsync(exception);
     }
     
+    public async Task NotifyDataRefreshed()
+    {
+        await Clients.All.SendAsync(MsgRefreshData);
+        _logger.LogInformation($"notifies all screens to refresh data");
+    }
     
     public async Task NotifyUpdateProfile(int[] screenIds)
     {
@@ -67,44 +79,42 @@ public class ScreenHub : Hub
             }
         }
     }
-
     
-    public async Task UpdateOrder(int[] screenIds, OrderDto orderDto)
+    public async Task UpdateOrder(List<KeyValuePair<int, List<OrderDto>>> screenToOrders)
     {
-        foreach (var id in screenIds)
+        foreach (var pair in screenToOrders)
         {
-            var connectionId = _screenConnectionRepository.GetConnectionIdByScreenIdAsync(id);
+            var connectionId = _screenConnectionRepository.GetConnectionIdByScreenIdAsync(pair.Key);
             if (!string.IsNullOrEmpty(connectionId.Result))
             {
-                await Clients.Client(connectionId.Result).SendAsync(MsgOrderUpdated, orderDto);
+                await Clients.Client(connectionId.Result).SendAsync(MsgOrderUpdated, pair.Value);
             }
         }
     }
     
     
-    public async Task AddOrder(int[] screenIds, OrderDto orderDto)
+    public async Task AddOrder(List<KeyValuePair<int, List<OrderDto>>> screenToOrders)
     {
-        foreach (var id in screenIds)
+        foreach (var pair in screenToOrders)
         {
-            var connectionId = _screenConnectionRepository.GetConnectionIdByScreenIdAsync(id);
+            var connectionId = _screenConnectionRepository.GetConnectionIdByScreenIdAsync(pair.Key);
             if (!string.IsNullOrEmpty(connectionId.Result))
             {
-                await Clients.Client(connectionId.Result).SendAsync(MsgOrderAdded, orderDto);
+                await Clients.Client(connectionId.Result).SendAsync(MsgOrderAdded, pair.Value);
             }
         }
     }
     
-    
-    public async Task DeleteOrder(int[] screenIds, int orderId)
+    public async Task DeleteOrder(List<KeyValuePair<int, int[]>> screenToOrderIds)
     {
-        foreach (var id in screenIds)
+        foreach (var pair in screenToOrderIds)
         {
-            var connectionId = _screenConnectionRepository.GetConnectionIdByScreenIdAsync(id);
+            var connectionId = _screenConnectionRepository.GetConnectionIdByScreenIdAsync(pair.Key);
             if (!string.IsNullOrEmpty(connectionId.Result))
             {
-                await Clients.Client(connectionId.Result).SendAsync(MsgOrderDeleted, orderId);
+                await Clients.Client(connectionId.Result).SendAsync(MsgOrderDeleted, pair.Value);
             }
-        } 
+        }
     }
 
     
@@ -118,5 +128,10 @@ public class ScreenHub : Hub
                 await Clients.Client(connectionId.Result).SendAsync(MsgInventoryUpdated);
             }
         } 
+    }
+
+    public Task NotifyAsync()
+    {
+        return NotifyDataRefreshed();
     }
 }

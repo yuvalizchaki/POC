@@ -1,14 +1,17 @@
 ﻿using POC.Contracts.CrmDTOs;
+using POC.Infrastructure.Common.Notifiers;
 
 namespace POC.Infrastructure.IRepositories;
 
 public interface IOrderRepository
 {
-    Task<IEnumerable<OrderDto>> GetAllOrdersAsync(int companyId);
+    Task<IEnumerable<CrmOrder>> GetAllOrdersAsync(int companyId);
     
-    Task SetAllOrdersAsync(IEnumerable<OrderDto> orders);
-    Task AddOrUpdateOrderAsync(OrderDto order);
-    Task<OrderDto?> GetOrderAsync(int id);
+    Task SetAllOrdersAsync(IEnumerable<CrmOrder> orders);
+    Task AddOrUpdateOrderAsync(CrmOrder order);
+    Task<CrmOrder?> GetOrderAsync(int id);
     // Other relevant methods
     Task DeleteOrderAsync(int id);
+    
+    void SetNotifyOnOrdersChanged(NotifyOnOrdersChanged notifyOnOrdersChanged);
 }

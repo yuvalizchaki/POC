@@ -1,4 +1,5 @@
-﻿using POC.Contracts.CrmDTOs;
+﻿using POC.Api.Hubs;
+using POC.Contracts.CrmDTOs;
 using POC.Infrastructure.Adapters;
 using POC.Infrastructure.IRepositories;
 
@@ -7,10 +8,13 @@ namespace POC.Services;
 public interface IOrderService
 {
     Task FetchAndReplicateOrdersAsync();
-    Task ProcessWebhookOrderAsync(OrderDto order); 
+    Task ProcessWebhookOrderAsync(CrmOrder order); 
 }
 
-public class OrderService(IOrderRepository orderRepository, IOrderAdapter orderAdapter, ILogger<OrderService> logger)
+public class OrderService(
+    IOrderRepository orderRepository, 
+    IOrderAdapter orderAdapter, 
+    ILogger<OrderService> logger)
     : IOrderService
 {
     
@@ -23,7 +27,7 @@ public class OrderService(IOrderRepository orderRepository, IOrderAdapter orderA
 
             // Process and save orders
             await orderRepository.SetAllOrdersAsync(orders);
-
+            
             logger.LogInformation("Orders replicated successfully at {Time}", DateTime.UtcNow);
         }
         catch (Exception ex)
@@ -32,7 +36,7 @@ public class OrderService(IOrderRepository orderRepository, IOrderAdapter orderA
         }
     }
 
-    public async Task ProcessWebhookOrderAsync(OrderDto order)
+    public async Task ProcessWebhookOrderAsync(CrmOrder order)
     {
         try
         {
