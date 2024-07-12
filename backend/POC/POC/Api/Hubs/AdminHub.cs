@@ -12,7 +12,8 @@ namespace POC.Api.Hubs
         private readonly ScreenConnectionRepository _screenConnectionRepository;
         private readonly ILogger<ScreenHub> _logger;
         
-        private static readonly string MsgScreenRemoved = "screenRemoved";
+        private static readonly string ScreenConnected = "screenConnected";
+        private static readonly string ScreenDisconnected = "screenDisconnected";
 
         public AdminHub(ScreenConnectionRepository screenConnectionRepository, ILogger<ScreenHub> logger)
         {
@@ -20,28 +21,16 @@ namespace POC.Api.Hubs
             _logger = logger;
         }
 
-        
-        public async Task SendMessage(string message)
+        public async Task NotifyScreenConnected(int screenId)
         {
-            await Clients.All.SendAsync("ReceiveAdminMessage", message);
+            await Clients.All.SendAsync(ScreenConnected, screenId);
         }
         
-        public async Task RemoveScreen(ScreenDto screen)
+        public async Task NotifyScreenDisonnected(int screenId)
         {
-            var connectionId = await _screenConnectionRepository.RemoveConnectionAsync(screen.Id);
-            _logger.LogInformation($"[DEBUG] connectionId: {connectionId} has been removed");
-            if (!string.IsNullOrEmpty(connectionId))
-            {
-                await Clients.Client(connectionId).SendAsync(MsgScreenRemoved, screen);
-            }
+            await Clients.All.SendAsync(ScreenDisconnected, screenId);
         }
-
-        public async Task RemoveScreens(ScreenDto[] screens)
-        {
-            foreach (var screen in screens)
-            {
-                await RemoveScreen(screen);
-            }
-        }
+        
+       
     }
 }
