@@ -85,7 +85,7 @@ export const ScreenProfilesProvider = ({
     fetchConnectedScreens().then((data) => {
       const connectedScreenIds = data.reduce((acc, screen) => ({ ...acc, [screen.id]: true }), {});
       setConnectedScreens(connectedScreenIds);
-      
+
       setIsLoadingConnectedScreens(false);
     }).catch(() => {
       setIsLoadingConnectedScreens(false);

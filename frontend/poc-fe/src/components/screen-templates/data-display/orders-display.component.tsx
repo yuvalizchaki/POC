@@ -48,7 +48,7 @@ const OrdersDisplay = ({ orders }: OrdersDisplayProps) => {
     }, [orders]);
 
     const uniqueOrders = useMemo(() => [...new Map(fixedOrders.map(order => [order.crmOrder.id, order])).values()], [fixedOrders]);
-    console.log('[DEBUG] UPDATE!');
+    // console.log('[DEBUG] UPDATE!');
     return (
         <Box sx={{ p: 2, height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -77,7 +77,7 @@ const OrdersDisplay = ({ orders }: OrdersDisplayProps) => {
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     exit={{ opacity: 0, x: 100 }}
-                                    transition={{ duration: 0.8, type:"spring" }}
+                                    transition={{ duration: 0.8, type: "spring" }}
                                     sx={{ opacity: 1 }}
                                 >
                                     <StyledTableCell component="th" scope="row">

@@ -8,7 +8,7 @@ import Paper from '@mui/material/Paper';
 import Divider from '@mui/material/Divider';
 import { Chip, Typography, lighten } from '@mui/material';
 import { StyledTableCell, StyledTableRow } from './styled';
-import { AppEntity, InventoryItem, OrderDto, OrderStatus, OrderTag, OrderTransportType, orderStatusDisplayMap, orderTransportTypeDisplayMap } from '../../../types/crmTypes.types';
+import { AppEntity, InventoryItem, OrderTag, orderTransportTypeDisplayMap } from '../../../types/crmTypes.types';
 import moment from 'moment';
 import { getColor } from '../../../util/screen-util';
 import { AppClock } from '../../common/app-clock.component';
@@ -55,7 +55,6 @@ const InventoryDisplay = ({ inventoryItems }: OrdersDisplayProps) => {
     //         new Date(b.transportType === OrderTransportType.Incoming ? b.crmOrder.endDate : b.crmOrder.endDate).getTime()
     //     );
     // }, [inventoryItems]);
-
     return (
         <Box sx={{ p: 2, height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -72,6 +71,7 @@ const InventoryDisplay = ({ inventoryItems }: OrdersDisplayProps) => {
                             <StyledTableCell>Id</StyledTableCell>
                             <StyledTableCell>Type</StyledTableCell>
                             <StyledTableCell>Product</StyledTableCell>
+                            <StyledTableCell>Amount</StyledTableCell>
                             <StyledTableCell>Bundle?</StyledTableCell>
                         </StyledTableRow>
                     </TableHead>
@@ -80,18 +80,19 @@ const InventoryDisplay = ({ inventoryItems }: OrdersDisplayProps) => {
                         <AnimatePresence>
                             {inventoryItems.map((item) => (
                                 <StyledTableRow
-                                    key={`${item.crmOrder.id}_${item.transportType}`}
-                                    layoutId={item.crmOrder.id.toString()}
+                                    key={`${item.crmInventoryItem.id}_${item.transportType}`}
+                                    layoutId={item.crmInventoryItem.id.toString()}
                                     initial={{ opacity: 0, scale: 1 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     exit={{ opacity: 1, maxHeight: 0 }}
                                     transition={{ duration: 1, type: 'spring' }}
                                 >
-                                    <StyledTableCell>{flatEntitiesMap?.[item.crmOrder.departmentId].Name}</StyledTableCell>
-                                    <StyledTableCell>{item.crmOrder.id}</StyledTableCell>
-                                    <StyledTableCell>{item.transportType}</StyledTableCell>
-                                    <StyledTableCell>{item.crmOrder.productName}</StyledTableCell>
-                                    <StyledTableCell>{item.crmOrder.isBundle ? '✔️' : ''}</StyledTableCell>
+                                    <StyledTableCell>{flatEntitiesMap[item.crmInventoryItem.departmentId]?.Name}</StyledTableCell>
+                                    <StyledTableCell>{item.crmInventoryItem.id}</StyledTableCell>
+                                    <StyledTableCell><span style={{ color: getColor(`transport_${item.transportType}`) }}>{orderTransportTypeDisplayMap[item.transportType]}</span></StyledTableCell>
+                                    <StyledTableCell>{item.crmInventoryItem.productName}</StyledTableCell>
+                                    <StyledTableCell>{item.crmInventoryItem.amount}</StyledTableCell>
+                                    <StyledTableCell>{item.crmInventoryItem.isBundle ? '✔️' : ''}</StyledTableCell>
                                 </StyledTableRow>
                             ))}
                         </AnimatePresence>

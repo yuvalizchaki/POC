@@ -49,7 +49,7 @@ export const SignalRProvider: FC<SignalRProviderProps> = ({
     commandHandlers
   }: ConnectParams) => {
     const connections = connectionsRef.current;
-    console.log('[DEBUG] connections:', connections);
+    // console.log('[DEBUG] connections:', connections);
     if (connections[hubUrl]) {
       console.log("Already connected to this hub.");
       return;
@@ -91,6 +91,8 @@ export const SignalRProvider: FC<SignalRProviderProps> = ({
       console.error("No connection found for hub: " + hubUrl);
       return;
     }
+    
+    delete connectionsRef.current[hubUrl];
     con.stop();
   }
 
@@ -135,7 +137,7 @@ export const SignalRProvider: FC<SignalRProviderProps> = ({
   const value = useMemo(
     () => ({
       connect,
-      disconnect
+      disconnect,
       // bindHandlers,
       // unbindHandlers,
       // getConnection: (hubUrl: string) => getConnection(hubUrl),

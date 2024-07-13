@@ -70,7 +70,7 @@ interface CrmInventoryItem {
   productImages: string[];
 }
 export interface InventoryItem {
-  crmOrder: CrmInventoryItem;
+  crmInventoryItem: CrmInventoryItem;
   transportType: OrderTransportType;
 }
 interface CrmServiceItemDto {

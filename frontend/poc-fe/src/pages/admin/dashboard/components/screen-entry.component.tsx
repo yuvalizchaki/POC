@@ -14,7 +14,7 @@ interface ScreenEntryProps {
 export const ScreenEntry = ({ screen }: ScreenEntryProps) => {
   const { removeScreen } = useAdminInfoContext();
   const { refetch, connectedScreens, isLoadingConnectedScreens } = useScreenProfilesContext();
-  console.log('[DEBUG] connectedScreens: ', connectedScreens);
+  // console.log('[DEBUG] connectedScreens: ', connectedScreens);
   const handleRemoveScreen = () => {
     removeScreen(screen.id).then(() => {
       refetch();

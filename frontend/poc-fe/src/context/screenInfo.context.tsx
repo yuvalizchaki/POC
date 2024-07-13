@@ -26,6 +26,7 @@ export interface ScreenInfoContextType {
   orderTags: OrderTag[],
   fetchOrderTagsData: () => Promise<void>;
   isLoading: boolean;
+  fetchAndSetScreenMetaData: () => Promise<ScreenMetaData>
 }
 
 export const ScreenInfoContext = createContext<ScreenInfoContextType>({
@@ -39,6 +40,7 @@ export const ScreenInfoContext = createContext<ScreenInfoContextType>({
   orderTags: [],
   fetchOrderTagsData: async () => { },
   isLoading: false,
+  fetchAndSetScreenMetaData: async () => ({} as ScreenMetaData),
 });
 
 export const ScreenInfoProvider: React.FC<ScreenInfoProviderProps> = ({
@@ -89,6 +91,7 @@ export const ScreenInfoProvider: React.FC<ScreenInfoProviderProps> = ({
       const response = await client.get("/meta");
       setScreenInfo(response.data);
       setIsLoadingScreenInfo(false);
+      return response.data;
     } catch (error) {
       setIsLoadingScreenInfo(false);
       console.error("Failed to fetch screen meta data:", error);
@@ -101,7 +104,7 @@ export const ScreenInfoProvider: React.FC<ScreenInfoProviderProps> = ({
       // TODO: Implement Correctly
       setIsLoadingEntities(true);
       const response = await client.get("/types/company");
-      console.log("response:", response);
+      // console.log("[DEBUG] response:", response);
       setEntities(response.data);
       setIsLoadingEntities(false);
     } catch (error) {
@@ -115,7 +118,7 @@ export const ScreenInfoProvider: React.FC<ScreenInfoProviderProps> = ({
       // TODO: Implement Correctly
       setIsLoadingOrderTags(true);
       const response = await client.get("/types/tags");
-      console.log("response:", response);
+      // console.log("[DEBUG] response:", response);
       setOrderTags(response.data);
       setIsLoadingOrderTags(false);
     } catch (error) {
@@ -141,7 +144,8 @@ export const ScreenInfoProvider: React.FC<ScreenInfoProviderProps> = ({
     fetchEntitiesData,
     orderTags,
     fetchOrderTagsData,
-    isLoading
+    isLoading,
+    fetchAndSetScreenMetaData
   };
 
   // Sync token state with local storage

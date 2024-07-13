@@ -194,7 +194,7 @@ export const AdminInfoProvider: React.FC<AdminInfoProviderProps> = ({
   > => {
     try {
       const response = await client.get("/screen-profiles");
-      console.log("response:", response);
+      // console.log("[DEBUG] response:", response);
       return response.data;
     } catch (error) {
       console.error("Error fetching screen profiles:", error);
@@ -208,7 +208,7 @@ export const AdminInfoProvider: React.FC<AdminInfoProviderProps> = ({
     try {
       // TODO: Implement Correctly
       const response = await client.get("/types/company");
-      console.log("response:", response);
+      // console.log("[DEBUG] response:", response);
       return response.data;
     } catch (error) {
       console.error("Error fetching screen profiles:", error);
@@ -222,7 +222,7 @@ export const AdminInfoProvider: React.FC<AdminInfoProviderProps> = ({
     try {
       // TODO: Implement Correctly
       const response = await client.get("/types/tags");
-      console.log("response:", response);
+      // console.log("[DEBUG] response:", response);
       return response.data;
     } catch (error) {
       console.error("Error fetching screen profiles:", error);
@@ -236,7 +236,7 @@ export const AdminInfoProvider: React.FC<AdminInfoProviderProps> = ({
       try {
         // TODO: Implement Correctly
         const response = await client.get("/admin/connected-screens");
-        console.log("response:", response);
+        // console.log("[DEBUG] response:", response);
         return response.data;
       } catch (error) {
         console.error("Error fetching screen profiles:", error);

@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useCallback, useState } from "react";
+import React, { createContext, ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { InventoryItem, OrderDto } from "../types/crmTypes.types";
 import { API_SCREEN_HUB_URL } from "../config";
 import { useScreenInfoContext } from "../hooks/useScreenInfoContext";
@@ -6,6 +6,7 @@ import { useSignalR } from "../hooks/useSignalR";
 import { useNavigate } from "react-router-dom";
 import { DisplayTemplateType } from "../types/screenProfile.types";
 import moment from "moment";
+import { ScreenMetaData } from "../types/screenMetaData.types";
 
 interface DisplayDataProviderProps {
     children: ReactNode;
@@ -26,7 +27,7 @@ export const OrdersDataContext = createContext<DisplayDataContextType>({
 });
 
 export const DisplayDataProvider: React.FC<DisplayDataProviderProps> = ({ children }) => {
-    const { screenInfo, setScreenInfo, client, token, setToken } = useScreenInfoContext();
+    const { screenInfo, setScreenInfo, client, token, setToken, fetchAndSetScreenMetaData } = useScreenInfoContext();
     const [orders, setOrders] = useState<OrderDto[]>([]);
     const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
     const navigate = useNavigate();
@@ -39,7 +40,6 @@ export const DisplayDataProvider: React.FC<DisplayDataProviderProps> = ({ childr
             console.error("Failed to fetch orders:", error);
         }
     }, [client]);
-
 
     const fetchAndSetInventoryItems = useCallback(async () => {
         try {
@@ -54,20 +54,28 @@ export const DisplayDataProvider: React.FC<DisplayDataProviderProps> = ({ childr
         navigate("/screen/pair", { replace: true })
     }, [navigate])
 
-    const refetchData = useCallback(() => {
-        if (screenInfo?.displayConfig.displayTemplate === DisplayTemplateType.Inventory) {
+    /** Closure error fix */
+    const screenInfoWrapped = useRef<ScreenMetaData | null>(screenInfo);
+    useEffect(() => {
+        screenInfoWrapped.current = screenInfo
+    }, [screenInfo]);
+
+    const refetchData = useCallback((newMetaDate?: ScreenMetaData) => {
+        /** This is to solve a bug where the refetchData closure is changed but binded to the previous one. using the latest meta data fixes it */
+        const metaData = newMetaDate ?? screenInfoWrapped.current
+        if (metaData?.displayConfig.displayTemplate === DisplayTemplateType.Inventory) {
             fetchAndSetInventoryItems();
         } else {
             fetchAndSetOrders();
         }
-    }, [fetchAndSetOrders, fetchAndSetInventoryItems]);
+    }, [screenInfoWrapped, fetchAndSetOrders, fetchAndSetInventoryItems]);
 
     useSignalR({
         connectParams: {
             hubUrl: API_SCREEN_HUB_URL,
             token: `${token}`,
             onConnect: () => {
-                fetchAndSetOrders();
+                refetchData();
             },
             onConnectError: () => {
                 redirectToGuest();
@@ -77,9 +85,10 @@ export const DisplayDataProvider: React.FC<DisplayDataProviderProps> = ({ childr
                     console.log(`${moment()} Refetching Data`);
                     refetchData();
                 },
-                profileUpdated: () => {
+                profileUpdated: async () => {
                     console.log(`${moment()} Profile Updated, refetching data`);
-                    refetchData();
+                    const newMetaDate = await fetchAndSetScreenMetaData();
+                    refetchData(newMetaDate);
                 },
                 screenRemoved: () => {
                     console.log(`${moment()}  Screen Removed by Admin`);
