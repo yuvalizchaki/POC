@@ -3,7 +3,8 @@ import { OrdersScreen } from "../../components/screen-templates";
 import { useScreenInfoContext } from "../../hooks/useScreenInfoContext";
 
 const ScreenContentPage = () => {
-  const { token, screenInfo } = useScreenInfoContext();
+  const { token } = useScreenInfoContext();
+  
   // TODO: Fetch screenInfo
   if (!token) {
     return <Navigate to={"/screen/pair"} replace />;
@@ -11,7 +12,7 @@ const ScreenContentPage = () => {
 
   return (
     <>
-      <OrdersScreen />
+        <OrdersScreen />
     </>
   );
 };

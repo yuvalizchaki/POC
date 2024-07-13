@@ -10,12 +10,12 @@ namespace POC.Api.Hubs
     public class AdminHub : Hub
     {
         private readonly ScreenConnectionRepository _screenConnectionRepository;
-        private readonly ILogger<ScreenHub> _logger;
+        private readonly ILogger<AdminHub> _logger;
         
         private static readonly string ScreenConnected = "screenConnected";
         private static readonly string ScreenDisconnected = "screenDisconnected";
 
-        public AdminHub(ScreenConnectionRepository screenConnectionRepository, ILogger<ScreenHub> logger)
+        public AdminHub(ScreenConnectionRepository screenConnectionRepository, ILogger<AdminHub> logger)
         {
             _screenConnectionRepository = screenConnectionRepository;
             _logger = logger;

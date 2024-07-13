@@ -4,16 +4,19 @@ import { DisplayDataProvider } from "../../../context/displayData.context";
 import { useDisplayDataContext as useDisplayDataContext } from "../../../hooks/useDisplayDataContext";
 import { useScreenInfoContext } from "../../../hooks/useScreenInfoContext";
 import OrdersDisplay from "./orders-display.component";
+import InventoryDisplay from "./inventory-display.component";
+import { DisplayTemplateType } from "../../../types/screenProfile.types";
 
 interface DataDisplayImpProps {
 }
 
 const DataDisplayImp = ({ }: DataDisplayImpProps) => {
   const { screenInfo } = useScreenInfoContext();
-  const { orders } = useDisplayDataContext();
-  console.log('[DEBUG] !! orders: ', orders);
-  return (
-      <OrdersDisplay orders={orders} />
+  const { orders, inventoryItems } = useDisplayDataContext();
+  
+  return (screenInfo?.displayConfig.displayTemplate === DisplayTemplateType.Inventory
+    ? <InventoryDisplay inventoryItems={inventoryItems} />
+    : <OrdersDisplay orders={orders} />
   );
 };
 

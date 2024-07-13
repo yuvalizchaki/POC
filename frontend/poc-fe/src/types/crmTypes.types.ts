@@ -18,12 +18,21 @@ export const orderStatusDisplayMap = {
 };
 export const orderStatusList = Object.entries(orderStatusDisplayMap).map(([value, label]) => ({ value: Number(value), label }));
 
+export enum OrderTransportType {
+  Incoming = 1,
+  Outgoing = 2
+}
+export const orderTransportTypeDisplayMap = {
+  [OrderTransportType.Outgoing]: "Outgoing",
+  [OrderTransportType.Incoming]: "Incoming"
+}
+
 interface BaseOrderDto {
   id: number;
   companyId: number;
 }
 
-export interface OrderDto extends BaseOrderDto {
+export interface CrmOrderDto extends BaseOrderDto {
   departmentId: number;
   customerId: number;
   clientName: string;
@@ -39,13 +48,17 @@ export interface OrderDto extends BaseOrderDto {
   updatedOn?: string;
 
   // Navigation properties
-  orderItems: InventoryItemDto[];
-  serviceOrderItems: ServiceItemDto[];
-  peopleOrderItems: PeopleOrderItemDto[];
-  oneTimeOrderItems: OneTimeOrderItemDto[];
+  orderItems: CrmInventoryItem[];
+  serviceOrderItems: CrmServiceItemDto[];
+  peopleOrderItems: CrmPeopleOrderItemDto[];
+  oneTimeOrderItems: CrmOneTimeOrderItemDto[];
+}
+export interface OrderDto {
+  crmOrder: CrmOrderDto;
+  transportType: OrderTransportType;
 }
 
-export interface InventoryItemDto {
+interface CrmInventoryItem {
   id: number;
   departmentId: number;
   amount: number;
@@ -56,8 +69,11 @@ export interface InventoryItemDto {
   isBundle: boolean;
   productImages: string[];
 }
-
-interface ServiceItemDto {
+export interface InventoryItem {
+  crmOrder: CrmInventoryItem;
+  transportType: OrderTransportType;
+}
+interface CrmServiceItemDto {
   id: number;
   departmentId: number;
   quantity: number;
@@ -72,7 +88,7 @@ interface ServiceItemDto {
   price: number;
 }
 
-interface PeopleOrderItemDto {
+interface CrmPeopleOrderItemDto {
   id: number;
   peopleProfileId: number;
   departmentId: number;
@@ -85,7 +101,7 @@ interface PeopleOrderItemDto {
   price: number;
 }
 
-interface OneTimeOrderItemDto {
+interface CrmOneTimeOrderItemDto {
   id: number;
   departmentId: number;
   amount: number;

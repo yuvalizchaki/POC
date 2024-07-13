@@ -18,7 +18,7 @@ public class ScreenHub : Hub, NotifyOnOrdersChanged
 {
     private readonly ScreenConnectionRepository _screenConnectionRepository;
     private readonly ILogger<ScreenHub> _logger;
-    private readonly IHubContext<AdminHub> _adminHubContext;
+    // private readonly IHubContext<AdminHub> _adminHubContext;
     private readonly IMediator _mediator;
 
     private static readonly string MsgRefreshData = "refreshData";

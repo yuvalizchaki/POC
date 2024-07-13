@@ -8,17 +8,26 @@ import Paper from '@mui/material/Paper';
 import Divider from '@mui/material/Divider';
 import { Chip, Typography, lighten } from '@mui/material';
 import { StyledTableCell, StyledTableRow } from './styled';
-import { OrderDto, OrderStatus, OrderTransportType, orderStatusDisplayMap, orderTransportTypeDisplayMap } from '../../../types/crmTypes.types';
+import { AppEntity, InventoryItem, OrderDto, OrderStatus, OrderTag, OrderTransportType, orderStatusDisplayMap, orderTransportTypeDisplayMap } from '../../../types/crmTypes.types';
 import moment from 'moment';
 import { getColor } from '../../../util/screen-util';
 import { AppClock } from '../../common/app-clock.component';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useScreenProfilesContext } from '../../../hooks/useScreenProfilesContext';
+import { useScreenInfoContext } from '../../../hooks/useScreenInfoContext';
+import { flattenAppEntities } from '../../../util/global-util';
 
 interface OrdersDisplayProps {
-    orders: OrderDto[];
+    inventoryItems: InventoryItem[];
 }
 
-const OrdersDisplay = ({ orders }: OrdersDisplayProps) => {
+const InventoryDisplay = ({ inventoryItems }: OrdersDisplayProps) => {
+    const { entities, orderTags } = useScreenInfoContext();
+
+    const flatEntities = useMemo(() => flattenAppEntities(entities), [entities]);
+    const flatEntitiesMap = useMemo(() => flatEntities.reduce((acc, e) => ({ ...acc, [e.Id]: e }), {} as { [id: number]: AppEntity }), [flatEntities]);
+
+    const orderTagsMap = useMemo(() => orderTags.reduce((acc, e) => ({ ...acc, [e.Id]: e }), {} as { [id: number]: OrderTag }), [orderTags]);
     // DEBUG TESTS
     // const [mask, setMask] = useState<boolean[]>(Array(fixedOrders.length).fill(false));
 
@@ -40,14 +49,12 @@ const OrdersDisplay = ({ orders }: OrdersDisplayProps) => {
     //     return fixedOrders.filter((_, index) => mask[index])
     // }, [mask, fixedOrders]);
 
-    const fixedOrders = useMemo(() => {
-        return [...orders].sort((a, b) =>
-            new Date(a.transportType === OrderTransportType.Incoming ? a.crmOrder.endDate : a.crmOrder.endDate).getTime() -
-        new Date(b.transportType === OrderTransportType.Incoming ? b.crmOrder.endDate : b.crmOrder.endDate).getTime()
-        );
-    }, [orders]);
-
-    const uniqueOrders = useMemo(() => [...new Map(fixedOrders.map(order => [order.crmOrder.id, order])).values()], [fixedOrders]);
+    // const fixedInventoryItems = useMemo(() => {
+    //     return [...inventoryItems].sort((a, b) =>
+    //         new Date(a.transportType === OrderTransportType.Incoming ? a.crmOrder.endDate : a.crmOrder.endDate).getTime() -
+    //         new Date(b.transportType === OrderTransportType.Incoming ? b.crmOrder.endDate : b.crmOrder.endDate).getTime()
+    //     );
+    // }, [inventoryItems]);
 
     return (
         <Box sx={{ p: 2, height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
@@ -61,37 +68,30 @@ const OrdersDisplay = ({ orders }: OrdersDisplayProps) => {
                 <Table sx={{ minWidth: 650, overflow: 'hidden' }} size="small">
                     <TableHead>
                         <StyledTableRow>
-                            <StyledTableCell>Time</StyledTableCell>
+                            <StyledTableCell>Department</StyledTableCell>
                             <StyledTableCell>Id</StyledTableCell>
                             <StyledTableCell>Type</StyledTableCell>
-                            <StyledTableCell>Status</StyledTableCell>
-                            <StyledTableCell>Client Name</StyledTableCell>
+                            <StyledTableCell>Product</StyledTableCell>
+                            <StyledTableCell>Bundle?</StyledTableCell>
                         </StyledTableRow>
                     </TableHead>
 
                     <TableBody>
                         <AnimatePresence>
-                            {fixedOrders.map((order) => (
+                            {inventoryItems.map((item) => (
                                 <StyledTableRow
-                                    key={`${order.crmOrder.id}_${order.transportType}`}
-                                    layoutId={order.crmOrder.id.toString()}
+                                    key={`${item.crmOrder.id}_${item.transportType}`}
+                                    layoutId={item.crmOrder.id.toString()}
                                     initial={{ opacity: 0, scale: 1 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     exit={{ opacity: 1, maxHeight: 0 }}
                                     transition={{ duration: 1, type: 'spring' }}
                                 >
-                                    <StyledTableCell component="th" scope="row">
-                                        {moment(order.transportType === OrderTransportType.Incoming ? order.crmOrder.endDate : order.crmOrder.endDate).format('DD/MM/YYYY hh:mm')}
-                                    </StyledTableCell>
-                                    <StyledTableCell>{order.crmOrder.id}</StyledTableCell>
-                                    <StyledTableCell><span style={{ color: getColor(`transport_${order.transportType}`) }}>{orderTransportTypeDisplayMap[order.transportType]}</span></StyledTableCell>
-                                    <StyledTableCell>
-                                        <Chip
-                                            sx={{ width: '12ch', height: 50, backgroundColor: getColor(`status_${order.crmOrder.status}`), color: '#ffffff' }}
-                                            label={orderStatusDisplayMap[order.crmOrder.status]}
-                                        />
-                                    </StyledTableCell>
-                                    <StyledTableCell>{order.crmOrder.clientName}</StyledTableCell>
+                                    <StyledTableCell>{flatEntitiesMap?.[item.crmOrder.departmentId].Name}</StyledTableCell>
+                                    <StyledTableCell>{item.crmOrder.id}</StyledTableCell>
+                                    <StyledTableCell>{item.transportType}</StyledTableCell>
+                                    <StyledTableCell>{item.crmOrder.productName}</StyledTableCell>
+                                    <StyledTableCell>{item.crmOrder.isBundle ? '✔️' : ''}</StyledTableCell>
                                 </StyledTableRow>
                             ))}
                         </AnimatePresence>
@@ -103,11 +103,11 @@ const OrdersDisplay = ({ orders }: OrdersDisplayProps) => {
 
             <Divider sx={{ mt: 2 }} />
             <Box sx={{ justifyContent: 'space-between', mt: 2 }}>
-                <Typography variant="body1">Total Orders: {fixedOrders.length}</Typography>
-                <Typography variant="body1">Total Unique Orders: {uniqueOrders.length}</Typography>
+                <Typography variant="body1">Total Inventory Items: {inventoryItems.length}</Typography>
+                {/* <Typography variant="body1">Total Unique Orders: {uniqueOrders.length}</Typography> */}
             </Box>
         </Box>
     );
 };
 
-export default OrdersDisplay;
+export default InventoryDisplay;

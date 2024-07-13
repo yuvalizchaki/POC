@@ -3,7 +3,14 @@ import React, { createContext, useMemo, FC, useContext, useRef } from "react";
 import * as signalR from "@microsoft/signalr";
 import { SignalRHandlers } from "../types/signalR.types";
 
-export interface ConnectParams { hubUrl: string, token?: string, onConnect?: () => void, onConnectError?: (msg: string) => void, onDisconnect?: () => void }
+export interface ConnectParams {
+  hubUrl: string,
+  token?: string,
+  onConnect?: () => void,
+  onConnectError?: (msg: string) => void,
+  onDisconnect?: () => void,
+  commandHandlers: Partial<SignalRHandlers>
+}
 
 interface SignalRProviderProps {
   baseUrl: string;
@@ -12,15 +19,15 @@ interface SignalRProviderProps {
 
 interface SignalRContextValue {
   connect: (props: ConnectParams) => void;
-  bindHandlers: (
-    hubUrl: string,
-    commandHandlers: Partial<SignalRHandlers>
-  ) => void;
-  unbindHandlers: (
-    hubUrl: string,
-    commandHandlers: Partial<SignalRHandlers>
-  ) => void;
-  getConnection: (hubUrl: string) => signalR.HubConnection | undefined;
+  // bindHandlers: (
+  //   hubUrl: string,
+  //   commandHandlers: Partial<SignalRHandlers>
+  // ) => void;
+  // unbindHandlers: (
+  //   hubUrl: string,
+  //   commandHandlers: Partial<SignalRHandlers>
+  // ) => void;
+  // getConnection: (hubUrl: string) => signalR.HubConnection | undefined;
 }
 
 export const SignalRContext = createContext<SignalRContextValue | null>(null);
@@ -36,7 +43,8 @@ export const SignalRProvider: FC<SignalRProviderProps> = ({
     token,
     onConnect,
     onConnectError,
-    onDisconnect
+    onDisconnect,
+    commandHandlers
   }: ConnectParams) => {
     const connections = connectionsRef.current;
     console.log('[DEBUG] connections:', connections);
@@ -50,6 +58,13 @@ export const SignalRProvider: FC<SignalRProviderProps> = ({
       .configureLogging(signalR.LogLevel.Information)
       .withAutomaticReconnect()
       .build();
+
+    // Bind handlers
+    Object.entries(commandHandlers).forEach(([commandName, handler]) => {
+      if (handler) {
+        con.on(commandName, handler);
+      }
+    });
 
     con
       .start()
@@ -66,50 +81,50 @@ export const SignalRProvider: FC<SignalRProviderProps> = ({
       });
   };
 
-  const bindHandlers = (
-    hubUrl: string,
-    commandHandlers: Partial<SignalRHandlers>
-  ) => {
-    const connection = connectionsRef.current?.[hubUrl];
-    if (!connection) {
-      console.error("No connection found for hub: " + hubUrl);
-      return;
-    }
+  // const bindHandlers = (
+  //   hubUrl: string,
+  //   commandHandlers: Partial<SignalRHandlers>
+  // ) => {
+  //   const connection = connectionsRef.current?.[hubUrl];
+  //   if (!connection) {
+  //     console.error("No connection found for hub: " + hubUrl);
+  //     return;
+  //   }
 
-    Object.entries(commandHandlers).forEach(([commandName, handler]) => {
-      if (handler) {
-        connection.on(commandName, handler);
-      }
-    });
-  };
+  //   Object.entries(commandHandlers).forEach(([commandName, handler]) => {
+  //     if (handler) {
+  //       connection.on(commandName, handler);
+  //     }
+  //   });
+  // };
 
-  const unbindHandlers = (
-    hubUrl: string,
-    commandHandlers: Partial<SignalRHandlers>
-  ) => {
-    const connection = connectionsRef.current?.[hubUrl];
-    if (!connection) {
-      console.error("No connection found for hub: " + hubUrl);
-      return;
-    }
+  // const unbindHandlers = (
+  //   hubUrl: string,
+  //   commandHandlers: Partial<SignalRHandlers>
+  // ) => {
+  //   const connection = connectionsRef.current?.[hubUrl];
+  //   if (!connection) {
+  //     console.error("No connection found for hub: " + hubUrl);
+  //     return;
+  //   }
 
-    Object.entries(commandHandlers).forEach(([commandName, handler]) => {
-      if (handler) {
-        connection.off(commandName, handler);
-      }
-    });
-  };
+  //   Object.entries(commandHandlers).forEach(([commandName, handler]) => {
+  //     if (handler) {
+  //       connection.off(commandName, handler);
+  //     }
+  //   });
+  // };
 
-  const getConnection = (hubUrl: string) => {
-    return connectionsRef.current?.[hubUrl];
-  };
+  // const getConnection = (hubUrl: string) => {
+  //   return connectionsRef.current?.[hubUrl];
+  // };
 
   const value = useMemo(
     () => ({
       connect,
-      bindHandlers,
-      unbindHandlers,
-      getConnection: (hubUrl: string) => getConnection(hubUrl),
+      // bindHandlers,
+      // unbindHandlers,
+      // getConnection: (hubUrl: string) => getConnection(hubUrl),
     }),
     []
   );
