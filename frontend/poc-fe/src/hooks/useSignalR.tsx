@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { SignalRHandlers } from "../types/signalR.types";
+import { DependencyList, useEffect } from "react";
 import { ConnectParams, useSignalRContext } from "../context/signalR.context";
 
 interface UseSignalRProps {
@@ -7,13 +6,24 @@ interface UseSignalRProps {
 }
 
 export const useSignalR = ({
-  connectParams
+  connectParams,
 }: UseSignalRProps) => {
-  const { connect, /*bindHandlers, unbindHandlers, getConnection*/ } = useSignalRContext();
+  const { connect, disconnect } = useSignalRContext();
 
   useEffect(() => {
     connect(connectParams);
-  }, [connectParams, connect]);
+    return () => {
+      disconnect(connectParams)
+    }
+  }, []);
+
+  // useEffect(() => {
+  //   console.log('[DEBUG] useEffect rebind');
+  //   bindHandlers(connectParams.hubUrl, connectParams.commandHandlers)
+  //   return () => {
+  //     unbindHandlers(connectParams.hubUrl, connectParams.commandHandlers)
+  //   }
+  // }, [connectParams, dependencies, bindHandlers, unbindHandlers]);
 
   // useEffect(() => {
   //   const connection = getConnection(connectParams.hubUrl);

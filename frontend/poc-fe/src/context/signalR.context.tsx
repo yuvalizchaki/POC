@@ -11,6 +11,7 @@ export interface ConnectParams {
   onDisconnect?: () => void,
   commandHandlers: Partial<SignalRHandlers>
 }
+export type DisconnectParams = Pick<ConnectParams, 'hubUrl'>
 
 interface SignalRProviderProps {
   baseUrl: string;
@@ -19,6 +20,7 @@ interface SignalRProviderProps {
 
 interface SignalRContextValue {
   connect: (props: ConnectParams) => void;
+  disconnect: (props: DisconnectParams) => void;
   // bindHandlers: (
   //   hubUrl: string,
   //   commandHandlers: Partial<SignalRHandlers>
@@ -47,7 +49,7 @@ export const SignalRProvider: FC<SignalRProviderProps> = ({
     commandHandlers
   }: ConnectParams) => {
     const connections = connectionsRef.current;
-    console.log('[DEBUG] connections:', connections);
+    // console.log('[DEBUG] connections:', connections);
     if (connections[hubUrl]) {
       console.log("Already connected to this hub.");
       return;
@@ -80,6 +82,19 @@ export const SignalRProvider: FC<SignalRProviderProps> = ({
         onConnectError?.(err);
       });
   };
+
+  const disconnect = ({
+    hubUrl
+  }: DisconnectParams) => {
+    const con = connectionsRef.current?.[hubUrl];
+    if (!con) {
+      console.error("No connection found for hub: " + hubUrl);
+      return;
+    }
+    
+    delete connectionsRef.current[hubUrl];
+    con.stop();
+  }
 
   // const bindHandlers = (
   //   hubUrl: string,
@@ -122,6 +137,7 @@ export const SignalRProvider: FC<SignalRProviderProps> = ({
   const value = useMemo(
     () => ({
       connect,
+      disconnect,
       // bindHandlers,
       // unbindHandlers,
       // getConnection: (hubUrl: string) => getConnection(hubUrl),

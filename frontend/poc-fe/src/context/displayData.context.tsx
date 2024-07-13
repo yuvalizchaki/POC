@@ -1,10 +1,12 @@
-import React, { createContext, ReactNode, useCallback, useState } from "react";
+import React, { createContext, ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { InventoryItem, OrderDto } from "../types/crmTypes.types";
 import { API_SCREEN_HUB_URL } from "../config";
 import { useScreenInfoContext } from "../hooks/useScreenInfoContext";
 import { useSignalR } from "../hooks/useSignalR";
 import { useNavigate } from "react-router-dom";
 import { DisplayTemplateType } from "../types/screenProfile.types";
+import moment from "moment";
+import { ScreenMetaData } from "../types/screenMetaData.types";
 
 interface DisplayDataProviderProps {
     children: ReactNode;
@@ -25,7 +27,7 @@ export const OrdersDataContext = createContext<DisplayDataContextType>({
 });
 
 export const DisplayDataProvider: React.FC<DisplayDataProviderProps> = ({ children }) => {
-    const { screenInfo, setScreenInfo, client, token, setToken } = useScreenInfoContext();
+    const { screenInfo, setScreenInfo, client, token, setToken, fetchAndSetScreenMetaData } = useScreenInfoContext();
     const [orders, setOrders] = useState<OrderDto[]>([]);
     const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
     const navigate = useNavigate();
@@ -38,7 +40,6 @@ export const DisplayDataProvider: React.FC<DisplayDataProviderProps> = ({ childr
             console.error("Failed to fetch orders:", error);
         }
     }, [client]);
-
 
     const fetchAndSetInventoryItems = useCallback(async () => {
         try {
@@ -53,108 +54,44 @@ export const DisplayDataProvider: React.FC<DisplayDataProviderProps> = ({ childr
         navigate("/screen/pair", { replace: true })
     }, [navigate])
 
-    const refetchData = useCallback(() => {
-        if (screenInfo?.displayConfig.displayTemplate === DisplayTemplateType.Inventory) {
+    /** Closure error fix */
+    const screenInfoWrapped = useRef<ScreenMetaData | null>(screenInfo);
+    useEffect(() => {
+        screenInfoWrapped.current = screenInfo
+    }, [screenInfo]);
+
+    const refetchData = useCallback((newMetaDate?: ScreenMetaData) => {
+        /** This is to solve a bug where the refetchData closure is changed but binded to the previous one. using the latest meta data fixes it */
+        const metaData = newMetaDate ?? screenInfoWrapped.current
+        if (metaData?.displayConfig.displayTemplate === DisplayTemplateType.Inventory) {
             fetchAndSetInventoryItems();
         } else {
             fetchAndSetOrders();
         }
-    }, [fetchAndSetOrders, fetchAndSetInventoryItems]);
+    }, [screenInfoWrapped, fetchAndSetOrders, fetchAndSetInventoryItems]);
 
     useSignalR({
         connectParams: {
             hubUrl: API_SCREEN_HUB_URL,
             token: `${token}`,
             onConnect: () => {
-                fetchAndSetOrders();
+                refetchData();
             },
             onConnectError: () => {
                 redirectToGuest();
             },
             commandHandlers: {
                 refreshData: () => {
-                    console.log('Refetching Data');
+                    console.log(`${moment()} Refetching Data`);
                     refetchData();
                 },
-                orderAdded: (orderAddedDtos) => {
-                    setOrders((prevOrders) => {
-                        let shouldFetchLatest = false;
-
-                        orderAddedDtos.forEach((orderAddedDto) => {
-                            if (prevOrders.some((order) =>
-                                order.crmOrder.id === orderAddedDto.crmOrder.id
-                                && order.transportType === orderAddedDto.transportType)
-                            ) {
-                                console.warn("Attempted to add an existing order. Fetching latest orders.");
-                                shouldFetchLatest = true;
-                            }
-                        });
-
-                        if (shouldFetchLatest) {
-                            fetchAndSetOrders();
-                            return prevOrders;
-                        }
-
-                        return [...prevOrders, ...orderAddedDtos];
-                    });
-
-                },
-                orderDeleted: (orderDeletedDtos) => {
-                    setOrders((prevOrders) => {
-                        let shouldFetchLatest = false;
-
-                        orderDeletedDtos.forEach((orderDeletedDto) => {
-                            if (!prevOrders.some((order) => order.crmOrder.id === orderDeletedDto)) {
-                                console.warn("Attempted to delete a non-existing order. Fetching latest orders.");
-                                shouldFetchLatest = true;
-                            }
-                        });
-
-                        if (shouldFetchLatest) {
-                            fetchAndSetOrders();
-                            return prevOrders;
-                        }
-
-                        return prevOrders.filter((order) => !orderDeletedDtos.includes(order.crmOrder.id));
-                    });
-                },
-                orderUpdated: (orderUpdatedDtos) => {
-                    setOrders((prevOrders) => {
-                        const updatedOrders = [...prevOrders];
-                        let shouldFetchLatest = false;
-
-                        orderUpdatedDtos.forEach((orderUpdatedDto) => {
-                            const orderIndex = prevOrders.findIndex((order) =>
-                                order.crmOrder.id === orderUpdatedDto.crmOrder.id
-                                && order.transportType === orderUpdatedDto.transportType
-                            );
-                            if (orderIndex === -1) {
-                                console.warn("Attempted to update a non-existing order. Fetching latest orders.");
-                                shouldFetchLatest = true;
-                            } else {
-                                updatedOrders[orderIndex] = orderUpdatedDto;
-                            }
-                        });
-
-                        if (shouldFetchLatest) {
-                            fetchAndSetOrders();
-                            return prevOrders;
-                        }
-
-                        return updatedOrders;
-                    });
-
-                },
-                profileUpdated: () => {
-                    console.log('Profile Updated, refetching data');
-                    refetchData();
-                },
-                inventoryUpdated: () => {
-                    console.log('Inventory Updated, refetching data');
-                    refetchData();
+                profileUpdated: async () => {
+                    console.log(`${moment()} Profile Updated, refetching data`);
+                    const newMetaDate = await fetchAndSetScreenMetaData();
+                    refetchData(newMetaDate);
                 },
                 screenRemoved: () => {
-                    console.log("Screen Removed by Admin");
+                    console.log(`${moment()}  Screen Removed by Admin`);
                     setToken(null);
                     setScreenInfo(null);
                 },

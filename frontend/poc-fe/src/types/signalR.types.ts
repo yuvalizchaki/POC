@@ -20,21 +20,13 @@ export interface GuestHubHandlers {
 // #region    /======================================== Screen Hub Commands ========================================\
 
 export type RefreshDataDto = void;
-export type OrderAddedDto = OrderDto[];
-export type OrderUpdatedDto = OrderDto[];
 export type ProfileUpdatedDto = void; // Assuming no payload for profileUpdated
-export type OrderDeletedDto = number[];
-export type InventoryUpdatedDto = void; // Assuming no payload for inventoryUpdated
 export type ScreenRemovedDto = ScreenDto;
 
 // Aligned with backend hub command strings
 export interface ScreenHubHandlers {
   refreshData: SignalRHandler<RefreshDataDto>;
-  orderAdded: SignalRHandler<OrderAddedDto>;
-  orderDeleted: SignalRHandler<OrderDeletedDto>;
-  orderUpdated: SignalRHandler<OrderUpdatedDto>;
   profileUpdated: SignalRHandler<ProfileUpdatedDto>;
-  inventoryUpdated: SignalRHandler<InventoryUpdatedDto>;
   screenRemoved: SignalRHandler<ScreenRemovedDto>;
 }
 
