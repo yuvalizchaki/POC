@@ -9,11 +9,14 @@ interface UseSignalRProps {
 export const useSignalR = ({
   connectParams
 }: UseSignalRProps) => {
-  const { connect, /*bindHandlers, unbindHandlers, getConnection*/ } = useSignalRContext();
+  const { connect, disconnect, /*bindHandlers, unbindHandlers, getConnection*/ } = useSignalRContext();
 
   useEffect(() => {
     connect(connectParams);
-  }, [connectParams, connect]);
+    return () => {
+      disconnect(connectParams)
+    }
+  }, []);
 
   // useEffect(() => {
   //   const connection = getConnection(connectParams.hubUrl);

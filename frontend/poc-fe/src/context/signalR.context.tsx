@@ -11,6 +11,7 @@ export interface ConnectParams {
   onDisconnect?: () => void,
   commandHandlers: Partial<SignalRHandlers>
 }
+export type DisconnectParams = Pick<ConnectParams, 'hubUrl'>
 
 interface SignalRProviderProps {
   baseUrl: string;
@@ -19,6 +20,7 @@ interface SignalRProviderProps {
 
 interface SignalRContextValue {
   connect: (props: ConnectParams) => void;
+  disconnect: (props: DisconnectParams) => void;
   // bindHandlers: (
   //   hubUrl: string,
   //   commandHandlers: Partial<SignalRHandlers>
@@ -81,6 +83,17 @@ export const SignalRProvider: FC<SignalRProviderProps> = ({
       });
   };
 
+  const disconnect = ({
+    hubUrl
+  }: DisconnectParams) => {
+    const con = connectionsRef.current?.[hubUrl];
+    if (!con) {
+      console.error("No connection found for hub: " + hubUrl);
+      return;
+    }
+    con.stop();
+  }
+
   // const bindHandlers = (
   //   hubUrl: string,
   //   commandHandlers: Partial<SignalRHandlers>
@@ -122,6 +135,7 @@ export const SignalRProvider: FC<SignalRProviderProps> = ({
   const value = useMemo(
     () => ({
       connect,
+      disconnect
       // bindHandlers,
       // unbindHandlers,
       // getConnection: (hubUrl: string) => getConnection(hubUrl),
