@@ -22,11 +22,7 @@ public class ScreenHub : Hub, NotifyOnOrdersChanged
     private readonly IMediator _mediator;
 
     private static readonly string MsgRefreshData = "refreshData";
-    private static readonly string MsgOrderAdded = "orderAdded";
-    private static readonly string MsgOrderUpdated = "orderUpdated";
-    private static readonly string MsgOrderDeleted = "orderDeleted";
     private static readonly string ProfileUpdated = "profileUpdated";
-    private static readonly string MsgInventoryUpdated = "inventoryUpdated";
     private static readonly string MsgScreenRemoved = "screenRemoved";
     
     public ScreenHub(
@@ -76,6 +72,18 @@ public class ScreenHub : Hub, NotifyOnOrdersChanged
         _logger.LogInformation($"notifies all screens to refresh data");
     }
     
+    public async Task NotifyDataChanged(IEnumerable<int> screenIds)
+    {
+        foreach (var id in screenIds)
+        {
+            var connectionId = _screenConnectionRepository.GetConnectionIdByScreenIdAsync(id);
+            if (!string.IsNullOrEmpty(connectionId.Result))
+            {
+                await Clients.Client(connectionId.Result).SendAsync(MsgRefreshData);
+            }
+        }
+    }
+    
     public async Task NotifyUpdateProfile(int[] screenIds)
     {
         foreach (var id in screenIds)
@@ -86,56 +94,6 @@ public class ScreenHub : Hub, NotifyOnOrdersChanged
                 await Clients.Client(connectionId.Result).SendAsync(ProfileUpdated);
             }
         }
-    }
-    
-    public async Task UpdateOrder(List<KeyValuePair<int, List<OrderDto>>> screenToOrders)
-    {
-        foreach (var pair in screenToOrders)
-        {
-            var connectionId = _screenConnectionRepository.GetConnectionIdByScreenIdAsync(pair.Key);
-            if (!string.IsNullOrEmpty(connectionId.Result))
-            {
-                await Clients.Client(connectionId.Result).SendAsync(MsgOrderUpdated, pair.Value);
-            }
-        }
-    }
-    
-    
-    public async Task AddOrder(List<KeyValuePair<int, List<OrderDto>>> screenToOrders)
-    {
-        foreach (var pair in screenToOrders)
-        {
-            var connectionId = _screenConnectionRepository.GetConnectionIdByScreenIdAsync(pair.Key);
-            if (!string.IsNullOrEmpty(connectionId.Result))
-            {
-                await Clients.Client(connectionId.Result).SendAsync(MsgOrderAdded, pair.Value);
-            }
-        }
-    }
-    
-    public async Task DeleteOrder(List<KeyValuePair<int, int[]>> screenToOrderIds)
-    {
-        foreach (var pair in screenToOrderIds)
-        {
-            var connectionId = _screenConnectionRepository.GetConnectionIdByScreenIdAsync(pair.Key);
-            if (!string.IsNullOrEmpty(connectionId.Result))
-            {
-                await Clients.Client(connectionId.Result).SendAsync(MsgOrderDeleted, pair.Value);
-            }
-        }
-    }
-
-    
-    public async Task FetchInventoryItems(int[] screenIds)
-    {
-        foreach (var id in screenIds)
-        {
-            var connectionId = _screenConnectionRepository.GetConnectionIdByScreenIdAsync(id);
-            if (!string.IsNullOrEmpty(connectionId.Result))
-            {
-                await Clients.Client(connectionId.Result).SendAsync(MsgInventoryUpdated);
-            }
-        } 
     }
 
     public Task NotifyAsync()
