@@ -43,12 +43,12 @@ const OrdersDisplay = ({ orders }: OrdersDisplayProps) => {
     const fixedOrders = useMemo(() => {
         return [...orders].sort((a, b) =>
             new Date(a.transportType === OrderTransportType.Incoming ? a.crmOrder.endDate : a.crmOrder.endDate).getTime() -
-        new Date(b.transportType === OrderTransportType.Incoming ? b.crmOrder.endDate : b.crmOrder.endDate).getTime()
+            new Date(b.transportType === OrderTransportType.Incoming ? b.crmOrder.endDate : b.crmOrder.endDate).getTime()
         );
     }, [orders]);
 
     const uniqueOrders = useMemo(() => [...new Map(fixedOrders.map(order => [order.crmOrder.id, order])).values()], [fixedOrders]);
-
+    console.log('[DEBUG] UPDATE!');
     return (
         <Box sx={{ p: 2, height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -68,17 +68,17 @@ const OrdersDisplay = ({ orders }: OrdersDisplayProps) => {
                             <StyledTableCell>Client Name</StyledTableCell>
                         </StyledTableRow>
                     </TableHead>
-
                     <TableBody>
-                        <AnimatePresence>
+                        <AnimatePresence mode="sync">
                             {fixedOrders.map((order) => (
                                 <StyledTableRow
                                     key={`${order.crmOrder.id}_${order.transportType}`}
-                                    layoutId={order.crmOrder.id.toString()}
-                                    initial={{ opacity: 0, scale: 1 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 1, maxHeight: 0 }}
-                                    transition={{ duration: 1, type: 'spring' }}
+                                    layoutId={`${order.crmOrder.id}_${order.transportType}`}
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: 100 }}
+                                    transition={{ duration: 0.8, type:"spring" }}
+                                    sx={{ opacity: 1 }}
                                 >
                                     <StyledTableCell component="th" scope="row">
                                         {moment(order.transportType === OrderTransportType.Incoming ? order.crmOrder.endDate : order.crmOrder.endDate).format('DD/MM/YYYY hh:mm')}
@@ -95,9 +95,7 @@ const OrdersDisplay = ({ orders }: OrdersDisplayProps) => {
                                 </StyledTableRow>
                             ))}
                         </AnimatePresence>
-
                     </TableBody>
-
                 </Table>
             </TableContainer>
 

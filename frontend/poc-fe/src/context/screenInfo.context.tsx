@@ -153,7 +153,7 @@ export const ScreenInfoProvider: React.FC<ScreenInfoProviderProps> = ({
 
     // Fetch screen meta data
     if (token) {
-    fetchAndSetScreenMetaData()
+      fetchAndSetScreenMetaData()
     }
   }, [token]);
 

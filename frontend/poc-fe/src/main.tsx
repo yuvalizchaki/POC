@@ -11,7 +11,9 @@ import { theme } from "./theme.ts";
 import './styles.css';
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
     <ThemeProvider theme={theme}>
       <RouterProvider router={router} fallbackElement={<LoadingPage />} />
     </ThemeProvider>
+  </React.StrictMode>
 );
