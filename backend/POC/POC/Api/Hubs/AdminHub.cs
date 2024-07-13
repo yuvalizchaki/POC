@@ -9,26 +9,28 @@ namespace POC.Api.Hubs
     [Authorize(Roles = "Admin")]
     public class AdminHub : Hub
     {
-        private readonly ScreenConnectionRepository _screenConnectionRepository;
         private readonly ILogger<AdminHub> _logger;
+        private IHubContext<AdminHub> _context;
+
         
         private static readonly string ScreenConnected = "screenConnected";
         private static readonly string ScreenDisconnected = "screenDisconnected";
+        
 
-        public AdminHub(ScreenConnectionRepository screenConnectionRepository, ILogger<AdminHub> logger)
+        public AdminHub(ILogger<AdminHub> logger, IHubContext<AdminHub> context)
         {
-            _screenConnectionRepository = screenConnectionRepository;
             _logger = logger;
+            _context = context;
         }
 
         public async Task NotifyScreenConnected(int screenId)
         {
-            await Clients.All.SendAsync(ScreenConnected, screenId);
+            await _context.Clients.All.SendAsync(ScreenConnected, screenId);
         }
         
         public async Task NotifyScreenDisonnected(int screenId)
         {
-            await Clients.All.SendAsync(ScreenDisconnected, screenId);
+            await _context.Clients.All.SendAsync(ScreenDisconnected, screenId);
         }
         
        

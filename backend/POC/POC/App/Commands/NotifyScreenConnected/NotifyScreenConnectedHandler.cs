@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.SignalR;
 using POC.Api.Hubs;
 
 namespace POC.App.Commands.NotifyScreenConnected;
@@ -10,3 +11,7 @@ public class NotifyScreenConnectedHandler(AdminHub adminHub): IRequestHandler<No
         await adminHub.NotifyScreenConnected(request.ScreenId);
     }
 }
+
+
+
+
