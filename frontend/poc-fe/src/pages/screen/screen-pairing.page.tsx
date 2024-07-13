@@ -2,11 +2,11 @@ import { useCallback, useState } from "react";
 
 import { useSignalR } from "../../hooks/useSignalR";
 import { PairingCodeDto, ScreenAddedDto } from "../../types/signalR.types";
-import { API_GUEST_HUB_URL } from "../../config";
-import { useScreenInfoContext } from "../../hooks/useScreenInfoContext";
+import { API_GUEST_HUB_URL, LOCALSTORAGE_KEY_SCREEN_TOKEN } from "../../config";
 import { useNavigate } from "react-router-dom";
 import { Box, Typography } from "@mui/material";
 import { AppLoader } from "../../components/common";
+import { useScreenInfoContext } from "../../hooks/useScreenInfoContext";
 
 // TODO: Use specific endpoint for setScreenInfo (instead of hard coded), with display name
 const ScreenPairingPage = () => {
@@ -16,7 +16,7 @@ const ScreenPairingPage = () => {
 
   const handleScreenAdded = useCallback(
     (message: ScreenAddedDto) => {
-      console.log("[DEBUG] screen added", message);
+      // console.log("[DEBUG] screen added", message);
       setToken(message);
       navigate({ pathname: "/screen/content" });
     },
@@ -25,7 +25,7 @@ const ScreenPairingPage = () => {
 
   const handlePairingCode = useCallback(
     (message: PairingCodeDto) => {
-      console.log("[DEBUG] paring code", message);
+      // console.log("[DEBUG] paring code", message);
       setPairingCode(message);
     },
     [setPairingCode]
@@ -34,10 +34,10 @@ const ScreenPairingPage = () => {
   useSignalR({
     connectParams: {
       hubUrl: API_GUEST_HUB_URL,
-    },
-    commandHandlers: {
-      screenAdded: handleScreenAdded,
-      pairCode: handlePairingCode,
+      commandHandlers: {
+        screenAdded: handleScreenAdded,
+        pairCode: handlePairingCode,
+      }
     },
   });
 

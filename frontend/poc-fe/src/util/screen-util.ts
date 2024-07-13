@@ -1,9 +1,9 @@
-import { OrderStatus } from "../types/crmTypes.types";
+import { OrderStatus, OrderTransportType } from "../types/crmTypes.types";
 
 export const getColor = (keyword: string) => {
     const colors: { [key: string]: string } = {
-        Outgoing: '#d32f2f',
-        Incoming: 'rgb(46, 125, 50)',
+        [`transport_${OrderTransportType.Outgoing}`]: '#d32f2f',
+        [`transport_${OrderTransportType.Incoming}`]: 'rgb(46, 125, 50)',
         Pending: 'rgb(115, 65, 147)',
         [`status_${OrderStatus.Completed}`]: 'rgb(2, 136, 209)',
         [`status_${OrderStatus.Canceled}`]: '#d32f2f',

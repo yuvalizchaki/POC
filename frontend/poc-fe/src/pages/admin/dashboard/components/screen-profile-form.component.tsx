@@ -4,26 +4,7 @@ import { DisplayTemplateType, ScreenProfileFormFields, TimeMode, TimeUnit, timeI
 import React, { useEffect, useMemo } from "react";
 import { useScreenProfilesContext } from "../../../../hooks/useScreenProfilesContext";
 import { AppEntity, OrderTag, orderStatusList, orderStatusDisplayMap } from "../../../../types/crmTypes.types";
-
-/** Helper */
-function flattenAppEntities(rootEntity: AppEntity): AppEntity[] {
-  const result: AppEntity[] = [];
-
-  function flatten(entity: AppEntity) {
-    if (entity.Id !== undefined) {
-      result.push(entity);
-    }
-    if (entity.Childs && entity.Childs.length > 0) {
-      entity.Childs.forEach(flatten);
-    }
-  }
-
-  if (rootEntity.Id !== undefined) {
-    flatten(rootEntity);
-  }
-
-  return result;
-}
+import { flattenAppEntities } from "../../../../util/global-util";
 
 // #region    ======================================== ScreenPorfileForm ========================================
 interface TimeRangePickerProps extends ControllerRenderProps {
@@ -125,17 +106,17 @@ export const ScreenPorfileForm = ({ }: ScreenPorfileFormProps) => {
   const orderTagsMap = useMemo(() => orderTags.reduce((acc, e) => ({ ...acc, [e.Id]: e }), {} as { [id: number]: OrderTag }), [orderTags]);
 
   const { control, getValues, setValue, watch, formState: { errors } } = useFormContext<ScreenProfileFormFields>();
-  console.log('[DEBUG] errors: ', errors);
+  // console.log('[DEBUG] errors: ', errors);
   /** Inventory Panel Conditional Rendering*/
   const displayTemplateValue = watch('screenProfileFiltering.displayConfig.displayTemplate');
   useEffect(() => {
-    console.log('[DEBUG] Display template changed to: ', displayTemplateValue);
+    // console.log('[DEBUG] Display template changed to: ', displayTemplateValue);
     if (displayTemplateValue !== DisplayTemplateType.Inventory) {
       setValue('screenProfileFiltering.inventoryFiltering', undefined);
     }
   }, [displayTemplateValue])
 
-  console.log('[DEBUG] Form Values: ', getValues());
+  // console.log('[DEBUG] Form Values: ', getValues());
 
   return (
     <>
@@ -173,7 +154,17 @@ export const ScreenPorfileForm = ({ }: ScreenPorfileFormProps) => {
                 fullWidth
                 {...field}
                 value={field.value}
-                onChange={(v) => field.onChange(v)}
+                onChange={(v) => {
+                  if (Number(v.target.value) === DisplayTemplateType.Inventory) {
+                    const inventoryFilteringValue = getValues('screenProfileFiltering.inventoryFiltering');
+                    if (inventoryFilteringValue === null || inventoryFilteringValue === undefined) {
+                      setValue('screenProfileFiltering.inventoryFiltering', {})
+                    }
+                  } else {
+                    setValue('screenProfileFiltering.inventoryFiltering', undefined)
+                  }
+                  field.onChange(v)
+                }}
                 error={!!errors.screenProfileFiltering?.displayConfig?.displayTemplate}
                 helperText={errors.screenProfileFiltering?.displayConfig?.displayTemplate?.message?.toString()}
               >
