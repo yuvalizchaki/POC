@@ -1,6 +1,7 @@
-import { IconButton, Stack, Typography } from "@mui/material";
-// import DesktopAccessDisabledIcon from "@mui/icons-material/DesktopAccessDisabled";
+import { CircularProgress, IconButton, Stack, Typography } from "@mui/material";
+import DesktopAccessDisabledIcon from "@mui/icons-material/DesktopAccessDisabled";
 import ConnectedTvIcon from "@mui/icons-material/ConnectedTv";
+
 import CloseIcon from "@mui/icons-material/Close";
 import { ScreenDto } from "../../../../types/screenProfile.types";
 import { useAdminInfoContext } from "../../../../hooks/useAdminInfoContext";
@@ -12,7 +13,8 @@ interface ScreenEntryProps {
 
 export const ScreenEntry = ({ screen }: ScreenEntryProps) => {
   const { removeScreen } = useAdminInfoContext();
-  const { refetch } = useScreenProfilesContext();
+  const { refetch, connectedScreens, isLoadingConnectedScreens } = useScreenProfilesContext();
+  console.log('[DEBUG] connectedScreens: ', connectedScreens);
   const handleRemoveScreen = () => {
     removeScreen(screen.id).then(() => {
       refetch();
@@ -27,8 +29,12 @@ export const ScreenEntry = ({ screen }: ScreenEntryProps) => {
     >
       <Typography>{screen.name}</Typography>
       <div style={{ flex: "1 0 0" }} />
-
-      <ConnectedTvIcon color="success" />
+      {isLoadingConnectedScreens
+        ? <CircularProgress size={20} />
+        : connectedScreens[screen.id]
+          ? <ConnectedTvIcon color="success" />
+          : <DesktopAccessDisabledIcon color="error" />
+      }
       <IconButton onClick={handleRemoveScreen} size="small">
         <CloseIcon />
       </IconButton>

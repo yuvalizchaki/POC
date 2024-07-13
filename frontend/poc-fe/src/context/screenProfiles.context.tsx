@@ -8,6 +8,11 @@ import {
 import { ScreenProfile } from "../types/screenProfile.types";
 import { useAdminInfoContext } from "../hooks/useAdminInfoContext";
 import { AppEntity, OrderTag } from "../types/crmTypes.types";
+import { useSignalR } from "../hooks/useSignalR";
+import { API_ADMIN_HUB_URL } from "../config";
+
+type ScreenConnectionStatus = boolean;
+type ScreenConnectionsMap = { [screenId: number]: ScreenConnectionStatus };
 
 interface ScreenProfilesContextType {
   profiles: ScreenProfile[];
@@ -15,6 +20,8 @@ interface ScreenProfilesContextType {
   orderTags: OrderTag[];
   isLoading: boolean;
   refetch: () => void;
+  connectedScreens: ScreenConnectionsMap,
+  isLoadingConnectedScreens: boolean
 }
 
 export const ScreenProfilesContext = createContext<
@@ -32,7 +39,10 @@ export const ScreenProfilesProvider = ({
   const [isLoadingEntities, setIsLoadingEntities] = useState<boolean>(true);
   const [isLoadingOrderTags, setIsLoadingOrderTags] = useState<boolean>(true);
 
-  const { getAllScreenProfiles, fetchEntities, fetchOrderTags } = useAdminInfoContext();
+  const [connectedScreens, setConnectedScreens] = useState<ScreenConnectionsMap>({});
+  const [isLoadingConnectedScreens, setIsLoadingConnectedScreens] = useState<boolean>(false);
+
+  const { token, getAllScreenProfiles, fetchEntities, fetchOrderTags, fetchConnectedScreens } = useAdminInfoContext();
 
   const fetchScreenProfiles = useCallback(() => {
     setIsLoadingProfiles(true);
@@ -70,6 +80,40 @@ export const ScreenProfilesProvider = ({
     });
   }, [getAllScreenProfiles]);
 
+  const fetchConnectedScreensData = useCallback(() => {
+    setIsLoadingConnectedScreens(true);
+    fetchConnectedScreens().then((data) => {
+      const connectedScreenIds = data.reduce((acc, screen) => ({ ...acc, [screen.id]: true }), {});
+      setConnectedScreens(connectedScreenIds);
+      
+      setIsLoadingConnectedScreens(false);
+    }).catch(() => {
+      setIsLoadingConnectedScreens(false);
+      console.error("Failed to fetch order tags");
+    });
+  }, [fetchOrderTags]);
+
+  useSignalR({
+    connectParams: {
+      hubUrl: API_ADMIN_HUB_URL,
+      token: `${token}`,
+      onConnect: () => {
+        fetchConnectedScreensData();
+      },
+      onConnectError: () => {
+
+      },
+      commandHandlers: {
+        screenConnected: (screenId: string) => {
+          setConnectedScreens((prev) => ({ ...prev, [screenId]: true }))
+        },
+        screenDisconnected: (screenId: string) => {
+          setConnectedScreens((prev) => ({ ...prev, [screenId]: false }))
+        },
+      },
+    },
+  });
+
   useEffect(() => {
     fetchScreenProfiles();
     fetchEntitiesData();
@@ -79,7 +123,15 @@ export const ScreenProfilesProvider = ({
   const isLoading = isLoadingProfiles || isLoadingEntities || isLoadingOrderTags;
 
   return (
-    <ScreenProfilesContext.Provider value={{ profiles, entities, orderTags, isLoading, refetch }}>
+    <ScreenProfilesContext.Provider value={{
+      profiles,
+      entities,
+      orderTags,
+      isLoading,
+      refetch,
+      connectedScreens,
+      isLoadingConnectedScreens
+    }}>
       {children}
     </ScreenProfilesContext.Provider>
   );

@@ -4,6 +4,8 @@ import { ScreenProfileEntry } from "./components/screen-profile-entry.component"
 import LoadingPage from "../../loading.page";
 import { ScreenProfilesProvider } from "../../../context/screenProfiles.context";
 import { useScreenProfilesContext } from "../../../hooks/useScreenProfilesContext";
+import { useSignalR } from "../../../hooks/useSignalR";
+import { API_ADMIN_HUB_URL } from "../../../config";
 
 const AdminDashboardContent = () => {
   const { profiles, isLoading } = useScreenProfilesContext();

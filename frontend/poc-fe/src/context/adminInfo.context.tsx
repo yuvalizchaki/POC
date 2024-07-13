@@ -15,6 +15,7 @@ import {
   CreateScreenProfileDto,
   UpdateScreenProfileDto,
   PairScreenDto,
+  ScreenDto,
 } from "../types/screenProfile.types";
 import { AppEntity, OrderTag } from "../types/crmTypes.types";
 
@@ -41,6 +42,7 @@ export interface AdminInfoContextType {
   getAllScreenProfiles: () => Promise<ScreenProfile[]>;
   fetchEntities: () => Promise<AppEntity>;
   fetchOrderTags: () => Promise<OrderTag[]>;
+  fetchConnectedScreens: () => Promise<ScreenDto[]>;
 }
 
 export const AdminInfoContext = createContext<AdminInfoContextType>({
@@ -68,7 +70,8 @@ export const AdminInfoContext = createContext<AdminInfoContextType>({
   fetchEntities: async () => {
     return {} as AppEntity
   },
-  fetchOrderTags: async () => []
+  fetchOrderTags: async () => [],
+  fetchConnectedScreens: async () => []
 });
 
 export const AdminInfoProvider: React.FC<AdminInfoProviderProps> = ({
@@ -227,6 +230,22 @@ export const AdminInfoProvider: React.FC<AdminInfoProviderProps> = ({
     }
   }, [client]);
 
+
+  const fetchConnectedScreens = useCallback(
+    async (): Promise<ScreenDto[]> => {
+      try {
+        // TODO: Implement Correctly
+        const response = await client.get("/admin/connected-screens");
+        console.log("response:", response);
+        return response.data;
+      } catch (error) {
+        console.error("Error fetching screen profiles:", error);
+        return [];
+      }
+    },
+    [loggedOutClient, setToken, navigate]
+  );
+
   const contextValue: AdminInfoContextType = {
     token,
     setToken,
@@ -240,7 +259,8 @@ export const AdminInfoProvider: React.FC<AdminInfoProviderProps> = ({
     deleteScreenProfile,
     getAllScreenProfiles,
     fetchEntities,
-    fetchOrderTags
+    fetchOrderTags,
+    fetchConnectedScreens
   };
 
   // Sync token state with local storage

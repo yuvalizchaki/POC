@@ -6,6 +6,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import RefreshIcon from '@mui/icons-material/Refresh';
 
 import { useScreenInfoContext } from "../../hooks/useScreenInfoContext";
+import { useNavigate } from "react-router-dom";
 
 const MotionBox = motion(Box);
 
@@ -16,6 +17,8 @@ export const ScreenSupportBar = ({ }: ScreenSupportBarProps) => {
     const timeoutRef = useRef<number | null>(null);
 
     const { token, setToken, setScreenInfo } = useScreenInfoContext();
+
+    const navigate = useNavigate();
 
     const handleVisibility = () => {
         if (timeoutRef.current) {
@@ -33,7 +36,7 @@ export const ScreenSupportBar = ({ }: ScreenSupportBarProps) => {
     };
 
     const handleRefresh = () => {
-        window.location.reload();
+        navigate("/");
     }
 
     const handleLogout = () => {
