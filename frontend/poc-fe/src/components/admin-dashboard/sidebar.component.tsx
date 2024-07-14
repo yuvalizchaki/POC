@@ -16,7 +16,7 @@ import {
 
 import HomeIcon from "@mui/icons-material/Home";
 import TvIcon from "@mui/icons-material/Tv";
-import SettingsIcon from "@mui/icons-material/Settings";
+// import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from '@mui/icons-material/Logout';
 
 export const SIDEBAR_WIDTH = "300px";
@@ -28,12 +28,12 @@ const menuItems = [
     path: "/admin/dashboard/screen-management",
     icon: <TvIcon />,
   },
-  {
-    title: "Settings",
-    path: "/admin/dashboard/settings",
-    position: "end",
-    icon: <SettingsIcon />,
-  },
+  // {
+  //   title: "Settings",
+  //   path: "/admin/dashboard/settings",
+  //   position: "end",
+  //   icon: <SettingsIcon />,
+  // },
   {
     title: "Logout",
     path: "/admin/logout",

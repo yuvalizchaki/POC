@@ -2,7 +2,7 @@ import { createTheme } from "@mui/material/styles";
 
 export const screenTheme = createTheme({
   typography: {
-    fontSize: 36, // Larger base font size
+    fontSize: 32, // Larger base font size
     //     h6: {
     //       fontSize: "1.25rem", // Increase size for h6
     //     },
