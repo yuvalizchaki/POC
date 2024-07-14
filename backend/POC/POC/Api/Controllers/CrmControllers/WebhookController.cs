@@ -12,7 +12,7 @@ namespace POC.Api.Controllers.CrmControllers;
 
 [ApiController]
 [Route("[controller]")]
-// [Authorize(Roles = "CRM")] //TODO : add authorization
+[Authorize(Roles = "CRM")] 
 public class WebhookController(IMediator mediator) : ControllerBase
 {
     [HttpPost("order")]
