@@ -53,8 +53,8 @@ const ScreenPairingPage = () => {
         boxSizing: "border-box",
         p: 4,
         bgcolor: "background.paper",
-        boxShadow: 3,
-        borderRadius: 2,
+        // boxShadow: 3,
+        // borderRadius: 2,
       }}
     >
       <Typography variant="h3" gutterBottom textAlign="center">

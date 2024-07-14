@@ -18,14 +18,16 @@ import {
   ScreenDto,
 } from "../types/screenProfile.types";
 import { AppEntity, OrderTag } from "../types/crmTypes.types";
+import { AdminData } from "../types/adminData.types";
+import { encodeAdminData, parseAdminData } from "../util/admin-util";
 
 interface AdminInfoProviderProps {
   children: ReactNode;
 }
 
 export interface AdminInfoContextType {
-  token: string | null;
-  setToken: (token: string | null) => void;
+  adminData: AdminData | null;
+  setAdminData: (adminData: AdminData | null) => void;
   loginAdmin: (username: string, password: string) => Promise<void>;
   logoutAdmin: () => void;
   isLoggedIn: () => boolean;
@@ -46,10 +48,10 @@ export interface AdminInfoContextType {
 }
 
 export const AdminInfoContext = createContext<AdminInfoContextType>({
-  token: null,
-  setToken: () => { },
-  loginAdmin: async () => { },
-  logoutAdmin: () => { },
+  adminData: null,
+  setAdminData: () => {},
+  loginAdmin: async () => {},
+  logoutAdmin: () => {},
   isLoggedIn: () => false,
   pairScreen: async () => {
     return {} as AxiosResponse;
@@ -68,25 +70,28 @@ export const AdminInfoContext = createContext<AdminInfoContextType>({
   },
   getAllScreenProfiles: async () => [],
   fetchEntities: async () => {
-    return {} as AppEntity
+    return {} as AppEntity;
   },
   fetchOrderTags: async () => [],
-  fetchConnectedScreens: async () => []
+  fetchConnectedScreens: async () => [],
 });
 
 export const AdminInfoProvider: React.FC<AdminInfoProviderProps> = ({
   children,
 }) => {
-  const [token, setTokenState] = useState<string | null>(() => {
+  const [adminData, setAdminDataState] = useState<AdminData | null>(() => {
     // Initialize state from local storage
-    return localStorage.getItem(LOCALSTORAGE_KEY_ADMIN_TOKEN);
+    return parseAdminData(localStorage.getItem(LOCALSTORAGE_KEY_ADMIN_TOKEN));
   });
   const navigate = useNavigate();
 
-  const setToken = useCallback((newToken: string | null) => {
-    setTokenState(newToken);
-    if (newToken !== null) {
-      localStorage.setItem(LOCALSTORAGE_KEY_ADMIN_TOKEN, newToken);
+  const setAdminData = useCallback((newAdminData: AdminData | null) => {
+    setAdminDataState(newAdminData);
+    if (newAdminData !== null) {
+      localStorage.setItem(
+        LOCALSTORAGE_KEY_ADMIN_TOKEN,
+        encodeAdminData(newAdminData)
+      );
     } else {
       localStorage.removeItem(LOCALSTORAGE_KEY_ADMIN_TOKEN);
     }
@@ -99,15 +104,15 @@ export const AdminInfoProvider: React.FC<AdminInfoProviderProps> = ({
 
   const client = useMemo(() => {
     const axiosInstance = axios.create({ baseURL: API_BASE_URL });
-    if (token) {
+    if (adminData) {
       axiosInstance.defaults.headers.common[
         "Authorization"
-      ] = `Bearer ${token}`;
+      ] = `Bearer ${adminData.token}`;
     } else {
       axiosInstance.defaults.headers.common["Authorization"] = "";
     }
     return axiosInstance;
-  }, [token]);
+  }, [adminData]);
 
   const loginAdmin = useCallback(
     async (username: string, password: string) => {
@@ -117,19 +122,19 @@ export const AdminInfoProvider: React.FC<AdminInfoProviderProps> = ({
           url: "/admin",
           data: { username, password },
         });
-        const token = response.data;
-        setToken(token);
+        const adminData = response.data;
+        setAdminData(adminData);
         navigate("/admin/dashboard");
       } catch (error) {
         console.error("Login failed:", error);
         throw error;
       }
     },
-    [loggedOutClient, setToken, navigate]
+    [loggedOutClient, setAdminData, navigate]
   );
 
   const logoutAdmin = useCallback(() => {
-    setToken(null);
+    setAdminData(null);
   }, []);
 
   const isLoggedIn = useCallback(() => {
@@ -141,7 +146,7 @@ export const AdminInfoProvider: React.FC<AdminInfoProviderProps> = ({
       return client({
         method: "post",
         url: "/screens",
-        data
+        data,
       });
     },
     [client]
@@ -202,9 +207,7 @@ export const AdminInfoProvider: React.FC<AdminInfoProviderProps> = ({
     }
   }, [client]);
 
-  const fetchEntities = useCallback(async (): Promise<
-    AppEntity
-  > => {
+  const fetchEntities = useCallback(async (): Promise<AppEntity> => {
     try {
       // TODO: Implement Correctly
       const response = await client.get("/types/company");
@@ -216,9 +219,7 @@ export const AdminInfoProvider: React.FC<AdminInfoProviderProps> = ({
     }
   }, [client]);
 
-  const fetchOrderTags = useCallback(async (): Promise<
-    OrderTag[]
-  > => {
+  const fetchOrderTags = useCallback(async (): Promise<OrderTag[]> => {
     try {
       // TODO: Implement Correctly
       const response = await client.get("/types/tags");
@@ -230,25 +231,21 @@ export const AdminInfoProvider: React.FC<AdminInfoProviderProps> = ({
     }
   }, [client]);
 
-
-  const fetchConnectedScreens = useCallback(
-    async (): Promise<ScreenDto[]> => {
-      try {
-        // TODO: Implement Correctly
-        const response = await client.get("/admin/connected-screens");
-        // console.log("[DEBUG] response:", response);
-        return response.data;
-      } catch (error) {
-        console.error("Error fetching screen profiles:", error);
-        return [];
-      }
-    },
-    [loggedOutClient, setToken, navigate]
-  );
+  const fetchConnectedScreens = useCallback(async (): Promise<ScreenDto[]> => {
+    try {
+      // TODO: Implement Correctly
+      const response = await client.get("/admin/connected-screens");
+      // console.log("[DEBUG] response:", response);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching screen profiles:", error);
+      return [];
+    }
+  }, [loggedOutClient, setAdminData, navigate]);
 
   const contextValue: AdminInfoContextType = {
-    token,
-    setToken,
+    adminData,
+    setAdminData,
     loginAdmin,
     logoutAdmin,
     isLoggedIn,
@@ -260,16 +257,18 @@ export const AdminInfoProvider: React.FC<AdminInfoProviderProps> = ({
     getAllScreenProfiles,
     fetchEntities,
     fetchOrderTags,
-    fetchConnectedScreens
+    fetchConnectedScreens,
   };
 
   // Sync token state with local storage
   useEffect(() => {
-    const storedToken = localStorage.getItem(LOCALSTORAGE_KEY_ADMIN_TOKEN);
-    if (storedToken !== token) {
-      setTokenState(storedToken);
+    const storedAdminData = parseAdminData(
+      localStorage.getItem(LOCALSTORAGE_KEY_ADMIN_TOKEN)
+    );
+    if (storedAdminData?.token !== adminData?.token) {
+      setAdminDataState(storedAdminData);
     }
-  }, [token]);
+  }, [adminData]);
 
   return (
     <AdminInfoContext.Provider value={contextValue}>

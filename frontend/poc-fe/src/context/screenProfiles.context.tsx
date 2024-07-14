@@ -20,8 +20,8 @@ interface ScreenProfilesContextType {
   orderTags: OrderTag[];
   isLoading: boolean;
   refetch: () => void;
-  connectedScreens: ScreenConnectionsMap,
-  isLoadingConnectedScreens: boolean
+  connectedScreens: ScreenConnectionsMap;
+  isLoadingConnectedScreens: boolean;
 }
 
 export const ScreenProfilesContext = createContext<
@@ -39,10 +39,18 @@ export const ScreenProfilesProvider = ({
   const [isLoadingEntities, setIsLoadingEntities] = useState<boolean>(true);
   const [isLoadingOrderTags, setIsLoadingOrderTags] = useState<boolean>(true);
 
-  const [connectedScreens, setConnectedScreens] = useState<ScreenConnectionsMap>({});
-  const [isLoadingConnectedScreens, setIsLoadingConnectedScreens] = useState<boolean>(false);
+  const [connectedScreens, setConnectedScreens] =
+    useState<ScreenConnectionsMap>({});
+  const [isLoadingConnectedScreens, setIsLoadingConnectedScreens] =
+    useState<boolean>(false);
 
-  const { token, getAllScreenProfiles, fetchEntities, fetchOrderTags, fetchConnectedScreens } = useAdminInfoContext();
+  const {
+    adminData,
+    getAllScreenProfiles,
+    fetchEntities,
+    fetchOrderTags,
+    fetchConnectedScreens,
+  } = useAdminInfoContext();
 
   const fetchScreenProfiles = useCallback(() => {
     setIsLoadingProfiles(true);
@@ -54,24 +62,28 @@ export const ScreenProfilesProvider = ({
 
   const fetchEntitiesData = useCallback(() => {
     setIsLoadingEntities(true);
-    fetchEntities().then((data) => {
-      setEntities(data);
-      setIsLoadingEntities(false);
-    }).catch(() => {
-      setIsLoadingEntities(false);
-      console.error("Failed to fetch entities");
-    });
+    fetchEntities()
+      .then((data) => {
+        setEntities(data);
+        setIsLoadingEntities(false);
+      })
+      .catch(() => {
+        setIsLoadingEntities(false);
+        console.error("Failed to fetch entities");
+      });
   }, [fetchEntities]);
 
   const fetchOrderTagsData = useCallback(() => {
     setIsLoadingOrderTags(true);
-    fetchOrderTags().then((data) => {
-      setOrderTags(data);
-      setIsLoadingOrderTags(false);
-    }).catch(() => {
-      setIsLoadingOrderTags(false);
-      console.error("Failed to fetch order tags");
-    });
+    fetchOrderTags()
+      .then((data) => {
+        setOrderTags(data);
+        setIsLoadingOrderTags(false);
+      })
+      .catch(() => {
+        setIsLoadingOrderTags(false);
+        console.error("Failed to fetch order tags");
+      });
   }, [fetchOrderTags]);
 
   const refetch = useCallback(() => {
@@ -82,33 +94,36 @@ export const ScreenProfilesProvider = ({
 
   const fetchConnectedScreensData = useCallback(() => {
     setIsLoadingConnectedScreens(true);
-    fetchConnectedScreens().then((data) => {
-      const connectedScreenIds = data.reduce((acc, screen) => ({ ...acc, [screen.id]: true }), {});
-      setConnectedScreens(connectedScreenIds);
+    fetchConnectedScreens()
+      .then((data) => {
+        const connectedScreenIds = data.reduce(
+          (acc, screen) => ({ ...acc, [screen.id]: true }),
+          {}
+        );
+        setConnectedScreens(connectedScreenIds);
 
-      setIsLoadingConnectedScreens(false);
-    }).catch(() => {
-      setIsLoadingConnectedScreens(false);
-      console.error("Failed to fetch order tags");
-    });
-  }, [fetchOrderTags]);
+        setIsLoadingConnectedScreens(false);
+      })
+      .catch(() => {
+        setIsLoadingConnectedScreens(false);
+        console.error("Failed to fetch order tags");
+      });
+  }, [fetchConnectedScreens]);
 
   useSignalR({
     connectParams: {
       hubUrl: API_ADMIN_HUB_URL,
-      token: `${token}`,
+      token: `${adminData?.token}`,
       onConnect: () => {
         fetchConnectedScreensData();
       },
-      onConnectError: () => {
-
-      },
+      onConnectError: () => {},
       commandHandlers: {
         screenConnected: (screenId: string) => {
-          setConnectedScreens((prev) => ({ ...prev, [screenId]: true }))
+          setConnectedScreens((prev) => ({ ...prev, [screenId]: true }));
         },
         screenDisconnected: (screenId: string) => {
-          setConnectedScreens((prev) => ({ ...prev, [screenId]: false }))
+          setConnectedScreens((prev) => ({ ...prev, [screenId]: false }));
         },
       },
     },
@@ -120,18 +135,21 @@ export const ScreenProfilesProvider = ({
     fetchOrderTagsData();
   }, [fetchScreenProfiles, fetchEntitiesData, fetchOrderTagsData]);
 
-  const isLoading = isLoadingProfiles || isLoadingEntities || isLoadingOrderTags;
+  const isLoading =
+    isLoadingProfiles || isLoadingEntities || isLoadingOrderTags;
 
   return (
-    <ScreenProfilesContext.Provider value={{
-      profiles,
-      entities,
-      orderTags,
-      isLoading,
-      refetch,
-      connectedScreens,
-      isLoadingConnectedScreens
-    }}>
+    <ScreenProfilesContext.Provider
+      value={{
+        profiles,
+        entities,
+        orderTags,
+        isLoading,
+        refetch,
+        connectedScreens,
+        isLoadingConnectedScreens,
+      }}
+    >
       {children}
     </ScreenProfilesContext.Provider>
   );

@@ -6,6 +6,7 @@ import { screenTheme } from "./theme";
 import { SignalRProvider } from "../../context/signalR.context";
 import { API_BASE_URL } from "../../config";
 import { ScreenSupportBar } from "../../components/screen-support-bar/screen-support-bar.component";
+import "./styles.css";
 
 const ScreenPage: React.FC = () => (
   <SignalRProvider baseUrl={API_BASE_URL}>

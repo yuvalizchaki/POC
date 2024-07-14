@@ -1,0 +1,20 @@
+#root {
+  /* ---------/ Zoom by different sizes \--------- */
+  zoom: 1;
+
+  @media (min-width: 600px) {
+    /* < -- sm (iPad Mini) */
+    zoom: 1;
+  }
+
+  @media (min-width: 900px) {
+    /* < -- md */
+    zoom: 1.2;
+  }
+
+  @media (min-width: 1200px) {
+    /* < -- lg */
+    zoom: 1.5;
+  }
+  /* ---------\ Zoom by different sizes /--------- */
+}
