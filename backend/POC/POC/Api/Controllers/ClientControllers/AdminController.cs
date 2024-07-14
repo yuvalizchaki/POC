@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using POC.App.Commands.AdminLogin;
 using POC.App.Queries.GetAllConnectedScreens;
 using POC.Contracts.Auth;
+using POC.Contracts.CrmDTOs;
 using POC.Infrastructure.Common.Exceptions;
 
 namespace POC.Api.Controllers.ClientControllers;
@@ -29,8 +30,8 @@ public class AdminController
 
         try
         {
-            var token = await _mediator.Send(command);
-            return Ok(token);
+            var adminLoginDto = await _mediator.Send(command);
+            return Ok(adminLoginDto);
         }
         catch (AdminLoginException e)
         {

@@ -1,6 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 using MediatR;
+using POC.Contracts.CrmDTOs;
 using POC.Infrastructure.Common.Exceptions;
 using POC.Infrastructure.Models;
 using POC.Infrastructure.Repositories;
@@ -9,9 +10,9 @@ using POC.Services;
 namespace POC.App.Commands.AdminLogin;
 
 public class AdminLoginCommandHandler(AdminRepository repository)
-    : IRequestHandler<AdminLoginCommand, String>
+    : IRequestHandler<AdminLoginCommand, AdminLoginDto>
 {
-    public async Task<String> Handle(AdminLoginCommand request, CancellationToken cancellationToken)
+    public async Task<AdminLoginDto> Handle(AdminLoginCommand request, CancellationToken cancellationToken)
     {
         // Hash the password
         byte[] result = SHA256.Create().ComputeHash(Encoding.ASCII.GetBytes(request.LoginPostDto.Password));
@@ -25,7 +26,13 @@ public class AdminLoginCommandHandler(AdminRepository repository)
         }
         
         String token = AuthService.GenerateAdminToken(request.LoginPostDto.Username, request.LoginPostDto.Password, int.Parse(admin.CompanyId));
-        return token;
+        AdminLoginDto adminLoginDto = new AdminLoginDto
+        {
+            Username = request.LoginPostDto.Username,
+            CompanyId = int.Parse(admin.CompanyId), 
+            token = token
+        };
+        return adminLoginDto;
     }
     
 }
