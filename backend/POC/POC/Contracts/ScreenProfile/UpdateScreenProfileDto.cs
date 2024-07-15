@@ -11,7 +11,7 @@ public class UpdateScreenProfileDto
     public string Name { get; set; }
 
     [Required]
-    public int CompanyId { get; set; } = 1;
+    public int CompanyId { get; set; }
     
     [Required]
     public ScreenProfileFilteringDto ScreenProfileFiltering { get; set; } = null!;

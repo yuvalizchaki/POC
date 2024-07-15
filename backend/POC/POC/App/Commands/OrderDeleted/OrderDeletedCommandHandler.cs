@@ -16,12 +16,12 @@ public class OrderDeletedCommandHandler(
 {
     public async Task Handle(OrderDeletedCommand request, CancellationToken cancellationToken)
     {
-        await orderRepository.DeleteOrderAsync(request.Id);
+        await orderRepository.DeleteOrderAsync(request.CompanyId, request.Id);
         
         var connectionIds = await screenConnectionRepository.GetConnectedScreensAsync();
         var screens = await screenRepository.GetScreensByIdsAsync(connectionIds);
         
-        var crmOrder = await orderRepository.GetOrderAsync(request.Id);
+        var crmOrder = await orderRepository.GetOrderAsync(request.CompanyId, request.Id);
         
         var ordersDup = new[] {crmOrder.ToIncomingOrderDto(), crmOrder.ToOutgoingOrderDto()};
 

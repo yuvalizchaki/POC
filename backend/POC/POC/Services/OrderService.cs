@@ -2,6 +2,7 @@
 using POC.Contracts.CrmDTOs;
 using POC.Infrastructure.Adapters;
 using POC.Infrastructure.IRepositories;
+using POC.Infrastructure.Repositories;
 
 namespace POC.Services;
 
@@ -13,6 +14,7 @@ public interface IOrderService
 
 public class OrderService(
     IOrderRepository orderRepository, 
+    AdminRepository adminRepository,
     IOrderAdapter orderAdapter, 
     ILogger<OrderService> logger)
     : IOrderService
@@ -22,11 +24,15 @@ public class OrderService(
     {
         try
         {
-            // TODO change the companyId accordingly in the future
-            var orders = await orderAdapter.FetchOrdersAsync();
-
+            var orderDictionary = new Dictionary<int, IEnumerable<CrmOrder>>();
+            var adminIds = adminRepository.GetAdminIds();
+            foreach (var adminId in adminIds)
+            {
+                var orders = await orderAdapter.FetchOrdersAsync(adminId);
+                orderDictionary[adminId] = orders;
+            }
             // Process and save orders
-            await orderRepository.SetAllOrdersAsync(orders);
+            await orderRepository.SetAllOrdersAsync(orderDictionary);
             
             logger.LogInformation("Orders replicated successfully at {Time}", DateTime.UtcNow);
         }
@@ -40,7 +46,7 @@ public class OrderService(
     {
         try
         {
-            await orderRepository.AddOrUpdateOrderAsync(order);
+            await orderRepository.AddOrUpdateOrderAsync(order.CompanyId, order);
             logger.LogInformation("Order processed from webhook at {Time}", DateTime.UtcNow);
         }
         catch (Exception ex)

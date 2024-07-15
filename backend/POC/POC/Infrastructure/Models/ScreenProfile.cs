@@ -11,7 +11,7 @@ public class ScreenProfile
     [Key]
     public int Id { get; set; }
     public string Name { get; set; } = null!;
-    public int CompanyId { get; set; } = 1;
+    public int CompanyId { get; set; } 
     public ScreenProfileFiltering ScreenProfileFiltering { get; set; } = new ScreenProfileFiltering();
     public List<Screen> Screens { get; set; } = [];
 }

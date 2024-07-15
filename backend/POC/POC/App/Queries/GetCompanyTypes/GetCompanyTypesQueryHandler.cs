@@ -9,6 +9,6 @@ public class GetCompanyTypesQueryHandler(
 {
     public Task<string> Handle(GetCompanyTypesQuery request, CancellationToken cancellationToken)
     {
-        return typesAdapter.FetchCompanyTypesAsync();
+        return typesAdapter.FetchCompanyTypesAsync(request.CompanyId);
     }
 }
