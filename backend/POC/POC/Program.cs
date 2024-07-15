@@ -124,7 +124,7 @@ builder.Services.AddMemoryCache();
 
 //Register the Order Service
 builder.Services.AddSingleton<IOrderRepository, InMemoryOrderRepository>();
-builder.Services.AddSingleton<IOrderService, OrderService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 
 builder.Services.AddSingleton<IGuestConnectionRepository, CachedGuestConnectionRepository>();

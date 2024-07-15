@@ -18,9 +18,18 @@ public class TypesController(ILogger<TypesController> logger, IMediator mediator
     [HttpGet("tags")]
     public async Task<ActionResult<String>> GetTagTypes()
     {
+        var cid = User.FindFirst("CompanyId");
+
+        if (cid == null)
+        {
+            return Unauthorized();
+        }
+        
+        var companyId = int.Parse(cid.Value);
+        
         try
         {
-            var result = await mediator.Send(new GetTagsTypesQuery());
+            var result = await mediator.Send(new GetTagsTypesQuery(companyId));
             return Ok(result);
         }
         catch (Exception e)
@@ -33,9 +42,18 @@ public class TypesController(ILogger<TypesController> logger, IMediator mediator
     [HttpGet("company")]
     public async Task<ActionResult<String>> GetCompanyTypes()
     {
+        var cid = User.FindFirst("CompanyId");
+
+        if (cid == null)
+        {
+            return Unauthorized();
+        }
+        
+        var companyId = int.Parse(cid.Value);
+        
         try
         {
-            var result = await mediator.Send(new GetCompanyTypesQuery());
+            var result = await mediator.Send(new GetCompanyTypesQuery(companyId));
             return Ok(result);
         }
         catch (Exception e)

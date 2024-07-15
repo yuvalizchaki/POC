@@ -2,7 +2,9 @@
 
 namespace POC.App.Queries.GetTagsTypes;
 
-public class GetTagsTypesQuery : IRequest<String>
+public class GetTagsTypesQuery(
+    int companyId
+    ) : IRequest<String>
 {
-    
+    public int CompanyId { get; set; } = companyId;
 }

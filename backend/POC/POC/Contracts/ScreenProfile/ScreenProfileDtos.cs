@@ -14,7 +14,7 @@ public class ScreenProfileDto
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
     
-    public int CompanyId { get; set; } = 1;
+    public int CompanyId { get; set; } 
 
     public List<ScreenDto> Screens { get; set; } = [];
     

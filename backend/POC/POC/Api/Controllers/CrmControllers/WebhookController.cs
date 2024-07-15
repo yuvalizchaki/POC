@@ -28,7 +28,7 @@ public class WebhookController(IMediator mediator) : ControllerBase
                 command = new OrderAddedCommand((CrmOrder)order);
                 break;
             case "delete":
-                command = new OrderDeletedCommand(order.Id);
+                command = new OrderDeletedCommand(order.Id,order.CompanyId);
                 break;
             case "update":
                 command = new OrderUpdatedCommand((CrmOrder)order);

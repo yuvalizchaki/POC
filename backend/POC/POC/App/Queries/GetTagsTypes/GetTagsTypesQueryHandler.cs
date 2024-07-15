@@ -10,6 +10,6 @@ public class GetTagsTypesQueryHandler(
 {
     public Task<string> Handle(GetTagsTypesQuery request, CancellationToken cancellationToken)
     {
-        return typesAdapter.FetchTagsTypesAsync();
+        return typesAdapter.FetchTagsTypesAsync(request.CompanyId);
     }
 }

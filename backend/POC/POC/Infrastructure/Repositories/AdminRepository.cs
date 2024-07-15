@@ -10,5 +10,9 @@ public class AdminRepository(OurDbContext dbContext)
         var admin = dbContext.Admins.FirstOrDefault(s => s.Username == username && s.HashedPassword == hashedPassword);
         return Task.FromResult(admin);
     }
-    
+
+    public IEnumerable<int> GetAdminIds()
+    {
+        return dbContext.Admins.Select(a =>int.Parse(a.CompanyId)).ToList();
+    }
 }
