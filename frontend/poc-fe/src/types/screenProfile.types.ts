@@ -10,21 +10,25 @@ export enum TimeUnit {
 }
 
 export const timeUnitMap = {
-  [TimeUnit.Hour]: 'hour',
-  [TimeUnit.Day]: 'day',
-  [TimeUnit.Week]: 'week',
-  [TimeUnit.Month]: 'month',
-  [TimeUnit.Year]: 'year',
+  [TimeUnit.Hour]: "hour",
+  [TimeUnit.Day]: "day",
+  [TimeUnit.Week]: "week",
+  [TimeUnit.Month]: "month",
+  [TimeUnit.Year]: "year",
 };
 export const timeUnitPluralMap = {
-  [TimeUnit.Hour]: 'hours',
-  [TimeUnit.Day]: 'days',
-  [TimeUnit.Week]: 'weeks',
-  [TimeUnit.Month]: 'months',
-  [TimeUnit.Year]: 'years',
+  [TimeUnit.Hour]: "hours",
+  [TimeUnit.Day]: "days",
+  [TimeUnit.Week]: "weeks",
+  [TimeUnit.Month]: "months",
+  [TimeUnit.Year]: "years",
 };
-export const timeUnitPluralList = Object.entries(timeUnitPluralMap).map(([value, label]) => ({ value: Number(value), label }));
-export const timeUnitList = Object.entries(timeUnitMap).map(([value, label]) => ({ value: Number(value), label }));
+export const timeUnitPluralList = Object.entries(timeUnitPluralMap).map(
+  ([value, label]) => ({ value: Number(value), label })
+);
+export const timeUnitList = Object.entries(timeUnitMap).map(
+  ([value, label]) => ({ value: Number(value), label })
+);
 
 export enum TimeMode {
   Start = 1,
@@ -33,29 +37,33 @@ export enum TimeMode {
 }
 
 export const timeModeMap = {
-  [TimeMode.Start]: 'start of',
-  [TimeMode.End]: 'end of',
-  [TimeMode.Fixed]: 'now',
+  [TimeMode.Start]: "start of",
+  [TimeMode.End]: "end of",
+  [TimeMode.Fixed]: "now",
 };
-export const timeModeList = Object.entries(timeModeMap).map(([value, label]) => ({ value: Number(value), label }));
+export const timeModeList = Object.entries(timeModeMap).map(
+  ([value, label]) => ({ value: Number(value), label })
+);
 
 export enum TimeInclude {
   Incoming = 1,
   Outgoing = 2,
-  Both = 3
+  Both = 3,
 }
 
 export const timeIncludeMap = {
-  [TimeInclude.Incoming]: 'incoming',
-  [TimeInclude.Outgoing]: 'outgoing',
-  [TimeInclude.Both]: 'all',
+  [TimeInclude.Incoming]: "incoming",
+  [TimeInclude.Outgoing]: "outgoing",
+  [TimeInclude.Both]: "all",
 };
 
-export const timeIncludeList = Object.entries(timeIncludeMap).map(([value, label]) => ({ value: Number(value), label }));
+export const timeIncludeList = Object.entries(timeIncludeMap).map(
+  ([value, label]) => ({ value: Number(value), label })
+);
 
 export enum DisplayTemplateType {
   Orders = 1,
-  Inventory = 2
+  Inventory = 2,
 }
 
 // Types
@@ -72,7 +80,7 @@ interface TimeEncapsulatedDto {
 }
 
 interface OrderFilteringDto {
-  timeRanges: TimeEncapsulatedDto,
+  timeRanges: TimeEncapsulatedDto;
   orderStatuses?: OrderStatus[];
   isPickup?: boolean;
   isSale?: boolean;
@@ -87,6 +95,9 @@ interface InventoryFilteringDto {
 export interface DisplayConfigDto {
   isPaging: boolean;
   displayTemplate: DisplayTemplateType;
+  label: string;
+  pagingRefreshTime: number;
+  isDarkMode: boolean;
 }
 
 interface ScreenProfileFilteringDto {
