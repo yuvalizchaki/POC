@@ -58,7 +58,10 @@ public static class ScreenProfileFilterExtensions
         return new DisplayConfigDto
         {
             IsPaging = displayConfig.IsPaging,
-            DisplayTemplate = displayConfig.DisplayTemplate
+            DisplayTemplate = displayConfig.DisplayTemplate,
+            Label = displayConfig.Label,
+            PagingRefreshTime = displayConfig.PagingRefreshTime,
+            IsDarkMode = displayConfig.IsDarkMode
         };
     }
 }
@@ -112,7 +115,10 @@ public static class ScreenProfileFilterDtoExtensions
         return new DisplayConfig
         {
             IsPaging = displayConfigDto.IsPaging,
-            DisplayTemplate = displayConfigDto.DisplayTemplate
+            DisplayTemplate = displayConfigDto.DisplayTemplate,
+            Label = displayConfigDto.Label,
+            PagingRefreshTime = displayConfigDto.PagingRefreshTime,
+            IsDarkMode = displayConfigDto.IsDarkMode
         };
     }
 }

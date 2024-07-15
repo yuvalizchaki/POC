@@ -55,5 +55,12 @@ public class InventoryFiltering
 public class DisplayConfig
 {
     public bool IsPaging { get; set; }
-    public DisplayTemplateType DisplayTemplate { get; set; } // Enum: Table, Graph, Notes, whatever
+    public DisplayTemplateType DisplayTemplate { get; set; } // Enum: Orders, Inventory
+    
+    public string? Label { get; set; } 
+    
+    public int? PagingRefreshTime { get; set; }
+    
+    public bool IsDarkMode { get; set; }
+    
 }
