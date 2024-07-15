@@ -71,5 +71,12 @@ public class DisplayConfigDto
     public bool IsPaging { get; set; }
     
     [ValidateEnum(ErrorMessage = "Invalid DisplayType specified")]
-    public DisplayTemplateType DisplayTemplate { get; set; } // Enum: Table, Graph, Notes, whatever
+    public DisplayTemplateType DisplayTemplate { get; set; } // Enum: Orders, Inventory
+    
+    public string? Label { get; set; } 
+    
+    public int? PagingRefreshTime { get; set; }
+    
+    public bool IsDarkMode { get; set; }
+    
 }

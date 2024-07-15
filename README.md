@@ -59,4 +59,18 @@ password: admin
 
 ### To add admin to database run:
 INSERT INTO public."Admins"("Username", "HashedPassword", "CompanyId")
-VALUES ('admin', '�iv�A���M�߱g��s�K��o*�H�', '1');
+VALUES ('admin1', '�Z񂯸Rv�y�֞юvLKԕȾP
+�m��p', '1');
+
+INSERT INTO public."Admins"("Username", "HashedPassword", "CompanyId")
+VALUES ('admin2', '�Z񂯸Rv�y�֞юvLKԕȾP
+�m��p', '2');
+
+INSERT INTO public."Admins"("Username", "HashedPassword", "CompanyId")
+VALUES ('admin4', '�Z񂯸Rv�y�֞юvLKԕȾP
+�m��p', '4');
+
+
+password for all 3 is
+
+Willofcapibara100
