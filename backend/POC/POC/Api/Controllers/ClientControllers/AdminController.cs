@@ -1,8 +1,11 @@
-﻿using MediatR;
+﻿using System.Security.Claims;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using POC.App.Commands.AdminLogin;
+using POC.App.Commands.SendPopupMessage;
 using POC.App.Queries.GetAllConnectedScreens;
+using POC.Contracts.Admin;
 using POC.Contracts.Auth;
 using POC.Contracts.CrmDTOs;
 using POC.Infrastructure.Common.Exceptions;
@@ -56,6 +59,27 @@ public class AdminController
         catch (Exception e)
         {
             _logger.LogError(e, "Error getting all connected screens.");
+            return BadRequest(e.Message);
+        }
+    }
+    
+    [Authorize(Roles = "Admin")]
+    [HttpPost("message-screens/{profileId}")]
+    public async Task<IActionResult> MessageScreens(int profileId, [FromBody] AdminMessageDto messageDto)
+    {
+        var senderName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (senderName == null) return BadRequest("Sender name is required.");
+        
+        var command = new SendPopupMessageCommand(profileId,senderName!, messageDto);
+        try
+        {
+            await _mediator.Send(command);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error sending message to screen.");
             return BadRequest(e.Message);
         }
     }

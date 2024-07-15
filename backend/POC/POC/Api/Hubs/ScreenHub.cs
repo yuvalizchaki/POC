@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.SignalR;
 using POC.App.Commands.NotifyScreenConnected;
 using POC.App.Commands.NotifyScreenDisonnected;
 using POC.App.Commands.OrderAdded;
+using POC.Contracts.Admin;
 using POC.Contracts.Screen;
 using POC.Infrastructure.Common.Notifiers;
 using POC.Infrastructure.IRepositories;
@@ -23,6 +24,7 @@ public class ScreenHub : Hub, NotifyOnOrdersChanged
     private static readonly string MsgRefreshData = "refreshData";
     private static readonly string ProfileUpdated = "profileUpdated";
     private static readonly string MsgScreenRemoved = "screenRemoved";
+    private static readonly string MsgSentToScreen = "msgSentToScreen";
     
     public ScreenHub(
         ScreenConnectionRepository screenConnectionRepository, 
@@ -117,4 +119,17 @@ public class ScreenHub : Hub, NotifyOnOrdersChanged
             await RemoveScreen(screen);
         }
     }
+    
+    public async Task SendPopupMessage(IEnumerable<int> screenIds, PopupMessageDto message)
+    {
+        foreach (var id in screenIds)
+        {
+            var connectionId = _screenConnectionRepository.GetConnectionIdByScreenIdAsync(id);
+            if (!string.IsNullOrEmpty(connectionId.Result))
+            {
+                await Clients.Client(connectionId.Result).SendAsync(MsgSentToScreen, message);
+            }
+        }
+    }
+    
 }
