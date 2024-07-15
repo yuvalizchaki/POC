@@ -3,3 +3,8 @@ export interface AdminData {
   companyId: number;
   token: string;
 }
+
+export interface AdminMessageDto {
+  message: string;
+  displayTime: number;
+}

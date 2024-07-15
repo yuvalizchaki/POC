@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import EditIcon from '@mui/icons-material/Edit';
+import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import React, { useState } from "react";
@@ -19,6 +19,9 @@ import { useAdminInfoContext } from "../../../../hooks/useAdminInfoContext";
 import { useScreenProfilesContext } from "../../../../hooks/useScreenProfilesContext";
 import { PairScreenDialog } from "./pair-screen-dialog.component";
 import { ScreenProfileDialog } from "./screen-profile-dialog.component";
+import SendMessageDialog from "./send-message-dialog.component";
+
+import MessageIcon from "@mui/icons-material/Message";
 
 interface ScreenProfileEntryProps {
   profile: ScreenProfile;
@@ -26,9 +29,20 @@ interface ScreenProfileEntryProps {
 
 export const ScreenProfileEntry = ({ profile }: ScreenProfileEntryProps) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  const [sendMessageOpen, setSendMessageOpen] = useState(false);
   const [addScreenOpen, setAddScreenOpen] = useState(false);
   const { deleteScreenProfile } = useAdminInfoContext();
   const { refetch } = useScreenProfilesContext();
+
+  // #region    ======================================== Add Screen ========================================
+  const handleSendMessageOpen = () => {
+    setSendMessageOpen(true);
+  };
+
+  const handleSendMessageClose = () => {
+    setSendMessageOpen(false);
+  };
+  // #endregion ======================================== Add Screen ========================================
 
   // #region    ======================================== Add Screen ========================================
   const handleAddScreenOpen = () => {
@@ -109,6 +123,17 @@ export const ScreenProfileEntry = ({ profile }: ScreenProfileEntryProps) => {
             <div style={{ flex: "1 0 0" }} />
             <Button
               variant="text"
+              color="success"
+              startIcon={<MessageIcon />}
+              onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                e.stopPropagation();
+                handleSendMessageOpen();
+              }}
+            >
+              Send Message
+            </Button>
+            <Button
+              variant="text"
               startIcon={<AddIcon />}
               onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.stopPropagation();
@@ -151,6 +176,12 @@ export const ScreenProfileEntry = ({ profile }: ScreenProfileEntryProps) => {
         onSubmitted={handleAddScreenSubmitted}
         onCancel={handleAddScreenClose}
         profileId={profile.id}
+      />
+      <SendMessageDialog
+        isOpen={sendMessageOpen}
+        onCancel={handleSendMessageClose}
+        screenProfileId={profile.id}
+        screenProfileName={profile.name ?? ""}
       />
     </React.Fragment>
   );

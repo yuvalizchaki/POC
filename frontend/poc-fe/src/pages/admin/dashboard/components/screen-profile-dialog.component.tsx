@@ -57,7 +57,10 @@ export const ScreenProfileDialog = ({
       screenProfileFiltering: {
         displayConfig: {
           displayTemplate: DisplayTemplateType.Orders,
-          isPaging: true,
+          isPaging: false,
+          label: "",
+          isDarkMode: false,
+          pagingRefreshTime: 15000,
         },
         orderFiltering: {
           timeRanges: {

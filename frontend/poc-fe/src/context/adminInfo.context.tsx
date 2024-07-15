@@ -18,7 +18,7 @@ import {
   ScreenDto,
 } from "../types/screenProfile.types";
 import { AppEntity, OrderTag } from "../types/crmTypes.types";
-import { AdminData } from "../types/adminData.types";
+import { AdminData, AdminMessageDto } from "../types/adminData.types";
 import { encodeAdminData, parseAdminData } from "../util/admin-util";
 
 interface AdminInfoProviderProps {
@@ -32,6 +32,10 @@ export interface AdminInfoContextType {
   logoutAdmin: () => void;
   isLoggedIn: () => boolean;
   pairScreen: (data: PairScreenDto) => Promise<AxiosResponse>;
+  sendMessage: (
+    screenProfileId: number,
+    data: AdminMessageDto
+  ) => Promise<AxiosResponse>;
   removeScreen: (id: number) => Promise<AxiosResponse>;
   createScreenProfile: (
     screenProfileData: CreateScreenProfileDto
@@ -54,6 +58,9 @@ export const AdminInfoContext = createContext<AdminInfoContextType>({
   logoutAdmin: () => {},
   isLoggedIn: () => false,
   pairScreen: async () => {
+    return {} as AxiosResponse;
+  },
+  sendMessage: async () => {
     return {} as AxiosResponse;
   },
   removeScreen: async () => {
@@ -146,6 +153,17 @@ export const AdminInfoProvider: React.FC<AdminInfoProviderProps> = ({
       return client({
         method: "post",
         url: "/screens",
+        data,
+      });
+    },
+    [client]
+  );
+
+  const sendMessage = useCallback(
+    (screenProfileId: number, data: AdminMessageDto) => {
+      return client({
+        method: "post",
+        url: `/admin/message-screens/${screenProfileId}`,
         data,
       });
     },
@@ -250,6 +268,7 @@ export const AdminInfoProvider: React.FC<AdminInfoProviderProps> = ({
     logoutAdmin,
     isLoggedIn,
     pairScreen,
+    sendMessage,
     removeScreen,
     createScreenProfile,
     updateScreenProfile,
