@@ -34,6 +34,7 @@ public class ScreenRepository(OurDbContext dbContext, IHttpContextAccessor httpC
     {
         var companyId = int.Parse(GetCompanyId());
         var screens = dbContext.Screens
+            .Include(s => s.ScreenProfile)
             .Where(s => ids.Contains(s.Id) && s.ScreenProfile.CompanyId == companyId);
         return Task.FromResult(screens as IEnumerable<Screen>);
     }
